@@ -1,4 +1,4 @@
-package com.example.alium;
+package com.dwao.alium;
 
 import org.junit.Test;
 

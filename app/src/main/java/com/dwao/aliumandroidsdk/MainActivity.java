@@ -8,7 +8,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.aliumandroidsdk.R;
+import com.dwao.aliumandroidsdk.R;
 
 public class MainActivity extends AppCompatActivity {
 

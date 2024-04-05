@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'com.example.aliumandroidsdk'
+    namespace 'com.dwao.aliumandroidsdk'
     compileSdk 34
 
     defaultConfig {
