@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
 //           new ShowSurvey(this, url);
 
 //        }
-        String url= "";
-        new ShowSurvey(this, url, this.getTitle().toString());
+        new ShowSurvey(this, Config.BASE_URL, this.getTitle().toString());
     }
 }
