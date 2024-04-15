@@ -3,10 +3,14 @@ package com.dwao.alium.survey;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -16,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -24,6 +29,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.dwao.alium.R;
 import com.dwao.alium.adapters.CheckBoxRecyViewAdapter;
@@ -69,6 +75,7 @@ public class ShowSurvey implements VolleyResponseListener {
     private  JSONArray surveyQuestions;
     private  JSONObject surveyUi;
     private JSONObject surveyInfo;
+    private String thankyouObj;
     VolleyService volleyService;
     String uuid, currentScreen;
     QuestionResponse currentQuestionResponse;
@@ -130,7 +137,7 @@ public class ShowSurvey implements VolleyResponseListener {
         closeDialogBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                submitSurvey();
+              dialog.dismiss();
             }
         });
         if(surveyQuestions.length()>0 && currentIndx==0) showCurrentQuestion();
@@ -151,6 +158,8 @@ public class ShowSurvey implements VolleyResponseListener {
     public void onResponseReceived(JSONObject json) {
         Log.d("response from", json.toString());
         String checkURL=currentScreen;
+        thankyouObj="";
+
         surveyResponse(json, checkURL);
 
     }
@@ -167,6 +176,7 @@ public class ShowSurvey implements VolleyResponseListener {
                 Log.d("Target2", "Key: " + key + ", URL: " + urlValue);
 
                 if (checkURL.equals(urlValue)){
+                    thankyouObj=ppupsrvObject.getString("thnkMsg");
                     Log.e("True","True");
                     Uri uri=Uri.parse(urlValue);
                     Log.d("path", uri.getPath());
@@ -248,23 +258,69 @@ public class ShowSurvey implements VolleyResponseListener {
                 "qusrs="+currentQuestionResponse.getQuestionResponse()+"&"+
                 "restp="+currentQuestionResponse.getResponseType();
         volleyService.loadRequestWithVolley(context,url );
-        if(surveyQuestions.length()>0 && currentIndx< surveyQuestions.length()){
-
+        if(surveyQuestions.length()>0) {
             this.layout.removeAllViews();
-            showCurrentQuestion();
-        }else if(currentIndx==surveyQuestions.length()){
-            //show thank you msg
-            Toast.makeText(context, "Your response has been submitted!!", Toast.LENGTH_LONG).show();
-            submitSurvey();
+            if( currentIndx< surveyQuestions.length()){
+                showCurrentQuestion();
+            }else if(currentIndx==surveyQuestions.length()){
+                currentQuestion.setVisibility(View.GONE);
+                AppCompatTextView improveExpTxt=layoutView.findViewById
+                        (R.id.help_improve_experience_textview);
+                improveExpTxt.setVisibility(View.GONE);
+                nextQuestion.setVisibility(View.GONE);
+                View thankyou=LayoutInflater.from(context).inflate(R.layout.thankyou, null);
+                AppCompatTextView thankyouTxt=thankyou.findViewById(R.id.thankyou_msg);
+                thankyouTxt.setText(thankyouObj);
+
+                AppCompatImageView imageView=thankyou.findViewById(R.id.completed_anim_container)
+                        .findViewById(R.id.completed_anim);
+                imageView.setImageResource(R.drawable.avd_anim);
+                Drawable drawable= imageView.getDrawable();
+                if(drawable instanceof AnimatedVectorDrawableCompat){
+                    Log.d("instance", "AnimatedVectorDrawableCompat");
+                    AnimatedVectorDrawableCompat avd=(AnimatedVectorDrawableCompat)drawable;
+                    avd.start();
+
+                }else if(drawable instanceof AnimatedVectorDrawable){
+                    AnimatedVectorDrawable avd=(AnimatedVectorDrawable)drawable;
+                    Log.d("instance2", "AnimatedVectorDrawableCompat");
+                    avd.start();
+
+                }
+                this.layout.addView(thankyou);
+
+                //show thank you msg
+//                Toast.makeText(context, "Your response has been submitted!!", Toast.LENGTH_LONG)
+//                        .show();
+                submitSurvey();
+            }
         }
     }
     private void submitSurvey(){
-        dialog.dismiss();
+        Handler handler=new Handler();
+        Runnable runnable=new Runnable() {
+            @Override
+            public void run() {
+
+                dialog.dismiss();
+            }
+        };
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                handler.removeCallbacks(runnable);
+            }
+        });
+        handler.postDelayed(runnable, 2000);
+
     }
 
 
     private void showCurrentQuestion(){
+
         try {
+            nextQuestion.setEnabled(false);
+            nextQuestion.setAlpha(0.5f);
             Log.d("indx@", ""+currentIndx);
             currentQuestionResponse.setQuestionId(surveyQuestions.getJSONObject(currentIndx)
                     .getInt("id"));
