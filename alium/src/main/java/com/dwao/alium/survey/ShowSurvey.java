@@ -88,24 +88,7 @@ public class ShowSurvey implements VolleyResponseListener {
         volleyService.loadRequestWithVolley(context, getLoadReqURL());
         Log.d("POST",getLoadReqURL() );
     }
-    private Map<String, String> getParams(){
-        Map<String, String> params = new HashMap<>();
-        params.put("srvid", "1201");
-        params.put("srvtpid", "6");
-        params.put("srvLng", "1");
-        params.put("srvldid", uuid+"ppup1710923706208srv");
-        params.put("srvpt", "dashboard");
-        params.put("ua", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36");
-        params.put("vstid", uuid);
-        params.put("ran", "1710923706208");
-        params.put("orgId", "1038");
-        params.put("custSystemId", "NA");
-        params.put("custId", "1066");
-        params.put("custEmail", "NA");
-        params.put("custMobile", "NA");
-        params.put("Content-Type", "application/x-www-form-urlencoded");
-        return params;
-    }
+
     private String getLoadReqURL(){
         try {
             String BASE_URL="https://tracker.alium.co.in/tracker?";
@@ -136,6 +119,7 @@ public class ShowSurvey implements VolleyResponseListener {
             @Override
             public void onClick(View view) {
                   currentIndx++;
+                  Log.d("indx", ""+currentIndx);
                   handleNextQuestion();
                   nextQuestion.setEnabled(false);
                   nextQuestion.setAlpha(0.5f);
@@ -260,13 +244,9 @@ public class ShowSurvey implements VolleyResponseListener {
 
     }
     private void handleNextQuestion(){
-        String url=getLoadReqURL()+"&"+"qusid="+currentQuestionResponse.getQuestionId()+"&"+
+        String url=getLoadReqURL()+"&"+"qusid="+(currentQuestionResponse.getQuestionId()+1)+"&"+
                 "qusrs="+currentQuestionResponse.getQuestionResponse()+"&"+
                 "restp="+currentQuestionResponse.getResponseType();
-//        Map params=getParams();
-//        params.put("qusid",currentQuestionResponse.getQuestionId());
-//        params.put("qusrs",currentQuestionResponse.getQuestionResponse());
-//        params.put("restp",currentQuestionResponse.getResponseType());
         volleyService.loadRequestWithVolley(context,url );
         if(surveyQuestions.length()>0 && currentIndx< surveyQuestions.length()){
 
@@ -285,6 +265,7 @@ public class ShowSurvey implements VolleyResponseListener {
 
     private void showCurrentQuestion(){
         try {
+            Log.d("indx@", ""+currentIndx);
             currentQuestionResponse.setQuestionId(surveyQuestions.getJSONObject(currentIndx)
                     .getInt("id"));
             currentQuestionResponse.setResponseType(surveyQuestions

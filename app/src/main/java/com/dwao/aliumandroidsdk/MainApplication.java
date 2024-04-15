@@ -7,12 +7,15 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.dwao.alium.survey.Alium;
+
 public class MainApplication extends Application {
     @Override
     public void onCreate() {
 
         super.onCreate();
-        String url= "https://assets.alium.co.in/cmmn/cstjn/cstjn_1038.json";
+        String url= "";
+        Alium.configure(this, url);
        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
            @Override
            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {
