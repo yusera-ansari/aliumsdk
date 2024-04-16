@@ -57,7 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class ShowSurvey implements VolleyResponseListener {
+public class ShowSurvey  {
     private View layoutView;
     private RelativeLayout layout;
     private RadioBtnAdapter adapter;
@@ -82,13 +82,22 @@ public class ShowSurvey implements VolleyResponseListener {
 
     public ShowSurvey(Context ctx, String url, String currentScreen){
         this.context=ctx;
-
         currentQuestionResponse=new QuestionResponse();
         this.currentScreen=currentScreen;
         this.uuid=UUID.randomUUID().toString();
         volleyService=new VolleyService();
         Log.d("survey", "showing on :"+currentScreen);
-        volleyService.callVolley(ctx,url ,this::onResponseReceived );
+        VolleyResponseListener ConfigJSONListener=new VolleyResponseListener() {
+            @Override
+            public void onResponseReceived(JSONObject jsonObject) {
+                String checkURL=currentScreen;
+                thankyouObj="";
+                surveyResponse(jsonObject, checkURL);
+                Log.d("response from listener", jsonObject.toString());
+
+            }
+        };
+        volleyService.callVolley(ctx,url ,ConfigJSONListener );
 
     }
     private void trackWithAlium() {
@@ -154,15 +163,15 @@ public class ShowSurvey implements VolleyResponseListener {
         trackWithAlium();
     }
 
-    @Override
-    public void onResponseReceived(JSONObject json) {
-        Log.d("response from", json.toString());
-        String checkURL=currentScreen;
-        thankyouObj="";
-
-        surveyResponse(json, checkURL);
-
-    }
+//    @Override
+//    public void onResponseReceived(JSONObject json) {
+//        Log.d("response from", json.toString());
+//        String checkURL=currentScreen;
+//        thankyouObj="";
+//
+//        surveyResponse(json, checkURL);
+//
+//    }
 
     private void surveyResponse(JSONObject response, String checkURL) {
         Log.d("Target2", checkURL);
