@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.dwao.alium.survey.Alium;
 import com.dwao.aliumandroidsdk.Config;
 import com.dwao.aliumandroidsdk.R;
 import com.dwao.alium.survey.ShowSurvey;
@@ -25,6 +26,6 @@ public class DashboardActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        new ShowSurvey(this, Config.BASE_URL, this.getTitle().toString());
+        Alium.loadAliumSurvey(this,  "mobilesecond");
     }
 }

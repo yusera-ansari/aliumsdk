@@ -16,6 +16,8 @@ import com.dwao.alium.R;
 import com.dwao.alium.listeners.CheckBoxClickListener;
 import com.dwao.alium.models.QuestionResponse;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +27,14 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
     CheckBoxClickListener listener;
     List<Integer> selectedItems;
     QuestionResponse currentQuestionResponse;
-    public CheckBoxRecyViewAdapter( List<String> checkBoxList,
-    CheckBoxClickListener listener, QuestionResponse currentQuestionResponse){
+    JSONObject surveyUi;
+    public CheckBoxRecyViewAdapter(List<String> checkBoxList,
+                                   CheckBoxClickListener listener, QuestionResponse currentQuestionResponse, JSONObject surveyUi){
         this.checkBoxList=checkBoxList;
         this.listener=listener;
         selectedItems=new ArrayList<>();
         this.currentQuestionResponse=currentQuestionResponse;
+        this.surveyUi=surveyUi;
     }
     private void updateResponseString(){
         String resp="";
@@ -64,6 +68,17 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.checkBox.setText(checkBoxList.get(position));
+        if(surveyUi!=null){
+           try{
+               if(surveyUi.has("options") && surveyUi.getJSONObject("options").has("textColor")){
+                holder.checkBox.setTextColor(Color.parseColor(surveyUi
+                        .getJSONObject("options")
+                        .getString("textColor")));
+               }
+           }catch (Exception e){
+               Log.e("surveyUICheckBox", e.toString());
+           }
+        }
         holder.checkBox.setChecked(selectedItems.contains(position));
         holder.checkBox.setButtonTintList(new ColorStateList(new int[][]{
                 new int[]{-android.R.attr.state_checked},

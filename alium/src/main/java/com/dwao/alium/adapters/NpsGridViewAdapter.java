@@ -16,16 +16,20 @@ import com.dwao.alium.R;
 import com.dwao.alium.listeners.NpsOptionClickListener;
 import com.dwao.alium.models.QuestionResponse;
 
+import org.json.JSONObject;
+
 
 public class NpsGridViewAdapter extends BaseAdapter{
     Context ctx;
     int selectedOption=-1;
     NpsOptionClickListener npsOptionClickListener;
+    JSONObject surveyUi;
     QuestionResponse currentQuestionResponse;
-    public NpsGridViewAdapter(Context ctx, NpsOptionClickListener npsOptionClickListener,  QuestionResponse currentQuestionResponse){
+    public NpsGridViewAdapter(Context ctx, NpsOptionClickListener npsOptionClickListener, QuestionResponse currentQuestionResponse, JSONObject surveyUi){
     this.ctx=ctx;
     this.npsOptionClickListener=npsOptionClickListener;
     this.currentQuestionResponse=currentQuestionResponse;
+    this.surveyUi=surveyUi;
 }
 
     public void updatedSelectedOption(int position){
@@ -63,7 +67,17 @@ public class NpsGridViewAdapter extends BaseAdapter{
         AppCompatButton  npsOption=view.findViewById(R.id.nps_option);
         npsOption.setText(String.valueOf(position));
         Drawable d=ctx.getDrawable(R.drawable.rounded_button);
-
+        if(surveyUi!=null) {
+            try {
+                if (surveyUi.has("options") && surveyUi.getJSONObject("options").has("textColor")) {
+                    npsOption.setTextColor(Color.parseColor(surveyUi
+                            .getJSONObject("options")
+                            .getString("textColor")));
+                }
+            } catch (Exception e) {
+                Log.e("surveyUICheckBox", e.toString());
+            }
+        }
         if(selectedOption==position){
             d.setColorFilter(Color.parseColor("#00ff00" ),PorterDuff.Mode.ADD);
         }
