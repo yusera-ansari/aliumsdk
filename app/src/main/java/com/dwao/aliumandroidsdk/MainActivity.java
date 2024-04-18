@@ -48,20 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-//        VolleyService.callVolley(this);
-//        try {
-//            VolleyService volleyService=new VolleyService();
-//            String url= "https://assets.alium.co.in/cmmn/cstjn/cstjn_1038.json";
-//            volleyService.callVolley(this,url );
-//           json= FetchJson.getFromLocal(getAssets().open("survey_details.json"));
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        if(json!=null){
-//        String url= "https://assets.alium.co.in/cmmn/cstjn/cstjn_1038.json";
-//           new ShowSurvey(this, url);
 
-//        }
         Alium.loadAliumSurvey(this,  "firstscreen");
     }
 }
