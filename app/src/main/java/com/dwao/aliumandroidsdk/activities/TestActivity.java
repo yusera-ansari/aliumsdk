@@ -5,6 +5,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.dwao.alium.survey.Alium;
 import com.dwao.aliumandroidsdk.Config;
 import com.dwao.aliumandroidsdk.R;
 import com.dwao.alium.survey.ShowSurvey;
@@ -16,6 +17,6 @@ public class TestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
         next=findViewById(R.id.next);
-        new ShowSurvey(this, Config.BASE_URL, this.getTitle().toString());
+        Alium.loadAliumSurvey(this,  this.getTitle().toString());
     }
 }

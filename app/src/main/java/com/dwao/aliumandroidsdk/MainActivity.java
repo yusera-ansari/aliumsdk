@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.dwao.alium.survey.Alium;
 import com.dwao.aliumandroidsdk.activities.DashboardActivity;
 
 
@@ -61,6 +62,6 @@ public class MainActivity extends AppCompatActivity {
 //           new ShowSurvey(this, url);
 
 //        }
-        new ShowSurvey(this, Config.BASE_URL, this.getTitle().toString());
+        Alium.loadAliumSurvey(this,  "firstscreen");
     }
 }

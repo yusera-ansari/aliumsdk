@@ -20,9 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -51,10 +49,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class ShowSurvey  {
@@ -67,7 +63,7 @@ public class ShowSurvey  {
     private Dialog dialog;
     private CheckBoxRecyViewAdapter checkBoxRecyViewAdapter;
 //    private static ShowSurvey instance;
-    private AppCompatButton nextQuestion;
+    private AppCompatButton nextQuestionBtn;
     private  AppCompatImageView closeDialogBtn;
 
     private int currentIndx=0;
@@ -130,15 +126,24 @@ public class ShowSurvey  {
         dialog=new Dialog(context);
         Activity activity=(Activity)context;
         Log.d("showSurvey", currentScreen);
-        nextQuestion=layoutView.findViewById(R.id.btn_next);
-        nextQuestion.setOnClickListener(new View.OnClickListener() {
+        nextQuestionBtn=layoutView.findViewById(R.id.btn_next);
+        GradientDrawable nxtQuesDrawable=(GradientDrawable) nextQuestionBtn.getBackground();
+        try{
+            if(surveyUi!=null)nxtQuesDrawable.setColor(Color.parseColor(surveyUi
+                    .getJSONObject("nextCta").getString("backgroundColor")));
+            if(surveyUi!=null)nextQuestionBtn.setTextColor(Color.parseColor(surveyUi
+                    .getJSONObject("nextCta").getString("textColor")));
+        }catch (Exception e){
+            Log.e("nextQues", e.toString());
+        }
+        nextQuestionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                   currentIndx++;
                   Log.d("indx", ""+currentIndx);
                   handleNextQuestion();
-                  nextQuestion.setEnabled(false);
-                  nextQuestion.setAlpha(0.5f);
+                  nextQuestionBtn.setEnabled(false);
+                  nextQuestionBtn.setAlpha(0.5f);
 
             }
         });
@@ -276,7 +281,7 @@ public class ShowSurvey  {
                 AppCompatTextView improveExpTxt=layoutView.findViewById
                         (R.id.help_improve_experience_textview);
                 improveExpTxt.setVisibility(View.GONE);
-                nextQuestion.setVisibility(View.GONE);
+                nextQuestionBtn.setVisibility(View.GONE);
                 View thankyou=LayoutInflater.from(context).inflate(R.layout.thankyou, null);
                 AppCompatTextView thankyouTxt=thankyou.findViewById(R.id.thankyou_msg);
                 thankyouTxt.setText(thankyouObj);
@@ -328,8 +333,8 @@ public class ShowSurvey  {
     private void showCurrentQuestion(){
 
         try {
-            nextQuestion.setEnabled(false);
-            nextQuestion.setAlpha(0.5f);
+            nextQuestionBtn.setEnabled(false);
+            nextQuestionBtn.setAlpha(0.5f);
             Log.d("indx@", ""+currentIndx);
             currentQuestionResponse.setQuestionId(surveyQuestions.getJSONObject(currentIndx)
                     .getInt("id"));
@@ -370,11 +375,11 @@ public class ShowSurvey  {
                             currentQuestionResponse.setQuestionResponse(input.getText().toString().trim()
                                     .replace(" ", "%20"));
                             if(currentQuestionResponse.getQuestionResponse().length()>0){
-                                nextQuestion.setEnabled(true);
-                                nextQuestion.setAlpha(1f);
+                                nextQuestionBtn.setEnabled(true);
+                                nextQuestionBtn.setAlpha(1f);
                             }else{
-                                nextQuestion.setEnabled(false);
-                                nextQuestion.setAlpha(0.5f);
+                                nextQuestionBtn.setEnabled(false);
+                                nextQuestionBtn.setAlpha(0.5f);
                             }
                             Log.d("input", currentQuestionResponse.getQuestionResponse());
                         }
@@ -418,17 +423,17 @@ public class ShowSurvey  {
 
                                 adapter.updateCheckedItem(position);
                                 if(currentQuestionResponse.getQuestionResponse().length()>0){
-                                    nextQuestion.setEnabled(true);
-                                    nextQuestion.setAlpha(1f);
+                                    nextQuestionBtn.setEnabled(true);
+                                    nextQuestionBtn.setAlpha(1f);
                                 }else{
-                                    nextQuestion.setEnabled(false);
-                                    nextQuestion.setAlpha(0.5f);
+                                    nextQuestionBtn.setEnabled(false);
+                                    nextQuestionBtn.setAlpha(0.5f);
                                 }
                             }
                         });
                     }
                 };
-                this.adapter=new RadioBtnAdapter(responseOptions,radioClickListener, currentQuestionResponse );
+                this.adapter=new RadioBtnAdapter(responseOptions,radioClickListener, currentQuestionResponse, surveyUi);
                 radioBtnRecyView.setAdapter(adapter);
 
                 this.layout.addView(radioQues);
@@ -456,18 +461,18 @@ public class ShowSurvey  {
                                     checkBoxRecyViewAdapter.updateCheckedItem(position, selected);
 
                                     if(currentQuestionResponse.getQuestionResponse().length()>0){
-                                        nextQuestion.setEnabled(true);
-                                        nextQuestion.setAlpha(1f);
+                                        nextQuestionBtn.setEnabled(true);
+                                        nextQuestionBtn.setAlpha(1f);
                                     }else{
-                                        nextQuestion.setEnabled(false);
-                                        nextQuestion.setAlpha(0.5f);
+                                        nextQuestionBtn.setEnabled(false);
+                                        nextQuestionBtn.setAlpha(0.5f);
                                     }
                                 }
                             });
                         }
                     };
                     checkBoxRecyViewAdapter=new CheckBoxRecyViewAdapter(responseOptions,
-                            checkBoxClickListener, currentQuestionResponse);
+                            checkBoxClickListener, currentQuestionResponse, surveyUi);
                     recyclerView.setAdapter(checkBoxRecyViewAdapter);
                     this.layout.addView(checkBoxQues);
                 }else  if(surveyQuestions.getJSONObject(currentIndx).getString("responseType")
@@ -486,11 +491,11 @@ public class ShowSurvey  {
                                 public void run() {
                                     npsGridViewAdapter.updatedSelectedOption(position);
                                     if( currentQuestionResponse.getQuestionResponse().length()>0){
-                                        nextQuestion.setEnabled(true);
-                                        nextQuestion.setAlpha(1f);
+                                        nextQuestionBtn.setEnabled(true);
+                                        nextQuestionBtn.setAlpha(1f);
                                     }else{
-                                        nextQuestion.setEnabled(false);
-                                        nextQuestion.setAlpha(0.5f);
+                                        nextQuestionBtn.setEnabled(false);
+                                        nextQuestionBtn.setAlpha(0.5f);
                                     }
 //                                    npsOptionsAdapter.updatedSelectedOption(position);
                                 }
@@ -498,7 +503,7 @@ public class ShowSurvey  {
                         }
                     };
                     npsOptionsAdapter=new NpsOptionsAdapter(listener);
-                    npsGridViewAdapter=new NpsGridViewAdapter(context, listener, currentQuestionResponse);
+                    npsGridViewAdapter=new NpsGridViewAdapter(context, listener, currentQuestionResponse, surveyUi);
                     npsRecView.setAdapter( npsGridViewAdapter);
                     this.layout.addView(npsQues);
 
