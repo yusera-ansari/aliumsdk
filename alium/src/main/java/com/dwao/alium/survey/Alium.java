@@ -40,6 +40,7 @@ import com.dwao.alium.listeners.RadioClickListener;
 import com.dwao.alium.listeners.VolleyResponseListener;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.network.VolleyService;
+import com.dwao.alium.utils.preferences.AliumPreferences;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -53,9 +54,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class Alium {
-    private SharedPreferences sharedPreferences;
-    private static final String ALIUM_PREFS="AliumPrefs";
-    private SharedPreferences.Editor editor;
+    AliumPreferences aliumPreferences;
     private static JSONObject surveyConfigJSON;
     private String thankyouObj;
         private String currentSurveyFrequency;
@@ -75,7 +74,6 @@ public class Alium {
         return uuid;
     }
 
-
     public JSONArray getSurveyQuestions(){
             return surveyQuestions;
     }
@@ -90,12 +88,10 @@ public class Alium {
         return currentScreen;
     }
 
-
-
     public static void configure(String url){
-//            if(instance==null){
-//                instance=new Alium();
-//            }
+            if(instance==null){
+                instance=new Alium();
+            }
             configURL=url;
             volleyService=new VolleyService();
             surveyConfigJSON=new JSONObject();
@@ -109,7 +105,7 @@ public class Alium {
                   public void onResponseReceived(JSONObject jsonObject) {
                       surveyConfigJSON=jsonObject;
                       Log.d("Alium-Config", jsonObject.toString());
-                      new Alium().showSurvey(ctx, currentScreen);
+                      instance.showSurvey(ctx, currentScreen);
                   }
               };
               volleyService.callVolley(ctx,configURL ,ConfigJSONListener );
@@ -120,8 +116,7 @@ public class Alium {
         private void showSurvey(Context ctx, String currentScreen){
             Log.d("Alium", "showing survey on :"+currentScreen);
             context=ctx;
-            sharedPreferences=context.getSharedPreferences(ALIUM_PREFS, Context.MODE_PRIVATE);
-            editor= sharedPreferences.edit();
+            aliumPreferences=AliumPreferences.getInstance(ctx);
             this.currentScreen=currentScreen;
             uuid=UUID.randomUUID().toString();
             surveyResponse(surveyConfigJSON, this.currentScreen);
@@ -147,19 +142,11 @@ public class Alium {
                     thankyouObj=ppupsrvObject.getString("thnkMsg");
                     Log.e("Alium-True","True");
                             Log.d("Alium-url-match",""+true);
-                            Log.d("srvshowfrq-sharedpref",key+" "+"prefs "
-                                    +sharedPreferences.getString(key, "")
-                                    +" "+sharedPreferences.getString(key, "").isEmpty() );
-                          if(!sharedPreferences.getString(key, "").isEmpty()){
-                            if(!sharedPreferences.getString(key,"").equals(srvshowfrq)){
-                                Log.i("srvshowfrq-changed", "updating stored preferences data");
-                                editor.remove(key);
-                                editor.commit();
-                            }else{
-                                return;
-                            }
-                          }
-                              loadSurvey(key, srvshowfrq, spath);
+
+                    if(aliumPreferences.checkForUpdate(key, srvshowfrq)){
+                        loadSurvey(key, srvshowfrq, spath);
+                    }
+
 
 
                 }
@@ -211,8 +198,7 @@ public class Alium {
             if(currentSurveyFrequency.equals("onlyonce")){
                 Log.i("srvshowfrq", "show survey frequency: onlyonce");
                 volleyService.callVolley(context, surURL,volleyResponseListener2 );
-                editor.putString(key,srvshowfrq);
-                editor.commit();
+                aliumPreferences.addToAliumPreferences(key, srvshowfrq);
             }else if(currentSurveyFrequency.equals("overandover")){
                 Log.i("srvshowfrq", "show survey frequency: overandover");
                 volleyService.callVolley(context, surURL,volleyResponseListener2 );
@@ -249,8 +235,7 @@ public class Alium {
 
     protected void submitSurvey(Dialog dialog){
             if(currentSurveyFrequency.equals("untilresponse")){
-                editor.putString(currentSurveyKey, currentSurveyFrequency);
-                editor.commit();
+                aliumPreferences.addToAliumPreferences(currentSurveyKey,currentSurveyFrequency);
             }
         Handler handler=new Handler();
         Runnable runnable=new Runnable() {
