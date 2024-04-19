@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.dwao.alium.survey.Alium;
 import com.dwao.aliumandroidsdk.Config;
 import com.dwao.aliumandroidsdk.R;
-import com.dwao.alium.survey.ShowSurvey;
 
 public class DashboardActivity extends AppCompatActivity {
     TextView next;
