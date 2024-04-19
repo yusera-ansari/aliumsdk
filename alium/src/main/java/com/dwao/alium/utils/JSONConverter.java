@@ -1,4 +1,4 @@
-package com.dwao.alium.utilities;
+package com.dwao.alium.utils;
 
 import android.util.Log;
 
@@ -6,12 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONObject;
 import  java.lang.Class;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
