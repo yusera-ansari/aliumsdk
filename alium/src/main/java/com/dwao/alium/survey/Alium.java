@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.AnimatedVectorDrawable;
@@ -21,7 +22,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -33,7 +33,6 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import com.dwao.alium.R;
 import com.dwao.alium.adapters.CheckBoxRecyViewAdapter;
 import com.dwao.alium.adapters.NpsGridViewAdapter;
-import com.dwao.alium.adapters.NpsOptionsAdapter;
 import com.dwao.alium.adapters.RadioBtnAdapter;
 import com.dwao.alium.listeners.CheckBoxClickListener;
 import com.dwao.alium.listeners.NpsOptionClickListener;
@@ -46,22 +45,21 @@ import com.dwao.alium.network.VolleyService;
 import com.dwao.alium.utilities.JSONConverter;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.gson.JsonElement;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class Alium {
+    private SharedPreferences sharedPreferences;
+    private static final String ALIUM_PREFS="AliumPrefs";
+    private SharedPreferences.Editor editor;
     private static JSONObject surveyConfigJSON;
     private String thankyouObj;
         private View layoutView;
@@ -70,6 +68,8 @@ public class Alium {
         private AppCompatTextView currentQuestion;
         private NpsGridViewAdapter npsGridViewAdapter;
         private Dialog dialog;
+        private String currentSurveyFrequency;
+        private  String currentSurveyKey;
         private CheckBoxRecyViewAdapter checkBoxRecyViewAdapter;
         //    private static ShowSurvey instance;
         private AppCompatButton nextQuestionBtn;
@@ -94,6 +94,7 @@ public class Alium {
             volleyService=new VolleyService();
             surveyConfigJSON=new JSONObject();
 
+
         }
 
         public static void loadAliumSurvey(Context ctx, String currentScreen){
@@ -103,6 +104,7 @@ public class Alium {
                   @Override
                   public void onResponseReceived(JSONObject jsonObject) {
                       surveyConfigJSON=jsonObject;
+
                       Log.d("Alium-Config", jsonObject.toString());
                       new Alium().showSurvey(ctx, currentScreen);
 
@@ -116,6 +118,8 @@ public class Alium {
         private void showSurvey(Context ctx, String currentScreen){
             Log.d("Alium", "showing survey on :"+currentScreen);
             context=ctx;
+            sharedPreferences=context.getSharedPreferences(ALIUM_PREFS, Context.MODE_PRIVATE);
+            editor= sharedPreferences.edit();
             this.currentScreen=currentScreen;
             currentQuestionResponse=new QuestionResponse();
             uuid=UUID.randomUUID().toString();
@@ -214,46 +218,56 @@ public class Alium {
             String key = keys.next();
             try {
                 JSONObject jsonObject = response.getJSONObject(key);
-                JSONObject ppupsrvObject = jsonObject.getJSONObject("ppupsrv");
+                JSONObject ppupsrvObject = jsonObject.getJSONObject("appsrv");
+                Uri spath=Uri.parse(jsonObject.getString("spath"));
+                Log.d("URI", spath.toString());
                 String urlValue = ppupsrvObject.getString("url");
                 Log.d("Alium-Target2", "Key: " + key + ", URL: " + urlValue);
 
                 if (checkURL.equals(urlValue)){
+                    String srvshowfrq=ppupsrvObject.getString("srvshowfrq");
                     thankyouObj=ppupsrvObject.getString("thnkMsg");
                     Log.e("Alium-True","True");
-                    Uri uri=Uri.parse(urlValue);
-                    Log.d("Alium-path", uri.getPath());
-                    List<String> segments= uri.getPathSegments();
-                    for(int i=0; i<segments.size(); i++){
-                        if(segments.get(i).equalsIgnoreCase(currentScreen)){
-                            Log.d("Alium-path-segment",segments.get(i));
-                            loadSurvey(key);
-                        }
-                    }
+                            Log.d("Alium-url-match",""+true);
+                            Log.d("srvshowfrq-sharedpref",key+" "+"prefs "
+                                    +sharedPreferences.getString(key, "")
+                                    +" "+sharedPreferences.getString(key, "").isEmpty() );
+                          if(!sharedPreferences.getString(key, "").isEmpty()){
+                            if(!sharedPreferences.getString(key,"").equals(srvshowfrq)){
+                                Log.i("srvshowfrq-changed", "updating stored preferences data");
+                                editor.remove(key);
+                                editor.commit();
+                            }else{
+                                return;
+                            }
+                          }
+                              loadSurvey(key, srvshowfrq, spath);
 
-                    break;
+
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     }
-    private void loadSurvey(String key) {
-        String surURL="https://assets.alium.co.in/cmmn/cqsjn/cqsjn_1038_" +key + ".json";
+    private void loadSurvey(String key, String srvshowfrq, Uri uri) {
+            currentSurveyFrequency=srvshowfrq;
+            currentSurveyKey=key;
+        String surURL=uri.toString();
         VolleyResponseListener volleyResponseListener2=new VolleyResponseListener() {
             @Override
             public void onResponseReceived(JSONObject json) {
                 Log.d("Alium-survey loaded", json.toString());
-                List<Question> questions= null;
-                Survey survey=JSONConverter.mapToObject(Survey.class, json.toString());
-                Log.d("jsonLoaded",survey.toString());
-                try {
-                    questions = JSONConverter.mapToListObject(Question.class,
-                            json.getJSONArray("surveyQuestions").toString());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-                Log.d("Questions", questions.get(0).toString());
+//                List<Question> questions= null;
+//                Survey survey=JSONConverter.mapToObject(Survey.class, json.toString());
+//                Log.d("jsonLoaded",survey.toString());
+//                try {
+//                    questions = JSONConverter.mapToListObject(Question.class,
+//                            json.getJSONArray("surveyQuestions").toString());
+//                } catch (Exception e) {
+//                    throw new RuntimeException(e);
+//                }
+//                Log.d("Questions", questions.get(0).toString());
                 try {
                     surveyQuestions=json.getJSONArray("surveyQuestions");
                     if(json.has("surveyUI")){
@@ -297,8 +311,19 @@ public class Alium {
                 }
             }
         };
+            if(currentSurveyFrequency.equals("onlyonce")){
+                Log.i("srvshowfrq", "show survey frequency: onlyonce");
+                volleyService.callVolley(context, surURL,volleyResponseListener2 );
+                editor.putString(key,srvshowfrq);
+                editor.commit();
+            }else if(currentSurveyFrequency.equals("overandover")){
+                Log.i("srvshowfrq", "show survey frequency: overandover");
+                volleyService.callVolley(context, surURL,volleyResponseListener2 );
+            }else if(currentSurveyFrequency.equals("untilresponse")){
+                Log.i("srvshowfrq", "show survey frequency: untilresponse");
+                volleyService.callVolley(context, surURL,volleyResponseListener2 );
+            }
 
-        volleyService.callVolley(context, surURL,volleyResponseListener2 );
 
     }
     private void handleNextQuestion(){
@@ -347,6 +372,10 @@ public class Alium {
         }
     }
     private void submitSurvey(){
+            if(currentSurveyFrequency.equals("untilresponse")){
+                editor.putString(currentSurveyKey, currentSurveyFrequency);
+                editor.commit();
+            }
         Handler handler=new Handler();
         Runnable runnable=new Runnable() {
             @Override
@@ -355,6 +384,7 @@ public class Alium {
                 dialog.dismiss();
             }
         };
+
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
@@ -421,8 +451,8 @@ public class Alium {
 
                     }
                 });
-//                    if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
-//                           .getJSONObject("question").getString("textColor")));
+                    if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
+                           .getString("question")));
                 this.layout.addView(longtextQues);
             }
 
@@ -436,8 +466,8 @@ public class Alium {
                     responseOptions.add(responseOptJSON.getString(i));
                 }
                 View radioQues= LayoutInflater.from(context).inflate(R.layout.radio_ques, null);
-//                   if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
-//                           .getJSONObject("question").getString("textColor")));
+                   if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
+                           .getString("question")));
 
                 RecyclerView radioBtnRecyView=radioQues.findViewById(R.id.radio_btn_rec_view);
                 radioBtnRecyView.setLayoutManager(new LinearLayoutManager(context));
@@ -473,8 +503,8 @@ public class Alium {
                     responseOptions.add(responseOptJSON.getString(i));
                 }
                 View checkBoxQues= LayoutInflater.from(context).inflate(R.layout.checkbox_type_ques, null);
-//                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
-//                        .getJSONObject("question").getString("textColor")));
+                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
+                        .getString("question")));
                 RecyclerView recyclerView=checkBoxQues.findViewById(R.id.checkbox_recy_view);
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
@@ -502,8 +532,8 @@ public class Alium {
             }else  if(surveyQuestions.getJSONObject(currentIndx).getString("responseType")
                     .equals("4")){
                 View npsQues= LayoutInflater.from(context).inflate(R.layout.nps_ques, null);
-//                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
-//                        .getJSONObject("question").getString("textColor")));
+                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
+                        .getString("question")));
 
                 GridView npsRecView=npsQues.findViewById(R.id.nps_recy_view);
                 NpsOptionClickListener listener=new NpsOptionClickListener() {
