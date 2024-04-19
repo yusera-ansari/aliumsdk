@@ -41,6 +41,7 @@ import com.dwao.alium.listeners.VolleyResponseListener;
 import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
+import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.network.VolleyService;
 import com.dwao.alium.utilities.JSONConverter;
 import com.google.android.material.textfield.TextInputEditText;
@@ -52,8 +53,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class Alium {
@@ -104,7 +107,6 @@ public class Alium {
                   @Override
                   public void onResponseReceived(JSONObject jsonObject) {
                       surveyConfigJSON=jsonObject;
-
                       Log.d("Alium-Config", jsonObject.toString());
                       new Alium().showSurvey(ctx, currentScreen);
 
@@ -126,89 +128,6 @@ public class Alium {
             surveyResponse(surveyConfigJSON, this.currentScreen);
         }
 
-    private void trackWithAlium() {
-        Log.d("track- first hit",getLoadReqURL() );
-        volleyService.loadRequestWithVolley(context, getLoadReqURL());
-
-    }
-
-    private String getLoadReqURL(){
-        try {
-            String BASE_URL="https://tracker.alium.co.in/tracker?";
-            String surveyId="srvid="+surveyInfo.getString("surveyId")+"&";
-            String srvpid="srvtpid=6&";
-            String srvLng="srvLng=1&";
-            String vstid="vstid="+uuid+"&"  ;
-            String srvldid="srvldid="+uuid+"ppup"+ new Date().getTime()+"srv"+"&";
-            String srvpt="srvpt="+currentScreen+"&";
-            String ua= "ua=Mozilla/5.0%20(Windows%20NT%2010.0%3B%20Win64%3B%20x64)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/122.0.0.0%20Safari/537.36&";
-            String ran="ran="+new Date().getTime()+"&";
-            String orgId="orgId="+surveyInfo.getString("orgId")+"&";
-            String cutomerData= "custSystemId=NA&custId="+surveyInfo.getString("customerId")+"&custEmail=NA&custMobile=NA";
-            String resp_string=BASE_URL+surveyId+srvpid+srvLng+srvldid+srvpt+ua+vstid+ran+orgId+
-                    cutomerData;
-            return resp_string;
-        } catch (JSONException e) {
-
-            throw new RuntimeException(e);
-        }
-    }
-    private void setCtaEnabled(View Cta, boolean enabled){
-       if(enabled){
-           Cta.setEnabled(true);
-           Cta.setAlpha(1f);
-       }else {
-           Cta.setEnabled(false);
-           Cta.setAlpha(0.5f);
-       }
-    }
-
-    private void show(){
-        dialog=new Dialog(context);
-        Log.d("Alium-showSurvey", currentScreen);
-        nextQuestionBtn=layoutView.findViewById(R.id.btn_next);
-
-        GradientDrawable nxtQuesDrawable=(GradientDrawable) nextQuestionBtn.getBackground();
-      try{
-          if(surveyUi!=null)nxtQuesDrawable.setColor(Color.parseColor(surveyUi
-                  .getJSONObject("nextCta").getString("backgroundColor")));
-          if(surveyUi!=null)nextQuestionBtn.setTextColor(Color.parseColor(surveyUi
-                  .getJSONObject("nextCta").getString("textColor")));
-      }catch (Exception e){
-          Log.e("nextQues", e.toString());
-      }
-        nextQuestionBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                currentIndx++;
-                Log.d("Alium-indx", ""+currentIndx);
-                setCtaEnabled(nextQuestionBtn,false);
-                handleNextQuestion();
-
-            }
-        });
-        closeDialogBtn=layoutView.findViewById(R.id.close_dialog_btn);
-        closeDialogBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-
-        if(surveyQuestions.length()>0 && currentIndx==0) showCurrentQuestion();
-        dialog.setContentView(this.layoutView);
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.setCancelable(false);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        WindowManager.LayoutParams lp=dialog.getWindow().getAttributes();
-        lp.gravity= Gravity.BOTTOM;
-        lp.horizontalMargin=0f;
-        lp.verticalMargin=0.0f;
-        dialog.getWindow().setAttributes(lp);
-        dialog.show();
-        trackWithAlium();
-    }
-
 
 
     private void surveyResponse(JSONObject response, String checkURL) {
@@ -218,7 +137,8 @@ public class Alium {
             String key = keys.next();
             try {
                 JSONObject jsonObject = response.getJSONObject(key);
-                JSONObject ppupsrvObject = jsonObject.getJSONObject("appsrv");
+                JSONObject ppupsrvObject = jsonObject.getJSONObject("ppupsrv");
+//                JSONObject ppupsrvObject = jsonObject.getJSONObject("appsrv");
                 Uri spath=Uri.parse(jsonObject.getString("spath"));
                 Log.d("URI", spath.toString());
                 String urlValue = ppupsrvObject.getString("url");
@@ -326,50 +246,128 @@ public class Alium {
 
 
     }
+    private void setCtaEnabled(View Cta, boolean enabled){
+        if(enabled){
+            Cta.setEnabled(true);
+            Cta.setAlpha(1f);
+        }else {
+            Cta.setEnabled(false);
+            Cta.setAlpha(0.5f);
+        }
+    }
+
+    private void show(){
+        dialog=new Dialog(context);
+        Log.d("Alium-showSurvey", currentScreen);
+        nextQuestionBtn=layoutView.findViewById(R.id.btn_next);
+
+        GradientDrawable nxtQuesDrawable=(GradientDrawable) nextQuestionBtn.getBackground();
+        try{
+            if(surveyUi!=null)nxtQuesDrawable.setColor(Color.parseColor(surveyUi
+                    .getJSONObject("nextCta").getString("backgroundColor")));
+            if(surveyUi!=null)nextQuestionBtn.setTextColor(Color.parseColor(surveyUi
+                    .getJSONObject("nextCta").getString("textColor")));
+        }catch (Exception e){
+            Log.e("nextQues", e.toString());
+        }
+        nextQuestionBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentIndx++;
+                Log.d("Alium-indx", ""+currentIndx);
+                setCtaEnabled(nextQuestionBtn,false);
+                handleNextQuestion();
+
+            }
+        });
+        closeDialogBtn=layoutView.findViewById(R.id.close_dialog_btn);
+        closeDialogBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        if(surveyQuestions.length()>0 && currentIndx==0) showCurrentQuestion();
+        dialog.setContentView(this.layoutView);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        WindowManager.LayoutParams lp=dialog.getWindow().getAttributes();
+        lp.gravity= Gravity.BOTTOM;
+        lp.horizontalMargin=0f;
+        lp.verticalMargin=0.0f;
+        dialog.getWindow().setAttributes(lp);
+        dialog.show();
+        trackWithAlium();
+    }
+    private void trackWithAlium() {
+      try{
+          Log.d("track- first hit", SurveyTracker.getUrl(
+                  surveyInfo.getString("surveyId"),uuid, currentScreen,
+                  surveyInfo.getString("orgId"),
+                  surveyInfo.getString("customerId")
+          ) );
+          volleyService.loadRequestWithVolley(context, SurveyTracker.getUrl(
+                  surveyInfo.getString("surveyId"),uuid, currentScreen,
+                  surveyInfo.getString("orgId"),
+                  surveyInfo.getString("customerId")
+          ));
+      }catch(Exception e){
+          Log.d("trackWithAlium()", e.toString());
+      }
+    }
     private void handleNextQuestion(){
-        String url=getLoadReqURL()+"&"+"qusid="+(currentQuestionResponse.getQuestionId()+1)+"&"+
-                "qusrs="+currentQuestionResponse.getQuestionResponse()+"&"+
-                "restp="+currentQuestionResponse.getResponseType();
-        volleyService.loadRequestWithVolley(context,url );
-        if(surveyQuestions.length()>0) {
-            this.layout.removeAllViews();
-            AppCompatTextView improveExpTxt=layoutView.findViewById
-                    (R.id.help_improve_experience_textview);
+      try{
+          String url=SurveyTracker.getUrl(
+                  surveyInfo.getString("surveyId"),uuid, currentScreen,
+                  surveyInfo.getString("orgId"),
+                  surveyInfo.getString("customerId"))+"&"+"qusid="+(currentQuestionResponse.getQuestionId()+1)+"&"+
+                          "qusrs="+currentQuestionResponse.getQuestionResponse()+"&"+
+                          "restp="+currentQuestionResponse.getResponseType();
+          volleyService.loadRequestWithVolley(context,url );
+          if(surveyQuestions.length()>0) {
+              this.layout.removeAllViews();
+              AppCompatTextView improveExpTxt=layoutView.findViewById
+                      (R.id.help_improve_experience_textview);
 
-            if( currentIndx< surveyQuestions.length()){
-                showCurrentQuestion();
-            }else if(currentIndx==surveyQuestions.length()){
-                currentQuestion.setVisibility(View.GONE);
+              if( currentIndx< surveyQuestions.length()){
+                  showCurrentQuestion();
+              }else if(currentIndx==surveyQuestions.length()){
+                  currentQuestion.setVisibility(View.GONE);
 
-                improveExpTxt.setVisibility(View.GONE);
-                nextQuestionBtn.setVisibility(View.GONE);
-                View thankyou=LayoutInflater.from(context).inflate(R.layout.thankyou, null);
-                AppCompatTextView thankyouTxt=thankyou.findViewById(R.id.thankyou_msg);
-                thankyouTxt.setText(thankyouObj);
+                  improveExpTxt.setVisibility(View.GONE);
+                  nextQuestionBtn.setVisibility(View.GONE);
+                  View thankyou=LayoutInflater.from(context).inflate(R.layout.thankyou, null);
+                  AppCompatTextView thankyouTxt=thankyou.findViewById(R.id.thankyou_msg);
+                  thankyouTxt.setText(thankyouObj);
 
-                AppCompatImageView imageView=thankyou.findViewById(R.id.completed_anim_container)
-                        .findViewById(R.id.completed_anim);
-                imageView.setImageResource(R.drawable.avd_anim);
-                Drawable drawable= imageView.getDrawable();
-                if(drawable instanceof AnimatedVectorDrawableCompat){
-                    Log.d("Alium-instance", "AnimatedVectorDrawableCompat");
-                    AnimatedVectorDrawableCompat avd=(AnimatedVectorDrawableCompat)drawable;
-                    avd.start();
+                  AppCompatImageView imageView=thankyou.findViewById(R.id.completed_anim_container)
+                          .findViewById(R.id.completed_anim);
+                  imageView.setImageResource(R.drawable.avd_anim);
+                  Drawable drawable= imageView.getDrawable();
+                  if(drawable instanceof AnimatedVectorDrawableCompat){
+                      Log.d("Alium-instance", "AnimatedVectorDrawableCompat");
+                      AnimatedVectorDrawableCompat avd=(AnimatedVectorDrawableCompat)drawable;
+                      avd.start();
 
-                }else if(drawable instanceof AnimatedVectorDrawable){
-                    AnimatedVectorDrawable avd=(AnimatedVectorDrawable)drawable;
-                    Log.d("Alium-instance2", "AnimatedVectorDrawableCompat");
-                    avd.start();
+                  }else if(drawable instanceof AnimatedVectorDrawable){
+                      AnimatedVectorDrawable avd=(AnimatedVectorDrawable)drawable;
+                      Log.d("Alium-instance2", "AnimatedVectorDrawableCompat");
+                      avd.start();
 
-                }
-                this.layout.addView(thankyou);
+                  }
+                  this.layout.addView(thankyou);
 
-                //show thank you msg
+                  //show thank you msg
 //                Toast.makeText(context, "Your response has been submitted!!", Toast.LENGTH_LONG)
 //                        .show();
-                submitSurvey();
-            }
-        }
+                  submitSurvey();
+              }}
+          }catch(Exception e){
+              Log.d("nextQuest",e.toString());
+          }
+
     }
     private void submitSurvey(){
             if(currentSurveyFrequency.equals("untilresponse")){
@@ -564,5 +562,6 @@ public class Alium {
             throw new RuntimeException(e);
         }
     }
+
 
 }
