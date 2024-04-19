@@ -72,8 +72,8 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
            try{
                if(surveyUi.has("options") && surveyUi.getJSONObject("options").has("textColor")){
                 holder.checkBox.setTextColor(Color.parseColor(surveyUi
-                        .getJSONObject("options")
-                        .getString("textColor")));
+                        .getString("options")
+                        ));
                }
            }catch (Exception e){
                Log.e("surveyUICheckBox", e.toString());

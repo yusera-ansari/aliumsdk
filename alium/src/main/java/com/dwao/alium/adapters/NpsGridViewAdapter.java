@@ -71,8 +71,8 @@ public class NpsGridViewAdapter extends BaseAdapter{
             try {
                 if (surveyUi.has("options") && surveyUi.getJSONObject("options").has("textColor")) {
                     npsOption.setTextColor(Color.parseColor(surveyUi
-                            .getJSONObject("options")
-                            .getString("textColor")));
+                            .getString("options")
+                           ));
                 }
             } catch (Exception e) {
                 Log.e("surveyUICheckBox", e.toString());
