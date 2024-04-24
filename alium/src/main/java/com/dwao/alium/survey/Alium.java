@@ -39,18 +39,22 @@ import com.dwao.alium.listeners.NpsOptionClickListener;
 import com.dwao.alium.listeners.RadioClickListener;
 import com.dwao.alium.listeners.VolleyResponseListener;
 import com.dwao.alium.models.QuestionResponse;
+import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.network.VolleyService;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class Alium {
@@ -59,7 +63,9 @@ public class Alium {
     private String thankyouObj;
         private String currentSurveyFrequency;
         private  String currentSurveyKey;
+        private static Map<String, SurveyConfig> surveyConfigMap;
 
+        private static Gson gson;
         private static  Alium instance;
         private  Context context;
         private JSONArray surveyQuestions;
@@ -95,6 +101,8 @@ public class Alium {
             configURL=url;
             volleyService=new VolleyService();
             surveyConfigJSON=new JSONObject();
+            surveyConfigMap=new HashMap<>();
+            gson=new Gson();
         }
 
         public static void loadAliumSurvey(Context ctx, String currentScreen){
@@ -103,6 +111,7 @@ public class Alium {
               VolleyResponseListener ConfigJSONListener=new VolleyResponseListener() {
                   @Override
                   public void onResponseReceived(JSONObject jsonObject) {
+
                       surveyConfigJSON=jsonObject;
                       Log.d("Alium-Config", jsonObject.toString());
                       instance.showSurvey(ctx, currentScreen);
@@ -130,8 +139,8 @@ public class Alium {
             String key = keys.next();
             try {
                 JSONObject jsonObject = response.getJSONObject(key);
-                JSONObject ppupsrvObject = jsonObject.getJSONObject("ppupsrv");
-//                JSONObject ppupsrvObject = jsonObject.getJSONObject("appsrv");
+//                JSONObject ppupsrvObject = jsonObject.getJSONObject("ppupsrv");
+                JSONObject ppupsrvObject = jsonObject.getJSONObject("appsrv");
                 Uri spath=Uri.parse(jsonObject.getString("spath"));
                 Log.d("URI", spath.toString());
                 String urlValue = ppupsrvObject.getString("url");
