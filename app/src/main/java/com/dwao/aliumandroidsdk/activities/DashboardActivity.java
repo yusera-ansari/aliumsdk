@@ -25,6 +25,6 @@ public class DashboardActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        Alium.loadAliumSurvey(this,  "mobilesecond");
+        Alium.loadAliumSurvey(this,  this.getTitle().toString());
     }
 }
