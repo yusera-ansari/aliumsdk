@@ -41,11 +41,11 @@ public class Question {
         this.responseOptions = responseOptions;
     }
 
-    public List<String> getConditionMapping() {
+    public List<Integer> getConditionMapping() {
         return conditionMapping;
     }
 
-    public void setConditionMapping(List<String> conditionMapping) {
+    public void setConditionMapping(List<Integer> conditionMapping) {
         this.conditionMapping = conditionMapping;
     }
 
@@ -60,5 +60,5 @@ public class Question {
                 '}';
     }
 
-    List<String> conditionMapping;
+    List<Integer> conditionMapping;
 }

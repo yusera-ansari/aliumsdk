@@ -60,9 +60,9 @@ public class SurveyConfig {
     }
 
     @SerializedName("appsrv")
-      Srv srv=new Srv();
+    public  Srv srv=new Srv();
 
-     private class Srv{
+     public class Srv{
         @SerializedName("urlmatch")
         String urlMatch;
         String url="";

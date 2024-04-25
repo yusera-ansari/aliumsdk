@@ -204,8 +204,8 @@ public class SurveyDialog {
                     nextQuestionBtn.setVisibility(View.GONE);
                     View thankyou=LayoutInflater.from(context).inflate(R.layout.thankyou, null);
                     AppCompatTextView thankyouTxt=thankyou.findViewById(R.id.thankyou_msg);
-                    thankyouTxt.setText(alium.getThankyouObj());
-
+//                    thankyouTxt.setText(alium.getThankyouObj());
+                    thankyouTxt.setText(Alium.getSurveyConfigMap().get(alium.getCurrentSurveyIndx()).srv.getThankYouMsg());
                     AppCompatImageView imageView=thankyou.findViewById(R.id.completed_anim_container)
                             .findViewById(R.id.completed_anim);
                     imageView.setImageResource(R.drawable.avd_anim);
