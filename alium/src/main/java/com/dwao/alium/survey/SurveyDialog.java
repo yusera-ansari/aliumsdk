@@ -196,7 +196,7 @@ public class SurveyDialog {
 
     }
     private void showCurrentQuestion( ){
-
+            setCtaEnabled(nextQuestionBtn, false);
         try {
             Log.i("question", "going to next question "+currentIndx);
             currentQuestionResponse.setQuestionId(surveyQuestions.getJSONObject(currentIndx)
