@@ -23,6 +23,8 @@ import android.view.WindowManager;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -38,18 +40,25 @@ import com.dwao.alium.listeners.CheckBoxClickListener;
 import com.dwao.alium.listeners.NpsOptionClickListener;
 import com.dwao.alium.listeners.RadioClickListener;
 import com.dwao.alium.listeners.VolleyResponseListener;
+import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
+
 import com.dwao.alium.models.SurveyConfig;
+
 import com.dwao.alium.network.VolleyService;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,7 +74,7 @@ public class Alium {
         private  String currentSurveyKey;
         private static Map<String, SurveyConfig> surveyConfigMap;
 
-        private static Gson gson;
+        private  Gson gson;
         private static  Alium instance;
         private  Context context;
         private JSONArray surveyQuestions;
@@ -102,10 +111,11 @@ public class Alium {
             volleyService=new VolleyService();
             surveyConfigJSON=new JSONObject();
             surveyConfigMap=new HashMap<>();
-            gson=new Gson();
+
         }
 
         public static void loadAliumSurvey(Context ctx, String currentScreen){
+
 
 //          if(instance!=null) {
               VolleyResponseListener ConfigJSONListener=new VolleyResponseListener() {
@@ -114,6 +124,21 @@ public class Alium {
 
                       surveyConfigJSON=jsonObject;
                       Log.d("Alium-Config", jsonObject.toString());
+
+                        //json with gson
+//                      Type type2=new TypeToken<HashMap<String, SurveyConfig>>(){}.getType();
+//                      Map<String, SurveyConfig> surveyConfigMap1=
+//                              new Gson().fromJson(
+//                                      surveyConfigJSON.toString(),
+//                                      type2);
+//                      Log.e("alium-survey", surveyConfigMap1.toString()+" "+surveyConfigMap1.size());
+//                      Iterator<String> keys=surveyConfigMap1.keySet().iterator();
+//                      while (keys.hasNext()){
+//                          String key=keys.next();
+//                          Log.i("surveyConfigMap1", surveyConfigMap1.get(key).toString());
+//                      }
+                        //end
+
                       instance.showSurvey(ctx, currentScreen);
                   }
               };
@@ -125,6 +150,7 @@ public class Alium {
         private void showSurvey(Context ctx, String currentScreen){
             Log.d("Alium", "showing survey on :"+currentScreen);
             context=ctx;
+            gson=new Gson();
             aliumPreferences=AliumPreferences.getInstance(ctx);
             this.currentScreen=currentScreen;
             uuid=UUID.randomUUID().toString();
@@ -164,6 +190,15 @@ public class Alium {
             }
         }
     }
+//    private void convertWithGson(JSONArray jsonObject){
+//
+//            Type type=new TypeToken<List<Question>>(){}.getType();
+//        List<Question> questionList=gson.fromJson(jsonObject.toString(),
+//                type
+//                );
+//        Log.i("Alium-Questions",questionList.get(0).toString());
+//
+//    }
     private void loadSurvey(String key, String srvshowfrq, Uri uri) {
             currentSurveyFrequency=srvshowfrq;
             currentSurveyKey=key;
@@ -172,18 +207,10 @@ public class Alium {
             @Override
             public void onResponseReceived(JSONObject json) {
                 Log.d("Alium-survey loaded", json.toString());
-//                List<Question> questions= null;
-//                Survey survey=JSONConverter.mapToObject(Survey.class, json.toString());
-//                Log.d("jsonLoaded",survey.toString());
-//                try {
-//                    questions = JSONConverter.mapToListObject(Question.class,
-//                            json.getJSONArray("surveyQuestions").toString());
-//                } catch (Exception e) {
-//                    throw new RuntimeException(e);
-//                }
-//                Log.d("Questions", questions.get(0).toString());
+
                 try {
                     surveyQuestions=json.getJSONArray("surveyQuestions");
+//                    convertWithGson(surveyQuestions);
                     if(json.has("surveyUI")){
                         surveyUi=json.getJSONObject("surveyUI");
                     }
