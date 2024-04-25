@@ -119,7 +119,7 @@ public class SurveyDialog {
         nextQuestionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                currentIndx++;
+//                currentIndx++;
                 Log.d("Alium-indx", ""+currentIndx);
                 setCtaEnabled(nextQuestionBtn,false);
                 handleNextQuestion();
@@ -147,15 +147,49 @@ public class SurveyDialog {
         dialog.show();
         alium.trackWithAlium();
     }
+    private void checkForConditionMapping(JSONObject jsonObject){
+        try{
+            if(jsonObject!=null && jsonObject.has("conditionMapping") ){
+                JSONArray conditionMappingArray=jsonObject.getJSONArray("conditionMapping");
+                int nextQuestIndx=conditionMappingArray.getInt(0);
+                if(nextQuestIndx==-2){
+                    currentIndx++;
+                    //next question
+                }else if(nextQuestIndx==-1){
+                    //thankyou
+                    currentIndx=surveyQuestions.length();
+                }else {
+                    //set currentIndx as nextQuestIndx
+                    currentIndx=nextQuestIndx;
+                }
+                Log.e("condition",Integer.toString(conditionMappingArray.getInt(0)) );
+            }
+        }catch (Exception e){
+            Log.e("checkForConditnMapping", e.toString());
+        }
+    }
     private void handleNextQuestion(){
         try{
             String url=SurveyTracker.getUrl(
-                    surveyInfo.getString("surveyId"),alium.getUuid(), currentScreen,
+                    surveyInfo.getString("surveyId"),
+                    alium.getUuid(),
+                    currentScreen,
                     surveyInfo.getString("orgId"),
-                    surveyInfo.getString("customerId"))+"&"+"qusid="+(currentQuestionResponse.getQuestionId()+1)+"&"+
-                    "qusrs="+currentQuestionResponse.getQuestionResponse()+"&"+
+                    surveyInfo.getString("customerId")
+                    )+
+                    "&"+
+                    "qusid="+
+                    (currentQuestionResponse.getQuestionId()+1)+
+                    "&"+
+                    "qusrs="+currentQuestionResponse.getQuestionResponse()+
+                    "&"+
                     "restp="+currentQuestionResponse.getResponseType();
+
             volleyService.loadRequestWithVolley(context,url );
+            //check for condition mapping, this updates the currentIndx
+            checkForConditionMapping(surveyQuestions.getJSONObject(currentIndx));
+
+            //check if to show next question or thank-you layout
             if(surveyQuestions.length()>0) {
                 this.layout.removeAllViews();
                 AppCompatTextView improveExpTxt=layoutView.findViewById
