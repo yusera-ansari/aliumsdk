@@ -82,7 +82,7 @@ public class Alium {
 
     private String currentSurveyFrequency;
         private  String currentSurveyKey;
-        private static Map<String, SurveyConfig> surveyConfigMap;
+//        private static Map<String, SurveyConfig> surveyConfigMap;
 
         private  Gson gson;
         private static  Alium instance;
@@ -110,13 +110,13 @@ public class Alium {
         return surveyInfo;
     }
 
-    public static Map<String, SurveyConfig> getSurveyConfigMap() {
-        return surveyConfigMap;
-    }
+//    public static Map<String, SurveyConfig> getSurveyConfigMap() {
+//        return surveyConfigMap;
+//    }
 
-    public static void setSurveyConfigMap(Map<String, SurveyConfig> surveyConfigMap) {
-        Alium.surveyConfigMap = surveyConfigMap;
-    }
+//    public static void setSurveyConfigMap(Map<String, SurveyConfig> surveyConfigMap) {
+//        Alium.surveyConfigMap = surveyConfigMap;
+//    }
 
     public String getCurrentScreen() {
         return currentScreen;
@@ -129,7 +129,7 @@ public class Alium {
             configURL=url;
             volleyService=new VolleyService();
             surveyConfigJSON=new JSONObject();
-            surveyConfigMap=new HashMap<>();
+//            surveyConfigMap=new HashMap<>();
 
         }
 
@@ -145,17 +145,17 @@ public class Alium {
                       Log.d("Alium-Config", jsonObject.toString());
 
                         //json with gson
-                      Type type2=new TypeToken<HashMap<String, SurveyConfig>>(){}.getType();
-                       surveyConfigMap=
-                              new Gson().fromJson(
-                                      surveyConfigJSON.toString(),
-                                      type2);
-                      Log.e("alium-survey", surveyConfigMap.toString()+" "+surveyConfigMap.size());
-                      Iterator<String> keys=surveyConfigMap.keySet().iterator();
-                      while (keys.hasNext()){
-                          String key=keys.next();
-                          Log.i("surveyConfigMap", surveyConfigMap.get(key).toString());
-                      }
+//                      Type type2=new TypeToken<HashMap<String, SurveyConfig>>(){}.getType();
+//                       surveyConfigMap=
+//                              new Gson().fromJson(
+//                                      surveyConfigJSON.toString(),
+//                                      type2);
+//                      Log.e("alium-survey", surveyConfigMap.toString()+" "+surveyConfigMap.size());
+//                      Iterator<String> keys=surveyConfigMap.keySet().iterator();
+//                      while (keys.hasNext()){
+//                          String key=keys.next();
+//                          Log.i("surveyConfigMap", surveyConfigMap.get(key).toString());
+//                      }
                         //end
 
                       instance.showSurvey(ctx, currentScreen);
