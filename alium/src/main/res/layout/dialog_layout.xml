@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:scrollbars="none"
 
-    android:backgroundTint="#ffffff"
-
-    >
     <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="8dp"
         android:padding="22dp"
@@ -29,11 +23,12 @@
                 android:id="@+id/question"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
                 android:paddingRight="2dp"
                 android:textColor="@color/black"
+                android:textSize="20sp"
                 app:layout_constraintEnd_toStartOf="@+id/close_dialog_btn"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/close_dialog_btn"
@@ -92,7 +87,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/btn_next"
-            android:layout_alignParentBottom="true"
             android:layout_marginTop="10dp"
             android:gravity="center"
             >
@@ -117,4 +111,3 @@
                 android:textAlignment="center" />
         </LinearLayout>
     </RelativeLayout>
-</ScrollView>

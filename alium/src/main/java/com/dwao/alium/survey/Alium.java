@@ -143,21 +143,6 @@ public class Alium {
 
                       surveyConfigJSON=jsonObject;
                       Log.d("Alium-Config", jsonObject.toString());
-
-                        //json with gson
-//                      Type type2=new TypeToken<HashMap<String, SurveyConfig>>(){}.getType();
-//                       surveyConfigMap=
-//                              new Gson().fromJson(
-//                                      surveyConfigJSON.toString(),
-//                                      type2);
-//                      Log.e("alium-survey", surveyConfigMap.toString()+" "+surveyConfigMap.size());
-//                      Iterator<String> keys=surveyConfigMap.keySet().iterator();
-//                      while (keys.hasNext()){
-//                          String key=keys.next();
-//                          Log.i("surveyConfigMap", surveyConfigMap.get(key).toString());
-//                      }
-                        //end
-
                       instance.showSurvey(ctx, currentScreen);
                   }
               };
@@ -185,21 +170,15 @@ public class Alium {
             String key = keys.next();
             try {
                 JSONObject jsonObject = response.getJSONObject(key);
-//                JSONObject ppupsrvObject = jsonObject.getJSONObject("ppupsrv");
                 JSONObject ppupsrvObject = jsonObject.getJSONObject("appsrv");
                 Uri spath=Uri.parse(jsonObject.getString("spath"));
-//                Uri spath=Uri.parse(surveyConfigMap.get(key).getSpath());
                 Log.d("URI", spath.toString());
                 String urlValue = ppupsrvObject.getString("url");
-//                String urlValue = surveyConfigMap.get(key).getSrv().getUrl();
                 Log.d("Alium-Target2", "Key: " + key + ", URL: " + urlValue);
 
                 if (checkURL.equals(urlValue)){
                     String srvshowfrq=ppupsrvObject.getString("srvshowfrq");
                     thankyouObj=ppupsrvObject.getString("thnkMsg");
-//                    String srvshowfrq=surveyConfigMap.get(key).getSrv().getSurveyShowFrequency();
-//                    setCurrentSurveyIndx(key);
-//                    thankyouObj=surveyConfigMap.get(key).getSrv().getThankYouMsg();
 
                     Log.e("Alium-True","True");
                             Log.d("Alium-url-match",""+true);

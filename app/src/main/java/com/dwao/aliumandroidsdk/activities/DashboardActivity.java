@@ -25,6 +25,6 @@ public class DashboardActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        Alium.loadAliumSurvey(this,  this.getTitle().toString());
+        Alium.loadAliumSurvey(this,  "firstscreen");
     }
 }
