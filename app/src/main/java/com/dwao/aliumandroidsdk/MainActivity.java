@@ -22,7 +22,7 @@ import com.dwao.alium.survey.Alium;
 import com.dwao.aliumandroidsdk.activities.DashboardActivity;
 
 
-
+import com.dwao.aliumandroidsdk.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

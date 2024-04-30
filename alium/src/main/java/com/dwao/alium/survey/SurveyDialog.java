@@ -81,31 +81,33 @@ public class SurveyDialog {
         surveyInfo=alium.getSurveyInfo();
         this.context=ctx;
         currentScreen= alium.getCurrentScreen();
+        dialog=new Dialog(context);
+        dialog.setContentView(R.layout.dialog_layout);
         layoutView= LayoutInflater.from(context).inflate(R.layout.dialog_layout, null);
-        ViewGroup questionContainer= layoutView.findViewById(R.id.question_container);
+        ViewGroup questionContainer= dialog.findViewById(R.id.question_container);
         currentQuestion=questionContainer.findViewById(R.id.question);
-        layout= layoutView.findViewById(R.id.dialog_layout_content);
+        layout= dialog.findViewById(R.id.dialog_layout_content);
 
-        GradientDrawable gradientDrawable=(GradientDrawable)  layoutView
+        GradientDrawable gradientDrawable=(GradientDrawable)  dialog
                 .findViewById(R.id.dialog_layout).getBackground();
 
         gradientDrawable.setCornerRadius((int)(5* Resources.getSystem().getDisplayMetrics().density));
         gradientDrawable.setColor(Color.WHITE);
-       try {
-           if(surveyUi!=null)gradientDrawable.setColor(Color.parseColor(surveyUi.getString("backgroundColor")));
+        try {
+            if(surveyUi!=null)gradientDrawable.setColor(Color.parseColor(surveyUi.getString("backgroundColor")));
 
-           if(surveyUi!=null && surveyUi.has("borderColor")) gradientDrawable.setStroke((int)(2* Resources.getSystem()
-                           .getDisplayMetrics().density),
-                   Color.parseColor(surveyUi.getString("borderColor")));
-       }catch (Exception e){
-           Log.d("surveyUI", e.toString());
-       }
+            if(surveyUi!=null && surveyUi.has("borderColor")) gradientDrawable.setStroke((int)(2* Resources.getSystem()
+                            .getDisplayMetrics().density),
+                    Color.parseColor(surveyUi.getString("borderColor")));
+        }catch (Exception e){
+            Log.d("surveyUI", e.toString());
+        }
     }
     protected void show(){
 
-        dialog=new Dialog(context);
+
         Log.d("Alium-showSurvey", currentScreen);
-        nextQuestionBtn=layoutView.findViewById(R.id.btn_next);
+        nextQuestionBtn=dialog.findViewById(R.id.btn_next);
 
         GradientDrawable nxtQuesDrawable=(GradientDrawable) nextQuestionBtn.getBackground();
         try{
@@ -126,7 +128,7 @@ public class SurveyDialog {
 
             }
         });
-        closeDialogBtn=layoutView.findViewById(R.id.close_dialog_btn);
+        closeDialogBtn=dialog.findViewById(R.id.close_dialog_btn);
         closeDialogBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -135,7 +137,7 @@ public class SurveyDialog {
         });
 
         if(surveyQuestions.length()>0 && currentIndx==0) showCurrentQuestion();
-        dialog.setContentView(this.layoutView);
+//        dialog.setContentView(this.layoutView);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.setCancelable(false);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -176,7 +178,7 @@ public class SurveyDialog {
                     currentScreen,
                     surveyInfo.getString("orgId"),
                     surveyInfo.getString("customerId")
-                    )+
+            )+
                     "&"+
                     "qusid="+
                     (currentQuestionResponse.getQuestionId()+1)+
@@ -192,7 +194,7 @@ public class SurveyDialog {
             //check if to show next question or thank-you layout
             if(surveyQuestions.length()>0) {
                 this.layout.removeAllViews();
-                AppCompatTextView improveExpTxt=layoutView.findViewById
+                AppCompatTextView improveExpTxt=dialog.findViewById
                         (R.id.help_improve_experience_textview);
 
                 if( currentIndx< surveyQuestions.length()){
@@ -230,7 +232,7 @@ public class SurveyDialog {
 
     }
     private void showCurrentQuestion( ){
-            setCtaEnabled(nextQuestionBtn, false);
+        setCtaEnabled(nextQuestionBtn, false);
         try {
             Log.i("question", "going to next question "+currentIndx);
             currentQuestionResponse.setQuestionId(surveyQuestions.getJSONObject(currentIndx)
@@ -246,7 +248,7 @@ public class SurveyDialog {
                 TextInputLayout textInputLayout=longtextQues.findViewById(R.id.text_input_layout);
 
                 TextInputEditText input=longtextQues.findViewById(R.id.text_input_edit_text);
-                GradientDrawable d= (GradientDrawable)input.getBackground();
+                GradientDrawable d= (GradientDrawable)textInputLayout.getBackground();
                 d.mutate();
                 input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                     @Override
