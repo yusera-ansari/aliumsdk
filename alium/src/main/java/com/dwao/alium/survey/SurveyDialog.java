@@ -52,20 +52,20 @@ public class SurveyDialog {
     String currentScreen;
     JSONObject surveyUi;
     JSONObject surveyInfo;
-    private CheckBoxRecyViewAdapter checkBoxRecyViewAdapter;
-    private NpsGridViewAdapter npsGridViewAdapter;
-    private RadioBtnAdapter adapter;
+     CheckBoxRecyViewAdapter checkBoxRecyViewAdapter;
+     NpsGridViewAdapter npsGridViewAdapter;
+    RadioBtnAdapter adapter;
     Alium alium;
-    private RelativeLayout layout;
-    private AppCompatImageView closeDialogBtn;
+    RelativeLayout layout;
+    AppCompatImageView closeDialogBtn;
 
     QuestionResponse currentQuestionResponse=new QuestionResponse();
     Dialog dialog;
     Context context;
     private int currentIndx=0;
     JSONArray surveyQuestions;
-    private View layoutView;
-    private AppCompatTextView currentQuestion,improveExpTxt, poweredByText,poweredByValue;
+    View layoutView;
+    AppCompatTextView currentQuestion,improveExpTxt, poweredByText,poweredByValue;
     private void setCtaEnabled(View Cta, boolean enabled){
 
         if(enabled){
