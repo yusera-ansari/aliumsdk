@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d("Activity", ""+this.getClass().getSimpleName());
-        next=findViewById(R.id.next);
+        next=findViewById(R.id.main_next);
         Intent intent=new Intent(this, DashboardActivity.class);
         next.setOnClickListener(new View.OnClickListener() {
             @Override

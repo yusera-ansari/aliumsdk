@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="20dp"
+    android:layout_marginVertical="8dp"
+    android:paddingTop="18dp"
+    android:paddingBottom="0dp"
+    android:id="@+id/dialog_layout"
+    android:background="@drawable/dialog_bg"
+    android:clipToPadding="true"
+    android:clipChildren="true"
+    android:orientation="vertical">
     <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginVertical="8dp"
-        android:padding="22dp"
+        android:paddingHorizontal="22dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/dialog_layout"
         android:orientation="vertical"
-        android:clipToOutline="true"
-        android:background="@drawable/dialog_bg"
+        android:layout_marginBottom="0dp"
+
+
         >
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/question_container"
@@ -20,7 +30,7 @@
             android:layout_height="wrap_content">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/question"
+                android:id="@+id/survey_question_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:paddingRight="2dp"
@@ -40,7 +50,6 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/help_improve_experience_textview"
             android:layout_width="match_parent"
@@ -57,9 +66,6 @@
             android:layout_below="@+id/help_improve_experience_textview"
             android:orientation="vertical"
             />
-
-
-
 
         <androidx.appcompat.widget.AppCompatButton
             android:layout_width="match_parent"
@@ -84,30 +90,42 @@
             android:textColor="@color/white" />
 
         <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/btn_next"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            >
+            android:layout_marginVertical="5dp"
+            android:gravity="center">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ic_check_circle"
-                />
+                android:background="@drawable/ic_check_circle" />
+
             <androidx.appcompat.widget.AppCompatTextView
-                android:paddingLeft="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
+                android:paddingLeft="5dp"
                 android:text="Powered by "
                 android:textAlignment="center" />
+
             <androidx.appcompat.widget.AppCompatTextView
 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
                 android:text="ALIUM"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textStyle="bold" />
         </LinearLayout>
+
+
     </RelativeLayout>
+    <ProgressBar
+        android:progress="100"
+        android:minHeight="4dp"
+        android:layout_margin="0dp"
+        android:id="@+id/horizontal_bottom_progressbar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="0dp" />
+</LinearLayout>

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".activities.TestActivity">
     <TextView
-        android:id="@+id/next"
+        android:id="@+id/test_next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Click Here to navigate"

@@ -1,7 +1,6 @@
 package com.dwao.alium.survey;
 
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
@@ -52,20 +51,20 @@ public class SurveyDialog {
     String currentScreen;
     JSONObject surveyUi;
     JSONObject surveyInfo;
-     CheckBoxRecyViewAdapter checkBoxRecyViewAdapter;
-     NpsGridViewAdapter npsGridViewAdapter;
-    RadioBtnAdapter adapter;
+    private CheckBoxRecyViewAdapter checkBoxRecyViewAdapter;
+    private NpsGridViewAdapter npsGridViewAdapter;
+    private RadioBtnAdapter adapter;
     Alium alium;
-    RelativeLayout layout;
-    AppCompatImageView closeDialogBtn;
+    private RelativeLayout layout;
+    private AppCompatImageView closeDialogBtn;
 
     QuestionResponse currentQuestionResponse=new QuestionResponse();
     Dialog dialog;
     Context context;
     private int currentIndx=0;
     JSONArray surveyQuestions;
-    View layoutView;
-    AppCompatTextView currentQuestion,improveExpTxt, poweredByText,poweredByValue;
+    private View layoutView;
+    private AppCompatTextView currentQuestion,improveExpTxt, poweredByText,poweredByValue;
     private void setCtaEnabled(View Cta, boolean enabled){
 
         if(enabled){
@@ -87,11 +86,11 @@ public class SurveyDialog {
     }
     protected void show(){
         dialog=new Dialog(context);
-        dialog.setContentView(R.layout.dialog_layout);
+        dialog.setContentView(R.layout.bottom_survey_layout);
         dialog.show();
-//        layoutView= LayoutInflater.from(context).inflate(R.layout.dialog_layout, null);
+//        layoutView= LayoutInflater.from(context).inflate(R.layout.bottom_survey_layout, null);
         ViewGroup questionContainer= dialog.findViewById(R.id.question_container);
-        currentQuestion=dialog.findViewById(R.id.question);
+        currentQuestion=dialog.findViewById(R.id.survey_question_text);
         layout= dialog.findViewById(R.id.dialog_layout_content);
 //        poweredByText=dialog.findViewById(R.id.powered_by_text);
 //        poweredByValue=dialog.findViewById(R.id.powered_by_value);
