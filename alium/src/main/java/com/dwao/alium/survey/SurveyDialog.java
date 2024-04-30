@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.widget.AppCompatButton;
@@ -35,6 +36,7 @@ import com.dwao.alium.listeners.NpsOptionClickListener;
 import com.dwao.alium.listeners.RadioClickListener;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.network.VolleyService;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -47,6 +49,7 @@ import java.util.List;
 
 public class SurveyDialog {
     private AppCompatButton nextQuestionBtn;
+    LinearProgressIndicator bottomProgressBar;
     VolleyService volleyService=new VolleyService();
     String currentScreen;
     JSONObject surveyUi;
@@ -92,6 +95,7 @@ public class SurveyDialog {
         ViewGroup questionContainer= dialog.findViewById(R.id.question_container);
         currentQuestion=dialog.findViewById(R.id.survey_question_text);
         layout= dialog.findViewById(R.id.dialog_layout_content);
+        bottomProgressBar=dialog.findViewById(R.id.horizontal_bottom_progressbar);
 //        poweredByText=dialog.findViewById(R.id.powered_by_text);
 //        poweredByValue=dialog.findViewById(R.id.powered_by_value);
         improveExpTxt=dialog.findViewById
@@ -203,6 +207,7 @@ public class SurveyDialog {
                 if( currentIndx< surveyQuestions.length()){
                     showCurrentQuestion();
                 }else if(currentIndx==surveyQuestions.length()){
+                    updateProgressIndicator();
                     currentQuestion.setVisibility(View.GONE);
 
                     improveExpTxt.setVisibility(View.GONE);
@@ -234,8 +239,14 @@ public class SurveyDialog {
         }
 
     }
+
+    private void updateProgressIndicator(){
+        int progress=100/(surveyQuestions.length()+1);
+        bottomProgressBar.setProgress(bottomProgressBar.getProgress()+progress);
+    }
     private void showCurrentQuestion( ){
         setCtaEnabled(nextQuestionBtn, false);
+        updateProgressIndicator();
         try {
             Log.i("question", "going to next question "+currentIndx);
             currentQuestionResponse.setQuestionId(surveyQuestions.getJSONObject(currentIndx)
