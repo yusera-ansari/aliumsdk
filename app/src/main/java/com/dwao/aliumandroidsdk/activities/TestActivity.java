@@ -15,7 +15,7 @@ public class TestActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
-        next=findViewById(R.id.next);
+        next=findViewById(R.id.test_next);
         Alium.loadAliumSurvey(this,  this.getTitle().toString());
     }
 }

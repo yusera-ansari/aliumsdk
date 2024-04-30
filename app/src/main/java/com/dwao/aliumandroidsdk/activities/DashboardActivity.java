@@ -17,7 +17,7 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-        next=findViewById(R.id.next);
+        next=findViewById(R.id.sec_next);
         Intent intent=new Intent(this, TestActivity.class);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
