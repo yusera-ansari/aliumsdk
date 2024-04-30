@@ -1,6 +1,7 @@
 package com.dwao.alium.survey;
 
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
@@ -57,13 +58,14 @@ public class SurveyDialog {
     Alium alium;
     private RelativeLayout layout;
     private AppCompatImageView closeDialogBtn;
+
     QuestionResponse currentQuestionResponse=new QuestionResponse();
     Dialog dialog;
     Context context;
     private int currentIndx=0;
     JSONArray surveyQuestions;
     private View layoutView;
-    private AppCompatTextView currentQuestion;
+    private AppCompatTextView currentQuestion,improveExpTxt, poweredByText,poweredByValue;
     private void setCtaEnabled(View Cta, boolean enabled){
 
         if(enabled){
@@ -81,18 +83,25 @@ public class SurveyDialog {
         surveyInfo=alium.getSurveyInfo();
         this.context=ctx;
         currentScreen= alium.getCurrentScreen();
+
+    }
+    protected void show(){
         dialog=new Dialog(context);
         dialog.setContentView(R.layout.dialog_layout);
-        layoutView= LayoutInflater.from(context).inflate(R.layout.dialog_layout, null);
+        dialog.show();
+//        layoutView= LayoutInflater.from(context).inflate(R.layout.dialog_layout, null);
         ViewGroup questionContainer= dialog.findViewById(R.id.question_container);
-        currentQuestion=questionContainer.findViewById(R.id.question);
+        currentQuestion=dialog.findViewById(R.id.question);
         layout= dialog.findViewById(R.id.dialog_layout_content);
-
+//        poweredByText=dialog.findViewById(R.id.powered_by_text);
+//        poweredByValue=dialog.findViewById(R.id.powered_by_value);
+        improveExpTxt=dialog.findViewById
+                (R.id.help_improve_experience_textview);
         GradientDrawable gradientDrawable=(GradientDrawable)  dialog
                 .findViewById(R.id.dialog_layout).getBackground();
-
         gradientDrawable.setCornerRadius((int)(5* Resources.getSystem().getDisplayMetrics().density));
         gradientDrawable.setColor(Color.WHITE);
+
         try {
             if(surveyUi!=null)gradientDrawable.setColor(Color.parseColor(surveyUi.getString("backgroundColor")));
 
@@ -102,13 +111,9 @@ public class SurveyDialog {
         }catch (Exception e){
             Log.d("surveyUI", e.toString());
         }
-    }
-    protected void show(){
-
 
         Log.d("Alium-showSurvey", currentScreen);
         nextQuestionBtn=dialog.findViewById(R.id.btn_next);
-
         GradientDrawable nxtQuesDrawable=(GradientDrawable) nextQuestionBtn.getBackground();
         try{
             if(surveyUi!=null)nxtQuesDrawable.setColor(Color.parseColor(surveyUi
@@ -136,7 +141,7 @@ public class SurveyDialog {
             }
         });
 
-        if(surveyQuestions.length()>0 && currentIndx==0) showCurrentQuestion();
+
 //        dialog.setContentView(this.layoutView);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.setCancelable(false);
@@ -146,7 +151,7 @@ public class SurveyDialog {
         lp.horizontalMargin=0f;
         lp.verticalMargin=0.0f;
         dialog.getWindow().setAttributes(lp);
-        dialog.show();
+        if(surveyQuestions.length()>0 && currentIndx==0) showCurrentQuestion();
         alium.trackWithAlium();
     }
     private void checkForConditionMapping(JSONObject jsonObject){
@@ -194,8 +199,7 @@ public class SurveyDialog {
             //check if to show next question or thank-you layout
             if(surveyQuestions.length()>0) {
                 this.layout.removeAllViews();
-                AppCompatTextView improveExpTxt=dialog.findViewById
-                        (R.id.help_improve_experience_textview);
+
 
                 if( currentIndx< surveyQuestions.length()){
                     showCurrentQuestion();
@@ -240,6 +244,13 @@ public class SurveyDialog {
             currentQuestionResponse.setResponseType(surveyQuestions
                     .getJSONObject(currentIndx).getString("responseType"));
             currentQuestion.setText(surveyQuestions.getJSONObject(currentIndx).getString("question"));
+            if(surveyUi!=null) {
+                int color=Color.parseColor(surveyUi
+                        .getString("question"));
+                currentQuestion.setTextColor(color);
+                improveExpTxt.setTextColor(color);
+
+            }
             //long text question
             if(surveyQuestions.getJSONObject(currentIndx).getString("responseType").equals("1")){
 
@@ -286,8 +297,8 @@ public class SurveyDialog {
 
                     }
                 });
-                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
-                        .getString("question")));
+//                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
+//                        .getString("question")));
                 this.layout.addView(longtextQues);
             }
 
@@ -301,8 +312,8 @@ public class SurveyDialog {
                     responseOptions.add(responseOptJSON.getString(i));
                 }
                 View radioQues= LayoutInflater.from(context).inflate(R.layout.radio_ques, null);
-                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
-                        .getString("question")));
+//                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
+//                        .getString("question")));
 
                 RecyclerView radioBtnRecyView=radioQues.findViewById(R.id.radio_btn_rec_view);
                 radioBtnRecyView.setLayoutManager(new LinearLayoutManager(context));
@@ -338,8 +349,8 @@ public class SurveyDialog {
                     responseOptions.add(responseOptJSON.getString(i));
                 }
                 View checkBoxQues= LayoutInflater.from(context).inflate(R.layout.checkbox_type_ques, null);
-                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
-                        .getString("question")));
+//                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
+//                        .getString("question")));
                 RecyclerView recyclerView=checkBoxQues.findViewById(R.id.checkbox_recy_view);
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
@@ -367,8 +378,8 @@ public class SurveyDialog {
             }else  if(surveyQuestions.getJSONObject(currentIndx).getString("responseType")
                     .equals("4")){
                 View npsQues= LayoutInflater.from(context).inflate(R.layout.nps_ques, null);
-                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
-                        .getString("question")));
+//                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
+//                        .getString("question")));
 
                 GridView npsRecView=npsQues.findViewById(R.id.nps_recy_view);
                 NpsOptionClickListener listener=new NpsOptionClickListener() {
