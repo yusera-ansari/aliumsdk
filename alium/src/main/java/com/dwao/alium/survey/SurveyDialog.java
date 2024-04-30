@@ -1,6 +1,7 @@
 package com.dwao.alium.survey;
 
 
+import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.LinearInterpolator;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -96,6 +98,8 @@ public class SurveyDialog {
         currentQuestion=dialog.findViewById(R.id.survey_question_text);
         layout= dialog.findViewById(R.id.dialog_layout_content);
         bottomProgressBar=dialog.findViewById(R.id.horizontal_bottom_progressbar);
+        bottomProgressBar.setMax(100*100);
+
 //        poweredByText=dialog.findViewById(R.id.powered_by_text);
 //        poweredByValue=dialog.findViewById(R.id.powered_by_value);
         improveExpTxt=dialog.findViewById
@@ -241,8 +245,13 @@ public class SurveyDialog {
     }
 
     private void updateProgressIndicator(){
-        int progress=100/(surveyQuestions.length()+1);
-        bottomProgressBar.setProgress(bottomProgressBar.getProgress()+progress);
+        int progress=10000/(surveyQuestions.length()+1);
+        ObjectAnimator animator=ObjectAnimator.ofInt(bottomProgressBar,"progress"
+        ,bottomProgressBar.getProgress(),(progress+bottomProgressBar.getProgress()));
+        animator.setDuration(1000);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.start();
+//        bottomProgressBar.setProgress(bottomProgressBar.getProgress()+progress);
     }
     private void showCurrentQuestion( ){
         setCtaEnabled(nextQuestionBtn, false);
