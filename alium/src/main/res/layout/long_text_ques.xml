@@ -19,14 +19,17 @@
         app:boxCornerRadiusTopStart="5dp"
         app:boxStrokeWidth="0dp"
         app:boxStrokeWidthFocused="0dp"
-
+        app:counterMaxLength="280"
+        android:padding="2dp"
+        app:counterEnabled="true"
+        android:background="@drawable/text_input_layout_bg"
       >
 
         <com.google.android.material.textfield.TextInputEditText
 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/text_input_layout_bg"
+            android:backgroundTint="@color/white"
             android:gravity="top|start"
             android:id="@+id/text_input_edit_text"
             android:inputType="textMultiLine"
