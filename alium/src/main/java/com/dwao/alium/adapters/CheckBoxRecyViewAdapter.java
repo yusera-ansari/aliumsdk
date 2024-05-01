@@ -70,7 +70,7 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
         holder.checkBox.setText(checkBoxList.get(position));
         if(surveyUi!=null){
            try{
-               if(surveyUi.has("options") && surveyUi.getJSONObject("options").has("textColor")){
+               if(surveyUi.has("options")){
                 holder.checkBox.setTextColor(Color.parseColor(surveyUi
                         .getString("options")
                         ));

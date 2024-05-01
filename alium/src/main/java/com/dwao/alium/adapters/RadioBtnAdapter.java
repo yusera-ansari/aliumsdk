@@ -51,7 +51,7 @@ public class RadioBtnAdapter extends RecyclerView.Adapter<RadioBtnAdapter.ViewHo
         holder.radioButton.setText(radioBtnList.get(position));
         if(surveyUi!=null){
             try{
-                if(surveyUi.has("options") && surveyUi.getJSONObject("options").has("textColor")){
+                if(surveyUi.has("options")){
                     holder.radioButton.setTextColor(Color.parseColor(surveyUi
                             .getString("options")
                             ));

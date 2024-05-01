@@ -69,7 +69,7 @@ public class NpsGridViewAdapter extends BaseAdapter{
         Drawable d=ctx.getDrawable(R.drawable.rounded_button);
         if(surveyUi!=null) {
             try {
-                if (surveyUi.has("options") && surveyUi.getJSONObject("options").has("textColor")) {
+                if (surveyUi.has("options")) {
                     npsOption.setTextColor(Color.parseColor(surveyUi
                             .getString("options")
                            ));
