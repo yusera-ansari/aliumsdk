@@ -8,8 +8,12 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.dwao.alium.survey.Alium;
+import com.dwao.alium.survey.SurveyParameters;
 import com.dwao.aliumandroidsdk.Config;
 import com.dwao.aliumandroidsdk.R;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class DashboardActivity extends AppCompatActivity {
     TextView next;
@@ -25,6 +29,10 @@ public class DashboardActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        Alium.loadAliumSurvey(this,  "firstscreen");
+        Map params=new HashMap();
+        params.put("appName", "alium   app");
+        params.put("surveyOn", "mobile");
+        params.put("os", "android");
+        Alium.loadAliumSurvey(this,  new SurveyParameters("firstscreen", params));
     }
 }
