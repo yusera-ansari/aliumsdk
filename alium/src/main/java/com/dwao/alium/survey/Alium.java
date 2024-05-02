@@ -93,8 +93,12 @@ public class Alium {
         private static VolleyService volleyService;
         String uuid, currentScreen;
         private static String configURL;
-        private  Alium(){}
+        private SurveyParameters surveyParameters;
 
+        private  Alium(){}
+        private Alium(SurveyParameters surveyParameters){
+            this.surveyParameters=surveyParameters;
+        }
     public String getUuid() {
         return uuid;
     }
@@ -123,9 +127,9 @@ public class Alium {
     }
 
     public static void configure(String url){
-            if(instance==null){
-                instance=new Alium();
-            }
+//            if(instance==null){
+//                instance=new Alium();
+//            }
             configURL=url;
             volleyService=new VolleyService();
             surveyConfigJSON=new JSONObject();
@@ -133,7 +137,7 @@ public class Alium {
 
         }
 
-        public static void loadAliumSurvey(Context ctx, String currentScreen){
+        public static void loadAliumSurvey(Context ctx, SurveyParameters parameters){
 
 
 //          if(instance!=null) {
@@ -143,11 +147,11 @@ public class Alium {
 
                       surveyConfigJSON=jsonObject;
                       Log.d("Alium-Config", jsonObject.toString());
-                      instance.showSurvey(ctx, currentScreen);
+                      new Alium(parameters).showSurvey(ctx, parameters.screenName);
                   }
               };
               volleyService.callVolley(ctx,configURL ,ConfigJSONListener );
-              Log.d("Alium-initialized","calling survey on"+ currentScreen);
+              Log.d("Alium-initialized","calling survey on"+ parameters.screenName);
 
 //          };
         }
@@ -179,7 +183,6 @@ public class Alium {
                 if (checkURL.equals(urlValue)){
                     String srvshowfrq=ppupsrvObject.getString("srvshowfrq");
                     thankyouObj=ppupsrvObject.getString("thnkMsg");
-
                     Log.e("Alium-True","True");
                             Log.d("Alium-url-match",""+true);
 
@@ -256,7 +259,7 @@ public class Alium {
                   surveyInfo.getString("surveyId"),uuid, currentScreen,
                   surveyInfo.getString("orgId"),
                   surveyInfo.getString("customerId")
-          ) );
+          ) +"&"+SurveyTracker.getAppendableCustomerVariables(surveyParameters.customerVariables));
           volleyService.loadRequestWithVolley(context, SurveyTracker.getUrl(
                   surveyInfo.getString("surveyId"),uuid, currentScreen,
                   surveyInfo.getString("orgId"),

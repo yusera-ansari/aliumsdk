@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.dwao.alium.survey.Alium;
+import com.dwao.alium.survey.SurveyParameters;
 import com.dwao.aliumandroidsdk.activities.DashboardActivity;
 
 
@@ -29,6 +30,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     JSONObject json=null;
@@ -48,6 +50,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Alium.loadAliumSurvey(this,  "firstscreen");
+        Alium.loadAliumSurvey(this, new SurveyParameters("firstscreen", new HashMap()));
     }
 }

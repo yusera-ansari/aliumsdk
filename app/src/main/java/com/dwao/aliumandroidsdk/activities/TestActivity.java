@@ -6,8 +6,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.dwao.alium.survey.Alium;
+import com.dwao.alium.survey.SurveyParameters;
 import com.dwao.aliumandroidsdk.Config;
 import com.dwao.aliumandroidsdk.R;
+
+import java.util.HashMap;
 
 public class TestActivity extends AppCompatActivity {
     TextView next;
@@ -16,6 +19,6 @@ public class TestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
         next=findViewById(R.id.test_next);
-        Alium.loadAliumSurvey(this,  this.getTitle().toString());
+        Alium.loadAliumSurvey(this,  new SurveyParameters(getTitle().toString(), new HashMap()));
     }
 }
