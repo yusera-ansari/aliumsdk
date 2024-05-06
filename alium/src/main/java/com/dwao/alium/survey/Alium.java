@@ -1,5 +1,7 @@
 package com.dwao.alium.survey;
 
+import static com.dwao.alium.utils.Util.generateCustomerId;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -87,6 +89,7 @@ public class Alium {
         private  Gson gson;
         private static  Alium instance;
         private  Context context;
+        private static String customerId="";
         private JSONArray surveyQuestions;
         private JSONObject surveyUi;
         private JSONObject surveyInfo;
@@ -98,6 +101,7 @@ public class Alium {
         private  Alium(){}
         private Alium(SurveyParameters surveyParameters){
             this.surveyParameters=surveyParameters;
+
         }
 
     public SurveyParameters getSurveyParameters() {
@@ -129,6 +133,10 @@ public class Alium {
 
     public String getCurrentScreen() {
         return currentScreen;
+    }
+
+    public static String getCustomerId() {
+        return customerId;
     }
 
     public static void configure(String url){
@@ -165,6 +173,10 @@ public class Alium {
             context=ctx;
             gson=new Gson();
             aliumPreferences=AliumPreferences.getInstance(ctx);
+            if(aliumPreferences.getCustomerId().length()==0){
+                aliumPreferences.setCustomerId(generateCustomerId());
+            }
+            customerId= aliumPreferences.getCustomerId();
             this.currentScreen=currentScreen;
             uuid=UUID.randomUUID().toString();
             surveyResponse(surveyConfigJSON, this.currentScreen);
@@ -263,12 +275,12 @@ public class Alium {
           Log.d("track- first hit", SurveyTracker.getUrl(
                   surveyInfo.getString("surveyId"),uuid, currentScreen,
                   surveyInfo.getString("orgId"),
-                  surveyInfo.getString("customerId")
+                  customerId
           ) +"&"+SurveyTracker.getAppendableCustomerVariables(surveyParameters.customerVariables));
           volleyService.loadRequestWithVolley(context, SurveyTracker.getUrl(
                   surveyInfo.getString("surveyId"),uuid, currentScreen,
                   surveyInfo.getString("orgId"),
-                  surveyInfo.getString("customerId")
+                  customerId
           ) +"&"+SurveyTracker.getAppendableCustomerVariables(surveyParameters.customerVariables));
       }catch(Exception e){
           Log.d("trackWithAlium()", e.toString());

@@ -189,7 +189,7 @@ public class SurveyDialog {
                     alium.getUuid(),
                     currentScreen,
                     surveyInfo.getString("orgId"),
-                    surveyInfo.getString("customerId")
+                    Alium.getCustomerId()
             )
                     +"&"
 

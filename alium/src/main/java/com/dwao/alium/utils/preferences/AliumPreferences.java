@@ -8,7 +8,20 @@ public class AliumPreferences {
     private static AliumPreferences instance;
     private static final String ALIUM_PREFS = "AliumPrefs";
     private SharedPreferences.Editor editor;
-    private SharedPreferences sharedPreferences;
+    private SharedPreferences aliumSharedPreferences;
+
+    public SharedPreferences getAliumSharedPreferences() {
+        return aliumSharedPreferences;
+    }
+    public void setCustomerId(String customerId){
+      editor.putString("customerId", customerId);
+      editor.apply();
+      Log.i("customerId", "Customer Id generated "+
+              aliumSharedPreferences.getString("customerId",""));
+    }
+    public String getCustomerId(){
+        return aliumSharedPreferences.getString("customerId", "");
+    }
 
     public static AliumPreferences getInstance(Context ctx) {
         if (instance == null) {
@@ -19,17 +32,16 @@ public class AliumPreferences {
         return instance;
     }
 
-    private AliumPreferences() {
-    }
+    private AliumPreferences() {}
 
     private AliumPreferences(Context context) {
-        sharedPreferences = context.getSharedPreferences(ALIUM_PREFS, Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
+        aliumSharedPreferences = context.getSharedPreferences(ALIUM_PREFS, Context.MODE_PRIVATE);
+        editor = aliumSharedPreferences.edit();
     }
 
     public boolean checkForUpdate(String key, String freq) {
-        if (!sharedPreferences.getString(key, "").isEmpty()) {
-            if (!sharedPreferences.getString(key, "").equals(freq)) {
+        if (!aliumSharedPreferences.getString(key, "").isEmpty()) {
+            if (!aliumSharedPreferences.getString(key, "").equals(freq)) {
                 Log.i("srvshowfrq-changed", "updating stored preferences data");
                 editor.remove(key);
                 editor.apply();
