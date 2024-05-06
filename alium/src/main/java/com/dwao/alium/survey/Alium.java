@@ -99,6 +99,11 @@ public class Alium {
         private Alium(SurveyParameters surveyParameters){
             this.surveyParameters=surveyParameters;
         }
+
+    public SurveyParameters getSurveyParameters() {
+        return surveyParameters;
+    }
+
     public String getUuid() {
         return uuid;
     }
@@ -264,6 +269,9 @@ public class Alium {
                   surveyInfo.getString("surveyId"),uuid, currentScreen,
                   surveyInfo.getString("orgId"),
                   surveyInfo.getString("customerId")
+                          +"&"
+                          +SurveyTracker
+                          .getAppendableCustomerVariables(surveyParameters.customerVariables)
           ));
       }catch(Exception e){
           Log.d("trackWithAlium()", e.toString());
