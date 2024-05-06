@@ -190,7 +190,11 @@ public class SurveyDialog {
                     currentScreen,
                     surveyInfo.getString("orgId"),
                     surveyInfo.getString("customerId")
-            )+
+            )
+                    +"&"
+
+                    +
+                    SurveyTracker.getAppendableCustomerVariables(alium.getSurveyParameters().customerVariables)+
                     "&"+
                     "qusid="+
                     (currentQuestionResponse.getQuestionId()+1)+
