@@ -18,9 +18,6 @@ public class MainApplication extends Application {
        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
            @Override
            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {
-//               new ShowSurvey(activity, url);
-
-//                     new  ShowSurvey(activity, url, activity.getTitle().toString());
            }
 
            @Override
