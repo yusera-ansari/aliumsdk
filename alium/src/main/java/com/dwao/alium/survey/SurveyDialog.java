@@ -191,7 +191,7 @@ public class SurveyDialog {
                     surveyInfo.getString("orgId"),
                     Alium.getCustomerId()
             )
-                    +"&"
+
 
                     +
                     SurveyTracker.getAppendableCustomerVariables(alium.getSurveyParameters().customerVariables)+

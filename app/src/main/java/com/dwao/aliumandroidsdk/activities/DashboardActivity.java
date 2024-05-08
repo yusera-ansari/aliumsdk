@@ -30,9 +30,9 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
         Map params=new HashMap();
-        params.put("appName", "alium   app");
-        params.put("surveyOn", "mobile");
-        params.put("os", "android");
+        params.put("dim1", "alium_app"); //appName
+        params.put("dim2", "mobile"); //surveyOn
+        params.put("dim3", "android"); //os
         Alium.loadAliumSurvey(this,  new SurveyParameters("firstscreen", params));
     }
 }

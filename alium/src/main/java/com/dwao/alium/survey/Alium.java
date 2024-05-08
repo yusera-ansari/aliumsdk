@@ -281,7 +281,7 @@ public class Alium {
                   surveyInfo.getString("surveyId"),uuid, currentScreen,
                   surveyInfo.getString("orgId"),
                   customerId
-          ) +"&"+SurveyTracker.getAppendableCustomerVariables(surveyParameters.customerVariables));
+          ) +SurveyTracker.getAppendableCustomerVariables(surveyParameters.customerVariables));
       }catch(Exception e){
           Log.d("trackWithAlium()", e.toString());
       }
