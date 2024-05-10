@@ -53,6 +53,7 @@ public class AliumPreferences {
         return true;
     }
     public void addToAliumPreferences(String key, String value){
+        Log.d("key", key+" "+value);
         editor.putString(key,value);
         editor.apply();
 
