@@ -1,6 +1,8 @@
 package com.dwao.alium.survey;
 
 
+import static com.dwao.alium.utils.Util.setCtaEnabled;
+
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Context;
@@ -62,10 +64,6 @@ public class SurveyDialog {
     SurveyParameters surveyParameters;
     JSONObject surveyUi;
     JSONObject surveyInfo;
-    private CheckBoxRecyViewAdapter checkBoxRecyViewAdapter;
-    private NpsGridViewAdapter npsGridViewAdapter;
-    private RadioBtnAdapter adapter;
-//    AliumSurveyLoader alium;
     private RelativeLayout layout;
     QuestionResponse currentQuestionResponse=new QuestionResponse();
     Dialog dialog;
@@ -76,16 +74,7 @@ public class SurveyDialog {
     private AppCompatTextView currentQuestion,improveExpTxt, poweredByText,poweredByValue;
     private final LoadableSurveySpecs loadableSurveySpecs;
     AliumPreferences aliumPreferences ;
-    private void setCtaEnabled(View Cta, boolean enabled){
 
-        if(enabled){
-            Cta.setEnabled(true);
-            Cta.setAlpha(1f);
-        }else {
-            Cta.setEnabled(false);
-            Cta.setAlpha(0.5f);
-        }
-    }
     SurveyDialog(Context ctx, ExecutableSurveySpecs executableSurveySpecs,
                  SurveyParameters surveyParameters)
     {
@@ -104,7 +93,6 @@ public class SurveyDialog {
         dialog=new Dialog(context);
         dialog.setContentView(R.layout.bottom_survey_layout);
         dialog.show();
-//        layoutView= LayoutInflater.from(context).inflate(R.layout.bottom_survey_layout, null);
         ViewGroup questionContainer= dialog.findViewById(R.id.question_container);
         currentQuestion=dialog.findViewById(R.id.survey_question_text);
         layout= dialog.findViewById(R.id.dialog_layout_content);
@@ -174,53 +162,42 @@ public class SurveyDialog {
     }
         protected void trackWithAlium() {
         try{
-            Log.d("track-surveyDialog", SurveyTracker.getUrl(
-                    surveyInfo.getString("surveyId"),uuid, surveyParameters.screenName,
-                    surveyInfo.getString("orgId"),
-                    aliumPreferences.getCustomerId()
-            ) +"&"+SurveyTracker.getAppendableCustomerVariables(surveyParameters.customerVariables));
             volleyService.loadRequestWithVolley(context, SurveyTracker.getUrl(
                     surveyInfo.getString("surveyId"),uuid, surveyParameters.screenName,
                     surveyInfo.getString("orgId"),
                     aliumPreferences.getCustomerId()
             ) +SurveyTracker.getAppendableCustomerVariables(surveyParameters.customerVariables));
         }catch(Exception e){
-            Log.d("trasureyDialog", e.toString());
+            Log.e("track", e.toString());
         }
     }
     private void checkForConditionMapping(JSONObject jsonObject){
         try{
-            if(jsonObject!=null && jsonObject.has("conditionMapping") ){
+            if(jsonObject!=null && jsonObject.has("conditionMapping")){
                 JSONArray conditionMappingArray=jsonObject.getJSONArray("conditionMapping");
                 int nextQuestIndx=conditionMappingArray.getInt(0);
                 if(nextQuestIndx==-2){
-                    currentIndx++;
-                    //next question
+                    currentIndx++;//next question
                 }else if(nextQuestIndx==-1){
-                    //thankyou
-                    currentIndx=surveyQuestions.length();
+                    currentIndx=surveyQuestions.length();//thankyou
                 }else {
-                    //set currentIndx as nextQuestIndx
-                    currentIndx=nextQuestIndx;
+                    currentIndx=nextQuestIndx;//set currentIndx as nextQuestIndx
                 }
                 Log.e("condition",Integer.toString(conditionMappingArray.getInt(0)) );
             }
         }catch (Exception e){
-            Log.e("checkForConditnMapping", e.toString());
+            Log.e("Condition Map", e.toString());
         }
     }
     private void handleNextQuestion(){
         try{
             String url=SurveyTracker.getUrl(
                     surveyInfo.getString("surveyId"),
-                    uuid, //get as param
+                    uuid,
                     surveyParameters.screenName,
                     surveyInfo.getString("orgId"),
                     aliumPreferences.getCustomerId()
-            )
-
-
-                    +
+            )        +
                     SurveyTracker.getAppendableCustomerVariables(surveyParameters.customerVariables)+
                     "&"+
                     "qusid="+
@@ -317,7 +294,8 @@ public class SurveyDialog {
                     .getInt("id"));
             currentQuestionResponse.setResponseType(surveyQuestions
                     .getJSONObject(currentIndx).getString("responseType"));
-            currentQuestion.setText(surveyQuestions.getJSONObject(currentIndx).getString("question"));
+            currentQuestion.setText(surveyQuestions.getJSONObject(currentIndx)
+                    .getString("question"));
             if(surveyUi!=null) {
                 int color=Color.parseColor(surveyUi
                         .getString("question"));
@@ -325,159 +303,42 @@ public class SurveyDialog {
                 improveExpTxt.setTextColor(color);
 
             }
-            //long text question
-            if(surveyQuestions.getJSONObject(currentIndx).getString("responseType").equals("1")){
+            String responseType=surveyQuestions.getJSONObject(currentIndx).getString("responseType");
+            generateQuestion(responseType); //matches response type and generates corresponding ques
 
-                View longtextQues= LayoutInflater.from(context).inflate(R.layout.long_text_ques,
-                        null);
-                TextInputLayout textInputLayout=longtextQues.findViewById(R.id.text_input_layout);
-
-                TextInputEditText input=longtextQues.findViewById(R.id.text_input_edit_text);
-                GradientDrawable d= (GradientDrawable)textInputLayout.getBackground();
-                d.mutate();
-                input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus) {
-
-                        if(hasFocus){
-
-                            d.setStroke(2, Color.BLUE);
-                        }else{
-
-                            d.setStroke(2, Color.BLACK);
-                        }
-                    }
-                });
-                input.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        currentQuestionResponse.setQuestionResponse(input.getText().toString().trim()
-                                .replace(" ", "%20"));
-                        setCtaEnabled(nextQuestionBtn, !currentQuestionResponse.getQuestionResponse().isEmpty());
-                        Log.d("Alium-input", currentQuestionResponse.getQuestionResponse());
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-
-                    }
-                });
-//                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
-//                        .getString("question")));
-                this.layout.addView(longtextQues);
-            }
-
-            else if(surveyQuestions.getJSONObject(currentIndx).getString("responseType")
-                    .equals("2")){
-
-                JSONArray responseOptJSON=surveyQuestions.getJSONObject(currentIndx)
-                        .getJSONArray("responseOptions");
-                List<String> responseOptions=new ArrayList<>();
-                for (int i=0; i<responseOptJSON.length(); i++){
-                    responseOptions.add(responseOptJSON.getString(i));
-                }
-                View radioQues= LayoutInflater.from(context).inflate(R.layout.radio_ques, null);
-//                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
-//                        .getString("question")));
-
-                RecyclerView radioBtnRecyView=radioQues.findViewById(R.id.radio_btn_rec_view);
-                radioBtnRecyView.setLayoutManager(new LinearLayoutManager(context));
-
-                RadioClickListener radioClickListener=new RadioClickListener() {
-                    @Override
-                    public void onClick(int position) {
-                        radioBtnRecyView.post(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                adapter.updateCheckedItem(position);
-                                if(currentQuestionResponse.getQuestionResponse().length()>0){
-                                    setCtaEnabled(nextQuestionBtn,true);
-                                }else{
-                                    setCtaEnabled(nextQuestionBtn,false);
-                                }
-                            }
-                        });
-                    }
-                };
-                this.adapter=new RadioBtnAdapter(responseOptions,radioClickListener,
-                        currentQuestionResponse, surveyUi );
-                radioBtnRecyView.setAdapter(adapter);
-
-                this.layout.addView(radioQues);
-            }
-            else
-            if(surveyQuestions.getJSONObject(currentIndx).getString("responseType").equals("3")){
-                JSONArray responseOptJSON=surveyQuestions.getJSONObject(currentIndx).getJSONArray("responseOptions");
-                List<String> responseOptions=new ArrayList<>();
-                for (int i=0; i<responseOptJSON.length(); i++){
-                    responseOptions.add(responseOptJSON.getString(i));
-                }
-                View checkBoxQues= LayoutInflater.from(context).inflate(R.layout.checkbox_type_ques, null);
-//                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
-//                        .getString("question")));
-                RecyclerView recyclerView=checkBoxQues.findViewById(R.id.checkbox_recy_view);
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-
-                CheckBoxClickListener checkBoxClickListener=new CheckBoxClickListener() {
-                    @Override
-                    public void onClick(int position, boolean selected) {
-                        recyclerView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                checkBoxRecyViewAdapter.updateCheckedItem(position, selected);
-
-                                if(currentQuestionResponse.getQuestionResponse().length()>0){
-                                    setCtaEnabled(nextQuestionBtn,true);
-                                }else{
-                                    setCtaEnabled(nextQuestionBtn,false);
-                                }
-                            }
-                        });
-                    }
-                };
-                checkBoxRecyViewAdapter=new CheckBoxRecyViewAdapter(responseOptions,
-                        checkBoxClickListener, currentQuestionResponse, surveyUi);
-                recyclerView.setAdapter(checkBoxRecyViewAdapter);
-                this.layout.addView(checkBoxQues);
-            }else  if(surveyQuestions.getJSONObject(currentIndx).getString("responseType")
-                    .equals("4")){
-                View npsQues= LayoutInflater.from(context).inflate(R.layout.nps_ques, null);
-//                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
-//                        .getString("question")));
-
-                GridView npsRecView=npsQues.findViewById(R.id.nps_recy_view);
-                NpsOptionClickListener listener=new NpsOptionClickListener() {
-                    @Override
-                    public void onClick(int position) {
-                        npsRecView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                npsGridViewAdapter.updatedSelectedOption(position);
-                                if( currentQuestionResponse.getQuestionResponse().length()>0){
-                                    setCtaEnabled(nextQuestionBtn,true);
-                                }else{
-                                    setCtaEnabled(nextQuestionBtn,false);
-                                }
-//                                    npsOptionsAdapter.updatedSelectedOption(position);
-                            }
-                        });
-                    }
-                };
-                npsGridViewAdapter=new NpsGridViewAdapter(context, listener, currentQuestionResponse, surveyUi);
-                npsRecView.setAdapter( npsGridViewAdapter);
-                this.layout.addView(npsQues);
-
-            }
             Log.d("surveyQuestion", "id: "+currentQuestionResponse.getQuestionId()
                     +" type: "+currentQuestionResponse.getResponseType());
         } catch (JSONException e) {
             throw new RuntimeException(e);
+        }
+
+    }
+    private void generateQuestion(String responseType) throws JSONException {
+        switch (responseType) {
+            case "1":
+                QuestionRenderer longtextRenderer = new LongTextQuestionRenderer();
+                longtextRenderer.renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
+                break;
+            case "2":
+                RadioQuestionRenderer radioQuestionRenderer = new RadioQuestionRenderer();
+                radioQuestionRenderer
+                        .setOptions(surveyQuestions.getJSONObject(currentIndx)
+                                .getJSONArray("responseOptions"))
+                        .setSurveyUi(surveyUi)
+                        .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
+                break;
+            case "3":
+                CheckBoxQuestionRenderer checkBoxQuestionRenderer = new CheckBoxQuestionRenderer();
+                checkBoxQuestionRenderer.setSurveyUi(surveyUi)
+                        .setOptions(surveyQuestions.getJSONObject(currentIndx)
+                                .getJSONArray("responseOptions"))
+                        .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
+                break;
+            case "4":
+                NPSQuestionRenderer npsQuestionRenderer = new NPSQuestionRenderer();
+                npsQuestionRenderer.setSurveyUi(surveyUi)
+                        .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
+                break;
         }
     }
 
