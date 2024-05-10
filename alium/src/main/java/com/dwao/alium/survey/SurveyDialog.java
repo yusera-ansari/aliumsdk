@@ -4,11 +4,13 @@ package com.dwao.alium.survey;
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -38,6 +40,7 @@ import com.dwao.alium.listeners.NpsOptionClickListener;
 import com.dwao.alium.listeners.RadioClickListener;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.network.VolleyService;
+import com.dwao.alium.utils.preferences.AliumPreferences;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -48,21 +51,22 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class SurveyDialog {
+    private final String uuid;
+    ExecutableSurveySpecs executableSurveySpecs;
     private AppCompatButton nextQuestionBtn;
     LinearProgressIndicator bottomProgressBar;
     VolleyService volleyService=new VolleyService();
-    String currentScreen;
+    SurveyParameters surveyParameters;
     JSONObject surveyUi;
     JSONObject surveyInfo;
     private CheckBoxRecyViewAdapter checkBoxRecyViewAdapter;
     private NpsGridViewAdapter npsGridViewAdapter;
     private RadioBtnAdapter adapter;
-    Alium alium;
+//    AliumSurveyLoader alium;
     private RelativeLayout layout;
-    private AppCompatImageView closeDialogBtn;
-
     QuestionResponse currentQuestionResponse=new QuestionResponse();
     Dialog dialog;
     Context context;
@@ -70,6 +74,8 @@ public class SurveyDialog {
     JSONArray surveyQuestions;
     private View layoutView;
     private AppCompatTextView currentQuestion,improveExpTxt, poweredByText,poweredByValue;
+    private final LoadableSurveySpecs loadableSurveySpecs;
+    AliumPreferences aliumPreferences ;
     private void setCtaEnabled(View Cta, boolean enabled){
 
         if(enabled){
@@ -80,13 +86,18 @@ public class SurveyDialog {
             Cta.setAlpha(0.5f);
         }
     }
-    SurveyDialog(Context ctx, Alium instance){
-        alium=instance;
-        surveyQuestions=alium.getSurveyQuestions();
-        surveyUi=alium.getSurveyUi();
-        surveyInfo=alium.getSurveyInfo();
+    SurveyDialog(Context ctx, ExecutableSurveySpecs executableSurveySpecs,
+                 SurveyParameters surveyParameters)
+    {
+        this.executableSurveySpecs=executableSurveySpecs;
+        this.uuid= UUID.randomUUID().toString();
+        surveyQuestions=executableSurveySpecs.getSurveyQuestions();
+        surveyUi=executableSurveySpecs.getSurveyUi();
+        surveyInfo=executableSurveySpecs.getSurveyInfo();
         this.context=ctx;
-        currentScreen= alium.getCurrentScreen();
+        this.surveyParameters=surveyParameters;
+        this.loadableSurveySpecs=executableSurveySpecs.getLoadableSurveySpecs();
+        this.aliumPreferences= AliumPreferences.getInstance(context);
 
     }
     protected void show(){
@@ -119,7 +130,7 @@ public class SurveyDialog {
             Log.d("surveyUI", e.toString());
         }
 
-        Log.d("Alium-showSurvey", currentScreen);
+        Log.d("Alium-showSurvey", surveyParameters.screenName);
         nextQuestionBtn=dialog.findViewById(R.id.btn_next);
         GradientDrawable nxtQuesDrawable=(GradientDrawable) nextQuestionBtn.getBackground();
         try{
@@ -140,7 +151,7 @@ public class SurveyDialog {
 
             }
         });
-        closeDialogBtn=dialog.findViewById(R.id.close_dialog_btn);
+        AppCompatImageView closeDialogBtn = dialog.findViewById(R.id.close_dialog_btn);
         closeDialogBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -159,7 +170,23 @@ public class SurveyDialog {
         lp.verticalMargin=0.0f;
         dialog.getWindow().setAttributes(lp);
         if(surveyQuestions.length()>0 && currentIndx==0) showCurrentQuestion();
-        alium.trackWithAlium();
+        trackWithAlium(); //convert to tracker class
+    }
+        protected void trackWithAlium() {
+        try{
+            Log.d("track-surveyDialog", SurveyTracker.getUrl(
+                    surveyInfo.getString("surveyId"),uuid, surveyParameters.screenName,
+                    surveyInfo.getString("orgId"),
+                    aliumPreferences.getCustomerId()
+            ) +"&"+SurveyTracker.getAppendableCustomerVariables(surveyParameters.customerVariables));
+            volleyService.loadRequestWithVolley(context, SurveyTracker.getUrl(
+                    surveyInfo.getString("surveyId"),uuid, surveyParameters.screenName,
+                    surveyInfo.getString("orgId"),
+                    aliumPreferences.getCustomerId()
+            ) +SurveyTracker.getAppendableCustomerVariables(surveyParameters.customerVariables));
+        }catch(Exception e){
+            Log.d("trasureyDialog", e.toString());
+        }
     }
     private void checkForConditionMapping(JSONObject jsonObject){
         try{
@@ -186,15 +213,15 @@ public class SurveyDialog {
         try{
             String url=SurveyTracker.getUrl(
                     surveyInfo.getString("surveyId"),
-                    alium.getUuid(),
-                    currentScreen,
+                    uuid, //get as param
+                    surveyParameters.screenName,
                     surveyInfo.getString("orgId"),
-                    Alium.getCustomerId()
+                    aliumPreferences.getCustomerId()
             )
 
 
                     +
-                    SurveyTracker.getAppendableCustomerVariables(alium.getSurveyParameters().customerVariables)+
+                    SurveyTracker.getAppendableCustomerVariables(surveyParameters.customerVariables)+
                     "&"+
                     "qusid="+
                     (currentQuestionResponse.getQuestionId()+1)+
@@ -222,7 +249,7 @@ public class SurveyDialog {
                     nextQuestionBtn.setVisibility(View.GONE);
                     View thankyou=LayoutInflater.from(context).inflate(R.layout.thankyou, null);
                     AppCompatTextView thankyouTxt=thankyou.findViewById(R.id.thankyou_msg);
-                    thankyouTxt.setText(alium.getThankyouObj());
+                    thankyouTxt.setText(loadableSurveySpecs.thankYouMsg);
 //                    thankyouTxt.setText(Alium.getSurveyConfigMap().get(alium.getCurrentSurveyIndx()).srv.getThankYouMsg());
                     AppCompatImageView imageView=thankyou.findViewById(R.id.completed_anim_container)
                             .findViewById(R.id.completed_anim);
@@ -240,11 +267,35 @@ public class SurveyDialog {
 
                     }
                     this.layout.addView(thankyou);
-                    alium.submitSurvey(dialog);
+                    submitSurvey();
                 }}
         }catch(Exception e){
             Log.d("nextQuest",e.toString());
         }
+
+    }
+    private void submitSurvey(){
+        if(loadableSurveySpecs.surveyFreq.equals("untilresponse")){
+
+            aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
+                    loadableSurveySpecs.surveyFreq);
+        }
+        Handler handler=new Handler();
+        Runnable runnable=new Runnable() {
+            @Override
+            public void run() {
+
+                dialog.dismiss();
+            }
+        };
+
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                handler.removeCallbacks(runnable);
+            }
+        });
+        handler.postDelayed(runnable, 2000);
 
     }
 
@@ -307,11 +358,7 @@ public class SurveyDialog {
                     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                         currentQuestionResponse.setQuestionResponse(input.getText().toString().trim()
                                 .replace(" ", "%20"));
-                        if(currentQuestionResponse.getQuestionResponse().length()>0){
-                            setCtaEnabled(nextQuestionBtn,true);
-                        }else{
-                            setCtaEnabled(nextQuestionBtn,false);
-                        }
+                        setCtaEnabled(nextQuestionBtn, !currentQuestionResponse.getQuestionResponse().isEmpty());
                         Log.d("Alium-input", currentQuestionResponse.getQuestionResponse());
                     }
 
