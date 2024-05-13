@@ -160,7 +160,7 @@ public class SurveyDialog {
         if(surveyQuestions.length()>0 && currentIndx==0) showCurrentQuestion();
         trackWithAlium(); //convert to tracker class
     }
-        protected void trackWithAlium() {
+    protected void trackWithAlium() {
         try{
             volleyService.loadRequestWithVolley(context, SurveyTracker.getUrl(
                     surveyInfo.getString("surveyId"),uuid, surveyParameters.screenName,
