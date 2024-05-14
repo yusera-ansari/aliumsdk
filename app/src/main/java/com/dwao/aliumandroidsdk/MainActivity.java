@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     TextView next;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); //disable night mode
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); //disable night mode
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d("Activity", ""+this.getClass().getSimpleName());
