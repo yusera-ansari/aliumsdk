@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.AnimatedVectorDrawable;
@@ -301,6 +302,9 @@ public class SurveyDialog {
                         .getString("question"));
                 currentQuestion.setTextColor(color);
                 improveExpTxt.setTextColor(color);
+                bottomProgressBar.getProgressDrawable().setColorFilter(
+                        color, android.graphics.PorterDuff.Mode.SRC_IN
+                );
 
             }
             String responseType=surveyQuestions.getJSONObject(currentIndx).getString("responseType");
