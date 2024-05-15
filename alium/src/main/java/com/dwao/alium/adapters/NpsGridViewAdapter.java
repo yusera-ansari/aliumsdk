@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,7 +67,9 @@ public class NpsGridViewAdapter extends BaseAdapter{
         view=LayoutInflater.from(ctx).inflate(R.layout.nps_option, null);
         AppCompatButton  npsOption=view.findViewById(R.id.nps_option);
         npsOption.setText(String.valueOf(position));
-        Drawable d=ctx.getDrawable(R.drawable.rounded_button);
+
+        GradientDrawable d=(GradientDrawable) npsOption.getBackground();
+        d.mutate();
         if(surveyUi!=null) {
             try {
                 if (surveyUi.has("options")) {
@@ -79,9 +82,29 @@ public class NpsGridViewAdapter extends BaseAdapter{
             }
         }
         if(selectedOption==position){
-            d.setColorFilter(Color.parseColor("#00ff00" ),PorterDuff.Mode.ADD);
+            try{
+                assert surveyUi != null;
+
+//                d.setColor(Color.parseColor(surveyUi
+//                        .getJSONObject("nextCta").getString("backgroundColor") ));
+                d.setColorFilter(Color.parseColor(surveyUi
+                        .getJSONObject("nextCta").getString("backgroundColor") ),PorterDuff.Mode.SRC_IN);
+                d.setStroke(10,Color.parseColor(surveyUi
+                        .getJSONObject("nextCta").getString("textColor")));
+            }catch(Exception e){
+                d.setColorFilter(Color.parseColor("#00ff00" ),PorterDuff.Mode.SRC_IN);
+            }
+
+        }else{
+            try{
+               d.setStroke(2,Color.parseColor(surveyUi
+                        .getJSONObject("nextCta").getString("backgroundColor") ));
+            }
+            catch (Exception e){
+                d.setStroke(2, Color.BLACK);
+            }
         }
-        npsOption.setBackgroundDrawable(d);
+//        npsOption.setBackgroundDrawable(d);
 //        npsOption.setBackgroundColor(selectedOption!=position? Color.parseColor("#808080")
 //                :Color.parseColor("#00ff00"));
         npsOption.setOnClickListener(new View.OnClickListener() {
