@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -118,15 +119,25 @@ public class SurveyDialog {
         }catch (Exception e){
             Log.d("surveyUI", e.toString());
         }
-
+        AppCompatImageView closeDialogBtn = dialog.findViewById(R.id.close_dialog_btn);
         Log.d("Alium-showSurvey", surveyParameters.screenName);
         nextQuestionBtn=dialog.findViewById(R.id.btn_next);
         GradientDrawable nxtQuesDrawable=(GradientDrawable) nextQuestionBtn.getBackground();
         try{
-            if(surveyUi!=null)nxtQuesDrawable.setColor(Color.parseColor(surveyUi
-                    .getJSONObject("nextCta").getString("backgroundColor")));
-            if(surveyUi!=null)nextQuestionBtn.setTextColor(Color.parseColor(surveyUi
-                    .getJSONObject("nextCta").getString("textColor")));
+            if(surveyUi!=null) {
+                nxtQuesDrawable.setColor(Color.parseColor(surveyUi
+                        .getJSONObject("nextCta").getString("backgroundColor")));
+                nextQuestionBtn.setTextColor(Color.parseColor(surveyUi
+                        .getJSONObject("nextCta").getString("textColor")));
+                closeDialogBtn.setColorFilter(Color.parseColor(surveyUi
+                                .getJSONObject("nextCta").getString("backgroundColor"))
+                        ,
+                        PorterDuff.Mode.MULTIPLY);
+
+
+
+
+            }
         }catch (Exception e){
             Log.e("nextQues", e.toString());
         }
@@ -140,7 +151,7 @@ public class SurveyDialog {
 
             }
         });
-        AppCompatImageView closeDialogBtn = dialog.findViewById(R.id.close_dialog_btn);
+
         closeDialogBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

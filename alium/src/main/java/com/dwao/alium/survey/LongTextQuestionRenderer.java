@@ -4,6 +4,7 @@ import static com.dwao.alium.utils.Util.setCtaEnabled;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,7 +18,14 @@ import com.dwao.alium.models.QuestionResponse;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.json.JSONObject;
+
 public class LongTextQuestionRenderer implements QuestionRenderer{
+    private JSONObject surveyUi;
+    public LongTextQuestionRenderer setSurveyUi(JSONObject surveyUi){
+        this.surveyUi=surveyUi;
+        return this;
+    }
 
     @Override
     public void renderQuestion(Context context, ViewGroup layout, QuestionResponse currentQuestionResponse
@@ -27,6 +35,12 @@ public class LongTextQuestionRenderer implements QuestionRenderer{
         TextInputLayout textInputLayout=longtextQues.findViewById(R.id.text_input_layout);
 
         TextInputEditText input=longtextQues.findViewById(R.id.text_input_edit_text);
+        if(surveyUi!=null) {
+//            int color=Color.parseColor(surveyUi
+//                    .getString("question"));
+        }
+
+
         GradientDrawable d= (GradientDrawable)textInputLayout.getBackground();
         d.mutate();
         input.setOnFocusChangeListener(new View.OnFocusChangeListener() {

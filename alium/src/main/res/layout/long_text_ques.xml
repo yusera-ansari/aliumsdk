@@ -18,23 +18,30 @@
         app:boxCornerRadiusTopEnd="5dp"
         app:boxCornerRadiusTopStart="5dp"
         app:boxStrokeWidth="0dp"
+        android:gravity="center_horizontal"
         app:boxStrokeWidthFocused="0dp"
         app:counterMaxLength="280"
-        android:padding="2dp"
+        app:counterOverflowTextAppearance="@color/black"
+        android:padding="5dp"
         app:counterEnabled="true"
+       app:hintEnabled="false"
+        app:boxStrokeColor="@color/white"
         android:background="@drawable/text_input_layout_bg"
       >
 
         <com.google.android.material.textfield.TextInputEditText
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
             android:gravity="top|start"
+            android:layout_gravity="center_horizontal"
             android:id="@+id/text_input_edit_text"
             android:inputType="textMultiLine"
             android:lines="5"
+            android:elegantTextHeight="true"
+            android:background="@color/white"
 
-            android:paddingVertical="5dp" />
+
+            />
     </com.google.android.material.textfield.TextInputLayout>
 </RelativeLayout>
