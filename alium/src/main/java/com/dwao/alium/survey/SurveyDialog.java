@@ -31,6 +31,8 @@ import android.widget.RelativeLayout;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
@@ -237,16 +239,20 @@ public class SurveyDialog {
                     nextQuestionBtn.setVisibility(View.GONE);
                     View thankyou=LayoutInflater.from(context).inflate(R.layout.thankyou, null);
                     AppCompatTextView thankYouText=thankyou.findViewById(R.id.thankyou_text);
-
                     AppCompatTextView thankYouMsg=thankyou.findViewById(R.id.thankyou_msg);
+                    AppCompatImageView completedAnimation=thankyou.findViewById(R.id.completed_anim);
                     if(surveyUi!=null){
                         int color=Color.parseColor(surveyUi
                     .getString("question"));
                         thankYouMsg.setTextColor(color);
                         thankYouText.setTextColor(color);
+                        DrawableCompat.setTint(
+                                DrawableCompat.wrap(completedAnimation.getDrawable()),
+                                color
+                        );
+//                        completedAnimation.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
                     }
                     thankYouMsg.setText(loadableSurveySpecs.thankYouMsg);
-//                    thankYouMsg.setText(Alium.getSurveyConfigMap().get(alium.getCurrentSurveyIndx()).srv.getThankYouMsg());
                     AppCompatImageView imageView=thankyou.findViewById(R.id.completed_anim_container)
                             .findViewById(R.id.completed_anim);
                     imageView.setImageResource(R.drawable.avd_anim);
