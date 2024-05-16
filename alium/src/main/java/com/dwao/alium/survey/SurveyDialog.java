@@ -233,13 +233,20 @@ public class SurveyDialog {
                 }else if(currentIndx==surveyQuestions.length()){
                     updateProgressIndicator();
                     currentQuestion.setVisibility(View.GONE);
-
                     improveExpTxt.setVisibility(View.GONE);
                     nextQuestionBtn.setVisibility(View.GONE);
                     View thankyou=LayoutInflater.from(context).inflate(R.layout.thankyou, null);
-                    AppCompatTextView thankyouTxt=thankyou.findViewById(R.id.thankyou_msg);
-                    thankyouTxt.setText(loadableSurveySpecs.thankYouMsg);
-//                    thankyouTxt.setText(Alium.getSurveyConfigMap().get(alium.getCurrentSurveyIndx()).srv.getThankYouMsg());
+                    AppCompatTextView thankYouText=thankyou.findViewById(R.id.thankyou_text);
+
+                    AppCompatTextView thankYouMsg=thankyou.findViewById(R.id.thankyou_msg);
+                    if(surveyUi!=null){
+                        int color=Color.parseColor(surveyUi
+                    .getString("question"));
+                        thankYouMsg.setTextColor(color);
+                        thankYouText.setTextColor(color);
+                    }
+                    thankYouMsg.setText(loadableSurveySpecs.thankYouMsg);
+//                    thankYouMsg.setText(Alium.getSurveyConfigMap().get(alium.getCurrentSurveyIndx()).srv.getThankYouMsg());
                     AppCompatImageView imageView=thankyou.findViewById(R.id.completed_anim_container)
                             .findViewById(R.id.completed_anim);
                     imageView.setImageResource(R.drawable.avd_anim);
