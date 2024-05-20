@@ -32,20 +32,20 @@ public class ExecutableSurveySpecs {
     }
 
     public ExecutableSurveySpecs(JSONObject survey, LoadableSurveySpecs loadableSurveySpecs) {
-      try {
-          if(survey.has("surveyQuestions")){
-              surveyQuestions=survey.getJSONArray("surveyQuestions");
-          }
+        try {
+            if(survey.has("surveyQuestions")){
+                surveyQuestions=survey.getJSONArray("surveyQuestions");
+            }
 //
-          if(survey.has("surveyUI")){
-              surveyUi=survey.getJSONObject("surveyUI");
-          }
-          if(survey.has("surveyInfo")){
-              surveyInfo=survey.getJSONObject("surveyInfo");
-          }
-      }catch (Exception e){
-          Log.e("ExecutableSurveySpecs", e.toString());
-      }
+            if(survey.has("surveyUI")){
+                surveyUi=survey.getJSONObject("surveyUI");
+            }
+            if(survey.has("surveyInfo")){
+                surveyInfo=survey.getJSONObject("surveyInfo");
+            }
+        }catch (Exception e){
+            Log.e("ExecutableSurveySpecs", e.toString());
+        }
         this.loadableSurveySpecs = loadableSurveySpecs;
     }
 }

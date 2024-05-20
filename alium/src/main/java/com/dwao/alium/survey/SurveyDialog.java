@@ -59,7 +59,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class SurveyDialog {
+public class SurveyDialog extends SurveyDialogCreator {
     private final String uuid;
     ExecutableSurveySpecs executableSurveySpecs;
     private AppCompatButton nextQuestionBtn;
@@ -79,7 +79,7 @@ public class SurveyDialog {
     private final LoadableSurveySpecs loadableSurveySpecs;
     AliumPreferences aliumPreferences ;
 
-    SurveyDialog(Context ctx, ExecutableSurveySpecs executableSurveySpecs,
+    public SurveyDialog(Context ctx, ExecutableSurveySpecs executableSurveySpecs,
                  SurveyParameters surveyParameters)
     {
         this.executableSurveySpecs=executableSurveySpecs;
@@ -93,8 +93,8 @@ public class SurveyDialog {
         this.aliumPreferences= AliumPreferences.getInstance(context);
 
     }
-    protected void show(){
-        dialog=new Dialog(context);
+    public void show(){
+        dialog=new Dialog(context, androidx.appcompat.R.style.Theme_AppCompat_Dialog);
         dialog.setContentView(R.layout.bottom_survey_layout);
         dialog.show();
         ViewGroup questionContainer= dialog.findViewById(R.id.question_container);
@@ -310,17 +310,20 @@ public class SurveyDialog {
         animator.start();
 //        bottomProgressBar.setProgress(bottomProgressBar.getProgress()+progress);
     }
-    private void showCurrentQuestion( ){
-        setCtaEnabled(nextQuestionBtn, false);
-        updateProgressIndicator();
-        try {
-            Log.i("question", "going to next question "+currentIndx);
-            currentQuestionResponse.setQuestionId(surveyQuestions.getJSONObject(currentIndx)
-                    .getInt("id"));
-            currentQuestionResponse.setResponseType(surveyQuestions
-                    .getJSONObject(currentIndx).getString("responseType"));
-            currentQuestion.setText(surveyQuestions.getJSONObject(currentIndx)
-                    .getString("question"));
+    private void updateCurrentQuestionResponse(){
+       try{
+           currentQuestionResponse.setQuestionId(surveyQuestions.getJSONObject(currentIndx)
+                   .getInt("id"));
+           currentQuestionResponse.setResponseType(surveyQuestions
+                   .getJSONObject(currentIndx).getString("responseType"));
+           currentQuestion.setText(surveyQuestions.getJSONObject(currentIndx)
+                   .getString("question"));
+       }catch (Exception e){
+           Log.d("updateQuestionResp", e.toString());
+       }
+    }
+    private void applySurveyUiColorScheme(){
+        try{
             if(surveyUi!=null) {
                 int color=Color.parseColor(surveyUi
                         .getString("question"));
@@ -331,9 +334,19 @@ public class SurveyDialog {
                 );
 
             }
+        }catch (Exception e){
+            Log.e("", e.toString());
+        }
+    }
+    private void showCurrentQuestion( ){
+        setCtaEnabled(nextQuestionBtn, false);
+        updateProgressIndicator();
+        Log.i("question", "going to next question "+currentIndx);
+        updateCurrentQuestionResponse();
+        applySurveyUiColorScheme();
+        try {
             String responseType=surveyQuestions.getJSONObject(currentIndx).getString("responseType");
             generateQuestion(responseType); //matches response type and generates corresponding ques
-
             Log.d("surveyQuestion", "id: "+currentQuestionResponse.getQuestionId()
                     +" type: "+currentQuestionResponse.getResponseType());
         } catch (JSONException e) {
@@ -341,7 +354,8 @@ public class SurveyDialog {
         }
 
     }
-    private void generateQuestion(String responseType) throws JSONException {
+    @Override
+    protected void generateQuestion(String responseType) throws JSONException {
         switch (responseType) {
             case "1":
                 QuestionRenderer longtextRenderer = new LongTextQuestionRenderer();

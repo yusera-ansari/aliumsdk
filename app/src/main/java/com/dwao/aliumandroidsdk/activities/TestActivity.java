@@ -1,5 +1,6 @@
 package com.dwao.aliumandroidsdk.activities;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -12,7 +13,7 @@ import com.dwao.aliumandroidsdk.R;
 
 import java.util.HashMap;
 
-public class TestActivity extends AppCompatActivity {
+public class TestActivity extends Activity {
     TextView next;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
