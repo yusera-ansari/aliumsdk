@@ -109,26 +109,26 @@ public class AliumSurveyLoader {
         LoadableSurveySpecs loadableSurveySpecs;
         private LoadSurveyFromAPI(){}
         public LoadSurveyFromAPI(LoadableSurveySpecs loadableSurveySpecs) {
-                this.loadableSurveySpecs=loadableSurveySpecs;
+            this.loadableSurveySpecs=loadableSurveySpecs;
         }
 
         @Override
         public void onResponseReceived(JSONObject json) {
             Log.d("Alium-survey loaded", json.toString());
             ExecutableSurveySpecs executableSurveySpecs=new ExecutableSurveySpecs(json
-                , loadableSurveySpecs);
-                ((Activity)context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        new SurveyDialog(context, executableSurveySpecs,
-                                 surveyParameters)
-                                .show();
-                    }
-                });
+                    , loadableSurveySpecs);
+            ((Activity)context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    new SurveyDialog(context, executableSurveySpecs,
+                            surveyParameters)
+                            .show();
+                }
+            });
 
 
         }
-}
+    }
 
 
 
