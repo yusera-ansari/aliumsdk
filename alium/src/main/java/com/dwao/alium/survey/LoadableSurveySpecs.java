@@ -1,8 +1,9 @@
 package com.dwao.alium.survey;
 
+
 import android.net.Uri;
 
-class LoadableSurveySpecs{
+public class LoadableSurveySpecs {
     String key, surveyFreq, thankYouMsg;
     Uri uri;
 

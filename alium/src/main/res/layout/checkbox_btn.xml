@@ -3,4 +3,5 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/checkbox_btn"
+    android:theme="@style/Theme.AppCompat.Light.NoActionBar"
     />

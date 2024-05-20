@@ -1,5 +1,6 @@
 package com.dwao.aliumandroidsdk.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -15,7 +16,7 @@ import com.dwao.aliumandroidsdk.R;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DashboardActivity extends AppCompatActivity {
+public class DashboardActivity extends Activity {
     TextView next;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
