@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">alium</string>
+    <string name="title_activity_alium">AliumActivity</string>
 </resources>

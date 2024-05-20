@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'maven-publish'
+    alias(libs.plugins.jetbrainsKotlinAndroid)
 }
 
 android {
@@ -16,7 +17,7 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
-        vectorDrawables.useSupportLibrary=true
+        vectorDrawables.useSupportLibrary= true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -34,6 +35,20 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.5.1'
+    }
+    packaging {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
     }
 
 }
@@ -53,6 +68,8 @@ publishing {
 }
 dependencies {
 
+
+
 //    implementation libs.appcompat
 //    implementation libs.material
 //    testImplementation libs.junit
@@ -69,4 +86,5 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     implementation 'com.google.code.gson:gson:2.10.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
 }
