@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
@@ -61,6 +62,7 @@ public class AliumSurveyLoader {
         Log.d("Alium-Target2", surveyParameters.screenName);
 //        Iterator<String> keys = surveyConfigMap.keySet().iterator();
         Iterator<String> keys = surveyConfigJSON.keys();
+        boolean activityInstanceCreated=false;
         while(keys.hasNext()) {
             String key = keys.next();
             try {
@@ -76,8 +78,17 @@ public class AliumSurveyLoader {
                     Log.e("Alium-True","True");
                     Log.d("Alium-url-match",""+true);
 
+                    if(!activityInstanceCreated){
+                        Intent intent=new Intent(context, AliumSurveyActivity.class);
+//                    intent.putExtra("surveyParameters", surveyParameters);
+//                    intent.putExtra("surveyConfigJSON", surveyConfigJSON.toString());
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                        activityInstanceCreated=true;
+                    }
                     if(aliumPreferences.checkForUpdate(key, srvshowfrq)){
-                        loadSurvey( new LoadableSurveySpecs(key, srvshowfrq, spath, thankyouObj));
+                        loadSurvey( new LoadableSurveySpecs(key, srvshowfrq, spath.toString(),
+                                thankyouObj));
                     }
                 }
             } catch (Exception e) {
@@ -120,9 +131,14 @@ public class AliumSurveyLoader {
             ((Activity)context).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new SurveyDialog(context, executableSurveySpecs,
-                            surveyParameters)
-                            .show();
+                Intent intent=new Intent("survey_content_fetched");
+                intent.putExtra("surveyJson", json.toString());
+                intent.putExtra("loadableSurveySpecs", loadableSurveySpecs);
+                intent.putExtra("surveyParameters", surveyParameters);
+                context.sendBroadcast(intent);
+//                    new SurveyDialog(context, executableSurveySpecs,
+//                            surveyParameters)
+//                            .show();
                 }
             });
 

@@ -5,5 +5,4 @@
    android:id="@+id/radio_btn"
     android:text="radio btn text"
     android:textSize="18sp"
-    android:theme="@style/Theme.AppCompat.Light.NoActionBar"
 />

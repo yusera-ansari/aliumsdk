@@ -4,6 +4,7 @@ package com.dwao.alium.survey;
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -94,7 +95,7 @@ public class SurveyDialog extends SurveyDialogCreator {
 
     }
     public void show(){
-        dialog=new Dialog(context, androidx.appcompat.R.style.Theme_AppCompat_Dialog);
+        dialog=new Dialog(context);
         dialog.setContentView(R.layout.bottom_survey_layout);
         dialog.show();
         ViewGroup questionContainer= dialog.findViewById(R.id.question_container);
@@ -158,6 +159,10 @@ public class SurveyDialog extends SurveyDialogCreator {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+                List<String>  activeSurveyList= ((AliumSurveyActivity)context).removeSurveyFromActiveList(loadableSurveySpecs.key);
+                if(activeSurveyList.isEmpty()){
+                    ((Activity)context).finish();
+                }
             }
         });
 
@@ -288,6 +293,10 @@ public class SurveyDialog extends SurveyDialogCreator {
             public void run() {
 
                 dialog.dismiss();
+                List<String>  activeSurveyList= ((AliumSurveyActivity)context).removeSurveyFromActiveList(loadableSurveySpecs.key);
+               if(activeSurveyList.size()==0){
+                   ((Activity)context).finish();
+               }
             }
         };
 

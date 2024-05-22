@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -147,6 +148,7 @@ public class Alium {
             Context context;
             SurveyParameters surveyParameters;
             ConfigURLResponseListener(Context ctx,SurveyParameters parameters){
+                Log.d("context", ((Activity)ctx).getTitle().toString());
                 context=ctx;
                 surveyParameters=parameters;
             }
