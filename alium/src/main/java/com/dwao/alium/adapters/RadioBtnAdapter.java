@@ -37,6 +37,7 @@ public class RadioBtnAdapter extends RecyclerView.Adapter<RadioBtnAdapter.ViewHo
     public void updateCheckedItem(int selectedPosition){
         this.selectedPosition=selectedPosition;
         currentQuestionResponse.setQuestionResponse(radioBtnList.get(selectedPosition));
+        currentQuestionResponse.setIndexOfSelectedAnswer(selectedPosition);
         notifyDataSetChanged();
     }
     @NonNull
@@ -71,7 +72,6 @@ public class RadioBtnAdapter extends RecyclerView.Adapter<RadioBtnAdapter.ViewHo
         holder.radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
                if(b){
                    radioClickListener.onClick(holder.getAdapterPosition());
                }

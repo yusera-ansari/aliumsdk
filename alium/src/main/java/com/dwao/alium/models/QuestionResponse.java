@@ -1,7 +1,16 @@
 package com.dwao.alium.models;
 
 public class QuestionResponse {
-    int questionId;
+    int questionId, indexOfSelectedAnswer=0;
+
+    public int getIndexOfSelectedAnswer() {
+        return indexOfSelectedAnswer;
+    }
+
+    public void setIndexOfSelectedAnswer(int indexOfSelectedAnswer) {
+        this.indexOfSelectedAnswer = indexOfSelectedAnswer;
+    }
+
     String questionResponse="", ResponseType="";
 
     public int getQuestionId() {
