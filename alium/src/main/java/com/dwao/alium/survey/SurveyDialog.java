@@ -191,6 +191,7 @@ public class SurveyDialog extends SurveyDialogCreator {
             if(jsonObject!=null && jsonObject.has("conditionMapping")){
                 JSONArray conditionMappingArray=jsonObject.getJSONArray("conditionMapping");
 //                int nextQuestIndx=conditionMappingArray.getInt(0);
+                Log.e("condition-index", conditionMappingArray.toString()+"" +currentQuestionResponse.getIndexOfSelectedAnswer() );
                 int nextQuestIndx= conditionMappingArray.getInt(
                         currentQuestionResponse.getIndexOfSelectedAnswer()
                 );
@@ -306,6 +307,7 @@ public class SurveyDialog extends SurveyDialogCreator {
     }
 
     private void updateProgressIndicator(){
+        Log.d("index", ""+currentIndx+" "+previousIndx);
         int progress=(10000/(surveyQuestions.length()+1))*(currentIndx-previousIndx);
         ObjectAnimator animator=ObjectAnimator.ofInt(bottomProgressBar,"progress"
         ,bottomProgressBar.getProgress(),(progress+bottomProgressBar.getProgress()));
@@ -349,6 +351,7 @@ public class SurveyDialog extends SurveyDialogCreator {
         updateCurrentQuestionResponse();
         applySurveyUiColorScheme();
         try {
+            currentQuestionResponse.setIndexOfSelectedAnswer(0);
             String responseType=surveyQuestions.getJSONObject(currentIndx).getString("responseType");
             generateQuestion(responseType); //matches response type and generates corresponding ques
             Log.d("surveyQuestion", "id: "+currentQuestionResponse.getQuestionId()
