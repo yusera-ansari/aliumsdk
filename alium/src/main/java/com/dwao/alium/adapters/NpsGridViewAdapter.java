@@ -36,13 +36,23 @@ public class NpsGridViewAdapter extends BaseAdapter{
     public void updatedSelectedOption(int position){
         if(selectedOption==position){
             this.selectedOption=-1;
+            currentQuestionResponse.setIndexOfSelectedAnswer(0);
         }else{
             this.selectedOption=position;
+            if(position>5){
+                currentQuestionResponse.setIndexOfSelectedAnswer(2);
+            }else if(position<5){
+                currentQuestionResponse.setIndexOfSelectedAnswer(0);
+            }else {
+                currentQuestionResponse.setIndexOfSelectedAnswer(1);
+            }
+
         }
        if(selectedOption!=-1) {
            currentQuestionResponse.setQuestionResponse(String.valueOf(selectedOption));
        }else{
            currentQuestionResponse.setQuestionResponse("");
+           currentQuestionResponse.setIndexOfSelectedAnswer(0);
        };
        Log.d("selected Opt", ""+selectedOption);
        notifyDataSetChanged();

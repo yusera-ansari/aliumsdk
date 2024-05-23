@@ -73,6 +73,7 @@ public class SurveyDialog extends SurveyDialogCreator {
     Dialog dialog;
     Context context;
     private int currentIndx=0;
+    private int previousIndx=-1;
     JSONArray surveyQuestions;
     private View layoutView;
     private AppCompatTextView currentQuestion,improveExpTxt, poweredByText,poweredByValue;
@@ -189,7 +190,11 @@ public class SurveyDialog extends SurveyDialogCreator {
         try{
             if(jsonObject!=null && jsonObject.has("conditionMapping")){
                 JSONArray conditionMappingArray=jsonObject.getJSONArray("conditionMapping");
-                int nextQuestIndx=conditionMappingArray.getInt(0);
+//                int nextQuestIndx=conditionMappingArray.getInt(0);
+                int nextQuestIndx= conditionMappingArray.getInt(
+                        currentQuestionResponse.getIndexOfSelectedAnswer()
+                );
+                previousIndx=currentIndx;
                 if(nextQuestIndx==-2){
                     currentIndx++;//next question
                 }else if(nextQuestIndx==-1){
@@ -197,7 +202,7 @@ public class SurveyDialog extends SurveyDialogCreator {
                 }else {
                     currentIndx=nextQuestIndx;//set currentIndx as nextQuestIndx
                 }
-                Log.e("condition",Integer.toString(conditionMappingArray.getInt(0)) );
+                Log.e("condition", "" +currentQuestionResponse.getIndexOfSelectedAnswer() );
             }
         }catch (Exception e){
             Log.e("Condition Map", e.toString());
@@ -220,7 +225,6 @@ public class SurveyDialog extends SurveyDialogCreator {
                     "qusrs="+currentQuestionResponse.getQuestionResponse()+
                     "&"+
                     "restp="+currentQuestionResponse.getResponseType();
-
             volleyService.loadRequestWithVolley(context,url );
             //check for condition mapping, this updates the currentIndx
             checkForConditionMapping(surveyQuestions.getJSONObject(currentIndx));
@@ -302,7 +306,7 @@ public class SurveyDialog extends SurveyDialogCreator {
     }
 
     private void updateProgressIndicator(){
-        int progress=10000/(surveyQuestions.length()+1);
+        int progress=(10000/(surveyQuestions.length()+1))*(currentIndx-previousIndx);
         ObjectAnimator animator=ObjectAnimator.ofInt(bottomProgressBar,"progress"
         ,bottomProgressBar.getProgress(),(progress+bottomProgressBar.getProgress()));
         animator.setDuration(1000);
