@@ -89,7 +89,7 @@ public class NpsGridViewAdapter extends BaseAdapter{
 //                        .getJSONObject("nextCta").getString("backgroundColor") ));
                 d.setColorFilter(Color.parseColor(surveyUi
                         .getJSONObject("nextCta").getString("backgroundColor") ),PorterDuff.Mode.SRC_IN);
-                d.setStroke(10,Color.parseColor(surveyUi
+                d.setStroke(5,Color.parseColor(surveyUi
                         .getJSONObject("nextCta").getString("textColor")));
             }catch(Exception e){
                 d.setColorFilter(Color.parseColor("#00ff00" ),PorterDuff.Mode.SRC_IN);
