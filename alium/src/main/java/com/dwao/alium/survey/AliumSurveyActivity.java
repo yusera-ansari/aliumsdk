@@ -82,6 +82,10 @@ public class AliumSurveyActivity extends AppCompatActivity {
 
     }
     @Override
+    protected void onStop() {
+        super.onStop();
+        isActivityRunning = false;}
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         isActivityRunning = false;
