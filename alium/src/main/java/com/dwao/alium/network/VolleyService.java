@@ -43,14 +43,15 @@ public class VolleyService {
                new Response.Listener<String>() {
                    @Override
                    public void onResponse(String response) {
+                       Log.d("response-survey", response);
                        try {
                            JSONObject jsonObject=new JSONObject(response);
                            volleyResponseListener.onResponseReceived(jsonObject);
 
                        } catch (JSONException e) {
-                           throw new RuntimeException(e);
+                        Log.i("surveyResponseExc", e.toString());
                        }
-                       Log.d("response", response);
+
                    }
                }, new Response.ErrorListener() {
            @Override
