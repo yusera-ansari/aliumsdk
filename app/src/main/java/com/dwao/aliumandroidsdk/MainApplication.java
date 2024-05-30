@@ -14,7 +14,7 @@ public class MainApplication extends Application {
     public void onCreate() {
 
         super.onCreate();
-        Alium.configure(Config.BASE_URL);
+        Alium.config(Config.BASE_URL);
        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
            @Override
            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {

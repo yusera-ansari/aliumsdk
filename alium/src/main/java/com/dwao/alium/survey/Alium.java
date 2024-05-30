@@ -119,7 +119,7 @@ public class Alium {
 
 
 
-    public static void configure(String url){
+    public static void config(String url){
             if(instance==null){
                 instance=new Alium();
             }
@@ -129,7 +129,7 @@ public class Alium {
 //            surveyConfigMap=new HashMap<>();
         }
 
-        public static void loadAliumSurvey(Context ctx, SurveyParameters parameters){
+        public static void trigger(Context ctx, SurveyParameters parameters){
             if (configURL == null) {
                 throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
             }
