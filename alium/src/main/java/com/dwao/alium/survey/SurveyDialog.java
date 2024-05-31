@@ -178,6 +178,7 @@ public class SurveyDialog extends SurveyDialogCreator {
     protected void trackWithAlium() {
         try{
             volleyService.loadRequestWithVolley(context, SurveyTracker.getUrl(
+                    context,
                     surveyInfo.getString("surveyId"),uuid, surveyParameters.screenName,
                     surveyInfo.getString("orgId"),
                     aliumPreferences.getCustomerId()
@@ -212,6 +213,7 @@ public class SurveyDialog extends SurveyDialogCreator {
     private void handleNextQuestion(){
         try{
             String url=SurveyTracker.getUrl(
+                    context,
                     surveyInfo.getString("surveyId"),
                     uuid,
                     surveyParameters.screenName,
