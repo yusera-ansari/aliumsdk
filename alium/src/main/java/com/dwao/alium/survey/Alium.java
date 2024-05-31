@@ -72,61 +72,26 @@ import java.util.UUID;
 public class Alium {
      private static JSONObject surveyConfigJSON;
 
+     private static  Alium instance;
 
-
-
-
-//        private static Map<String, SurveyConfig> surveyConfigMap;
-
-        private  Gson gson;
-        private static  Alium instance;
-
-        private static VolleyService volleyService;
-        String uuid, currentScreen;
-        private static String configURL;
-        private SurveyParameters surveyParameters;
-
-        private  Alium(){
-            volleyService=new VolleyService();
-            surveyConfigJSON=new JSONObject();
-        }
-        private Alium(SurveyParameters surveyParameters){
-            this.surveyParameters=surveyParameters;
-
-        }
-
-    public SurveyParameters getSurveyParameters() {
-        return surveyParameters;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-
-
-//    public static Map<String, SurveyConfig> getSurveyConfigMap() {
-//        return surveyConfigMap;
-//    }
-
-//    public static void setSurveyConfigMap(Map<String, SurveyConfig> surveyConfigMap) {
-//        Alium.surveyConfigMap = surveyConfigMap;
-//    }
-
-    public String getCurrentScreen() {
-        return currentScreen;
-    }
-
-
+     private static VolleyService volleyService;
+     private static String configURL;
+     private  Alium(){
+         volleyService=new VolleyService();
+         surveyConfigJSON=new JSONObject();
+     }
 
     public static void config(String url){
             if(instance==null){
                 instance=new Alium();
             }
-            configURL=url;
-//        volleyService=new VolleyService();
-//        surveyConfigJSON=new JSONObject();
-//            surveyConfigMap=new HashMap<>();
+            if(configURL==null){
+                configURL=url;
+            }
+            if(!configURL.equals(url)) {
+                configURL = url;
+                surveyConfigJSON=new JSONObject();
+            }
         }
 
         public static void trigger(Context ctx, SurveyParameters parameters){
