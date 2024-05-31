@@ -63,6 +63,7 @@ public class SurveyDialog extends SurveyDialogCreator {
     private final String uuid;
     ExecutableSurveySpecs executableSurveySpecs;
     private AppCompatButton nextQuestionBtn;
+    private AppCompatImageView closeDialogBtn;
     LinearProgressIndicator bottomProgressBar;
     VolleyService volleyService=new VolleyService();
     SurveyParameters surveyParameters;
@@ -95,19 +96,31 @@ public class SurveyDialog extends SurveyDialogCreator {
 
     }
     public void show(){
+        initializeDialogUiElements();
+        configureDialogWindow();
+        setNextQuestionBtn();
+        setSurveyCloseBtn();
+        if(surveyQuestions.length()>0 && currentIndx==0) showCurrentQuestion();
+        dialog.show();
+        trackWithAlium(); //convert to tracker class
+    }
+    private void initializeDialogUiElements(){
         dialog=new Dialog(context, androidx.appcompat.R.style.Theme_AppCompat_Dialog);
         dialog.setContentView(R.layout.bottom_survey_layout);
-        dialog.show();
+        layout= dialog.findViewById(R.id.dialog_layout_content);
         ViewGroup questionContainer= dialog.findViewById(R.id.question_container);
         currentQuestion=dialog.findViewById(R.id.survey_question_text);
-        layout= dialog.findViewById(R.id.dialog_layout_content);
         bottomProgressBar=dialog.findViewById(R.id.horizontal_bottom_progressbar);
         bottomProgressBar.setMax(100*100);
+        nextQuestionBtn=dialog.findViewById(R.id.btn_next);
+        closeDialogBtn = dialog.findViewById(R.id.close_dialog_btn);
 
 //        poweredByText=dialog.findViewById(R.id.powered_by_text);
 //        poweredByValue=dialog.findViewById(R.id.powered_by_value);
         improveExpTxt=dialog.findViewById
                 (R.id.help_improve_experience_textview);
+    }
+    private void configureDialogWindow(){
         GradientDrawable gradientDrawable=(GradientDrawable)  dialog
                 .findViewById(R.id.dialog_layout).getBackground();
         gradientDrawable.setCornerRadius((int)(5* Resources.getSystem().getDisplayMetrics().density));
@@ -122,9 +135,39 @@ public class SurveyDialog extends SurveyDialogCreator {
         }catch (Exception e){
             Log.d("surveyUI", e.toString());
         }
-        AppCompatImageView closeDialogBtn = dialog.findViewById(R.id.close_dialog_btn);
-        Log.d("Alium-showSurvey", surveyParameters.screenName);
-        nextQuestionBtn=dialog.findViewById(R.id.btn_next);
+
+//        dialog.setContentView(this.layoutView);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        WindowManager.LayoutParams lp=dialog.getWindow().getAttributes();
+        lp.gravity= Gravity.BOTTOM;
+        lp.horizontalMargin=0f;
+        lp.verticalMargin=0.0f;
+        dialog.getWindow().setAttributes(lp);
+    }
+    private void setSurveyCloseBtn(){
+        try{
+            if(surveyUi!=null) {
+
+                closeDialogBtn.setColorFilter(Color.parseColor(surveyUi
+                                .getJSONObject("nextCta")
+                                .getString("backgroundColor"))
+                        ,
+                        PorterDuff.Mode.MULTIPLY);
+
+            }
+        }catch (Exception e){
+            Log.e("nextQues", e.toString());
+        }
+        closeDialogBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+    }
+    private void setNextQuestionBtn(){
         GradientDrawable nxtQuesDrawable=(GradientDrawable) nextQuestionBtn.getBackground();
         try{
             if(surveyUi!=null) {
@@ -132,14 +175,6 @@ public class SurveyDialog extends SurveyDialogCreator {
                         .getJSONObject("nextCta").getString("backgroundColor")));
                 nextQuestionBtn.setTextColor(Color.parseColor(surveyUi
                         .getJSONObject("nextCta").getString("textColor")));
-                closeDialogBtn.setColorFilter(Color.parseColor(surveyUi
-                                .getJSONObject("nextCta").getString("backgroundColor"))
-                        ,
-                        PorterDuff.Mode.MULTIPLY);
-
-
-
-
             }
         }catch (Exception e){
             Log.e("nextQues", e.toString());
@@ -154,26 +189,6 @@ public class SurveyDialog extends SurveyDialogCreator {
 
             }
         });
-
-        closeDialogBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-
-
-//        dialog.setContentView(this.layoutView);
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.setCancelable(false);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        WindowManager.LayoutParams lp=dialog.getWindow().getAttributes();
-        lp.gravity= Gravity.BOTTOM;
-        lp.horizontalMargin=0f;
-        lp.verticalMargin=0.0f;
-        dialog.getWindow().setAttributes(lp);
-        if(surveyQuestions.length()>0 && currentIndx==0) showCurrentQuestion();
-        trackWithAlium(); //convert to tracker class
     }
     protected void trackWithAlium() {
         try{
