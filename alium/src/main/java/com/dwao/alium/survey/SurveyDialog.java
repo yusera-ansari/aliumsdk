@@ -7,7 +7,7 @@ import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.ColorStateList;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -15,8 +15,6 @@ import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,39 +22,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
-import android.widget.GridView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.dwao.alium.R;
-import com.dwao.alium.adapters.CheckBoxRecyViewAdapter;
-import com.dwao.alium.adapters.NpsGridViewAdapter;
-import com.dwao.alium.adapters.RadioBtnAdapter;
-import com.dwao.alium.listeners.CheckBoxClickListener;
-import com.dwao.alium.listeners.NpsOptionClickListener;
-import com.dwao.alium.listeners.RadioClickListener;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.network.VolleyService;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.UUID;
 
 public class SurveyDialog extends SurveyDialogCreator {
@@ -102,7 +85,63 @@ public class SurveyDialog extends SurveyDialogCreator {
         setSurveyCloseBtn();
         if(surveyQuestions.length()>0 && currentIndx==0) showCurrentQuestion();
         dialog.show();
+        recordTriggerOnPreferences();
         trackWithAlium(); //convert to tracker class
+    }
+    private void recordTriggerOnPreferences(){
+        switch (loadableSurveySpecs.surveyFreq) {
+            case "onlyonce":
+                Log.i("srvshowfrq", "show survey frequency: onlyonce");
+                aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
+                        loadableSurveySpecs.surveyFreq);
+                break;
+            case "overandover":
+                Log.i("srvshowfrq", "show survey frequency: overandover");
+                break;
+            case "untilresponse":
+                Log.i("srvshowfrq", "show survey frequency: untilresponse");
+                break;
+            default:
+                   checkForFrequencyCount();
+
+
+        }
+
+    }
+    private void checkForFrequencyCount(){
+            try{
+                int freq=Integer.parseInt(loadableSurveySpecs.surveyFreq);
+//        int  freq=  Integer.parseInt("5");
+        JSONObject freqObj=new JSONObject();
+        Log.d("srvshowfrq", " "+freq);
+        freqObj.put("showFreq",freq);
+        freqObj.put("counter", 0);
+
+        if (!aliumPreferences.getAliumSharedPreferences().getString(loadableSurveySpecs.key, "").isEmpty()) {
+            JSONObject storedFreq=
+                    new JSONObject(aliumPreferences.getAliumSharedPreferences().getString(loadableSurveySpecs.key, ""))
+                    ;
+
+            if(storedFreq.getInt("showFreq")!=freq){
+                freqObj.put("counter", 1);
+            }else{
+                freqObj.put("counter", storedFreq.getInt("counter")+1);
+            }
+            if(storedFreq.getInt("counter")!=storedFreq.getInt("showFreq")){
+                aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key, freqObj.toString());
+            }
+            Log.i("srvshowfrq-changed", ""+aliumPreferences.getAliumSharedPreferences().getString(loadableSurveySpecs.key, "")
+                    +" "+freqObj);
+
+        } else {
+            freqObj.put("counter",1);
+            aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
+                    freqObj.toString()
+            );
+        }}catch (Exception e){
+            Log.e("SurveyFrequency", "Invalid Survey Frequency Provided");
+
+        }
     }
     private void initializeDialogUiElements(){
         dialog=new Dialog(context, androidx.appcompat.R.style.Theme_AppCompat_Dialog);
