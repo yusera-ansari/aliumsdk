@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
@@ -75,9 +76,14 @@ public class AliumSurveyLoader {
                     String thankyouObj = ppupsrvObject.getString("thnkMsg");
                     Log.e("Alium-True","True");
                     Log.d("Alium-url-match",""+true);
-
-                    if(aliumPreferences.checkForUpdate(key, srvshowfrq)){
+                    try{
+                        int freq=Integer.parseInt(srvshowfrq);
                         loadSurvey( new LoadableSurveySpecs(key, srvshowfrq, spath, thankyouObj));
+                    }catch (Exception e) {
+                        Log.d("Exception","Exception occurred while trying to convert to integer" );
+                        if (aliumPreferences.checkForUpdate(key, srvshowfrq)) {
+                            loadSurvey(new LoadableSurveySpecs(key, srvshowfrq, spath, thankyouObj));
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -86,21 +92,10 @@ public class AliumSurveyLoader {
         }
     }
 
+
     private void loadSurvey(LoadableSurveySpecs loadableSurveySpecs) {
         String surURL=loadableSurveySpecs.uri.toString();
-        switch (loadableSurveySpecs.surveyFreq) {
-            case "onlyonce":
-                Log.i("srvshowfrq", "show survey frequency: onlyonce");
-                aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
-                        loadableSurveySpecs.surveyFreq);
-                break;
-            case "overandover":
-                Log.i("srvshowfrq", "show survey frequency: overandover");
-                break;
-            case "untilresponse":
-                Log.i("srvshowfrq", "show survey frequency: untilresponse");
-                break;
-        }
+
         volleyService.callVolley(context, surURL,new LoadSurveyFromAPI(loadableSurveySpecs) );
 
     }
@@ -120,6 +115,7 @@ public class AliumSurveyLoader {
             ((Activity)context).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
                     new SurveyDialog(context, executableSurveySpecs,
                             surveyParameters)
                             .show();
