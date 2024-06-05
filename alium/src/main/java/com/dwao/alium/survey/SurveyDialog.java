@@ -160,7 +160,7 @@ public class SurveyDialog extends SurveyDialogCreator {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
-                List<String>  activeSurveyList= ((AliumSurveyActivity)context).removeSurveyFromActiveList(loadableSurveySpecs.key);
+                List<String>  activeSurveyList= ((AliumSurveyActivity)context).removeSurveyFromActiveList(SurveyDialog.this);
                 if(activeSurveyList.isEmpty()){
                     ((Activity)context).finish();
                 }
@@ -296,7 +296,7 @@ public class SurveyDialog extends SurveyDialogCreator {
             public void run() {
 
                 dialog.dismiss();
-                List<String>  activeSurveyList= ((AliumSurveyActivity)context).removeSurveyFromActiveList(loadableSurveySpecs.key);
+                List<String>  activeSurveyList= ((AliumSurveyActivity)context).removeSurveyFromActiveList(SurveyDialog.this);
                if(activeSurveyList.size()==0){
                    ((Activity)context).finish();
                }

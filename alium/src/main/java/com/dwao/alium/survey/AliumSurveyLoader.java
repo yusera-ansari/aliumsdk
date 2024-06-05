@@ -3,6 +3,7 @@ package com.dwao.alium.survey;
 import static com.dwao.alium.utils.Util.generateCustomerId;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,6 +11,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
+
+import androidx.fragment.app.FragmentManager;
 
 import com.dwao.alium.listeners.VolleyResponseListener;
 import com.dwao.alium.network.VolleyService;
@@ -21,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 public class AliumSurveyLoader {
@@ -80,12 +84,38 @@ public class AliumSurveyLoader {
 
                     if(!activityInstanceCreated){
                         Intent intent=new Intent(context, AliumSurveyActivity.class);
+
 //                    intent.putExtra("surveyParameters", surveyParameters);
 //                    intent.putExtra("surveyConfigJSON", surveyConfigJSON.toString());
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    if(!AliumSurveyActivity.isActivityRunning)   context.startActivity(intent);
+                        intent.setFlags(
+
+                                Intent.FLAG_ACTIVITY_RETAIN_IN_RECENTS|
+                                Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                    if(!AliumSurveyActivity.isActivityRunning)
+                        context.startActivity(intent);
                         activityInstanceCreated=true;
+
                     }
+
+                    ActivityManager activityManager=(ActivityManager)
+                            context.getSystemService(context.ACTIVITY_SERVICE);
+                    List<ActivityManager.RunningTaskInfo> tasks=
+                            activityManager.getRunningTasks(Integer.MAX_VALUE);
+                    Log.d("instance", tasks.toString());
+                    for(ActivityManager.RunningTaskInfo
+                            task:tasks){
+                        Class activity=AliumSurveyActivity.class;
+                        Log.d("instance"," "+task.baseActivity.getClassName());
+                        if(task.baseActivity.getClassName().equals(activity.getName())){
+                            Log.d("instance"," activity is in backstack");
+
+                        }else{
+                            Log.d("instance"," not in the stack"+task.baseActivity.getClassName());
+                        }
+
+                    }
+
+
                     if(aliumPreferences.checkForUpdate(key, srvshowfrq)){
                         loadSurvey( new LoadableSurveySpecs(key, srvshowfrq, spath.toString(),
                                 thankyouObj));
@@ -96,6 +126,7 @@ public class AliumSurveyLoader {
             }
         }
     }
+
 
     private void loadSurvey(LoadableSurveySpecs loadableSurveySpecs) {
         String surURL=loadableSurveySpecs.uri.toString();
