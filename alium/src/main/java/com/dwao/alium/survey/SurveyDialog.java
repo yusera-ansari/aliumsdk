@@ -1,6 +1,7 @@
 package com.dwao.alium.survey;
 
 
+import static com.dwao.alium.survey.SurveyTracker.trackWithAlium;
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
 import android.animation.ObjectAnimator;
@@ -40,6 +41,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class SurveyDialog extends SurveyDialogCreator {
@@ -77,6 +81,9 @@ public class SurveyDialog extends SurveyDialogCreator {
         this.loadableSurveySpecs=executableSurveySpecs.getLoadableSurveySpecs();
         this.aliumPreferences= AliumPreferences.getInstance(context);
 
+
+
+
     }
     public void show(){
         initializeDialogUiElements();
@@ -86,7 +93,7 @@ public class SurveyDialog extends SurveyDialogCreator {
         if(surveyQuestions.length()>0 && currentIndx==0) showCurrentQuestion();
         dialog.show();
         recordTriggerOnPreferences();
-        trackWithAlium(); //convert to tracker class
+        trackWithAlium(context, generateTrackingParameters()); //convert to tracker class
     }
     private void recordTriggerOnPreferences(){
         switch (loadableSurveySpecs.surveyFreq) {
@@ -111,7 +118,7 @@ public class SurveyDialog extends SurveyDialogCreator {
     private void checkForFrequencyCount(){
             try{
                 int freq=Integer.parseInt(loadableSurveySpecs.surveyFreq);
-//        int  freq=  Integer.parseInt("5");
+//        int  freq=  Integer.parseInt("1");
         JSONObject freqObj=new JSONObject();
         Log.d("showFreq", " "+freq);
         freqObj.put("showFreq",freq);
@@ -220,7 +227,6 @@ public class SurveyDialog extends SurveyDialogCreator {
         nextQuestionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                currentIndx++;
                 Log.d("Alium-indx", ""+currentIndx);
                 setCtaEnabled(nextQuestionBtn,false);
                 handleNextQuestion();
@@ -228,23 +234,33 @@ public class SurveyDialog extends SurveyDialogCreator {
             }
         });
     }
-    protected void trackWithAlium() {
+    private Map<String ,String> generateTrackingParameters(){
+        Map<String, String> params=new HashMap<>(surveyParameters.customerVariables);
+        params.put("srvtpid", "6");
+        params.put("srvLng", "1");
+        params.put("vstid", uuid);
+        params.put("srvldid",uuid+"ppup"+ new Date().getTime()+"srv" );
+        params.put("srvpt", surveyParameters.screenName);
+        params.put("ran",""+new Date().getTime() );
+        params.put("custSystemId", "NA");
+        params.put("custId", aliumPreferences.getCustomerId());
+        params.put("custEmail", "NA");
+        params.put("custMobile", "NA");
         try{
-            volleyService.loadRequestWithVolley(context, SurveyTracker.getUrl(
-                    context,
-                    surveyInfo.getString("surveyId"),uuid, surveyParameters.screenName,
-                    surveyInfo.getString("orgId"),
-                    aliumPreferences.getCustomerId()
-            ) +SurveyTracker.getAppendableCustomerVariables(surveyParameters.customerVariables));
-        }catch(Exception e){
-            Log.e("track", e.toString());
+            params.put("srvid", surveyInfo.getString("surveyId"));
+
+            params.put("orgId",surveyInfo.getString("orgId"));
+        }catch (Exception e){
+            Log.e("Generate Params Map", "Couldn't get srvid/orgId");
         }
+        Log.d("MAP of MAP", params.toString());
+        return params;
     }
+
     private void checkForConditionMapping(JSONObject jsonObject){
         try{
             if(jsonObject!=null && jsonObject.has("conditionMapping")){
                 JSONArray conditionMappingArray=jsonObject.getJSONArray("conditionMapping");
-//                int nextQuestIndx=conditionMappingArray.getInt(0);
                 Log.e("condition-index", conditionMappingArray.toString()+"" +currentQuestionResponse.getIndexOfSelectedAnswer() );
                 int nextQuestIndx= conditionMappingArray.getInt(
                         currentQuestionResponse.getIndexOfSelectedAnswer()
@@ -263,25 +279,16 @@ public class SurveyDialog extends SurveyDialogCreator {
             Log.e("Condition Map", e.toString());
         }
     }
+    private void submitResponse() throws JSONException {
+        Map<String, String > responseMap=new HashMap<>(generateTrackingParameters());
+        responseMap.put("qusid",""+(currentQuestionResponse.getQuestionId()+1));
+        responseMap.put("qusrs",currentQuestionResponse.getQuestionResponse());
+        responseMap.put("restp",currentQuestionResponse.getResponseType());
+        trackWithAlium(context,responseMap );
+    }
     private void handleNextQuestion(){
         try{
-            String url=SurveyTracker.getUrl(
-                    context,
-                    surveyInfo.getString("surveyId"),
-                    uuid,
-                    surveyParameters.screenName,
-                    surveyInfo.getString("orgId"),
-                    aliumPreferences.getCustomerId()
-            )        +
-                    SurveyTracker.getAppendableCustomerVariables(surveyParameters.customerVariables)+
-                    "&"+
-                    "qusid="+
-                    (currentQuestionResponse.getQuestionId()+1)+
-                    "&"+
-                    "qusrs="+currentQuestionResponse.getQuestionResponse()+
-                    "&"+
-                    "restp="+currentQuestionResponse.getResponseType();
-            volleyService.loadRequestWithVolley(context,url );
+            submitResponse();
             //check for condition mapping, this updates the currentIndx
             checkForConditionMapping(surveyQuestions.getJSONObject(currentIndx));
 
@@ -338,7 +345,6 @@ public class SurveyDialog extends SurveyDialogCreator {
     }
     private void submitSurvey(){
         if(loadableSurveySpecs.surveyFreq.equals("untilresponse")){
-
             aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
                     loadableSurveySpecs.surveyFreq);
         }

@@ -13,6 +13,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.dwao.alium.network.VolleyService;
+
 import org.json.JSONException;
 
 import java.util.Date;
@@ -27,7 +29,6 @@ public class SurveyTracker {
         TABLET,
         WATCH,
         UNKNOWN;
-
 
          public String toString(){
             switch (this){
@@ -64,7 +65,7 @@ public class SurveyTracker {
             float yinch=displayMetrics.heightPixels/ displayMetrics.ydpi;
             float xinch=displayMetrics.widthPixels/ displayMetrics.xdpi;
             Log.d("HEIGHT/WIDTH", " "+yinch+" "+xinch);
-            double diagonalinch = Math.sqrt(xinch * xinch + yinch * yinch);
+            double diagonalinch = Math. sqrt(xinch * xinch + yinch * yinch);
             if(diagonalinch<=Max_Mobile_Inches){
                 Log.d("isTab-if-DeviceType", DeviceType.PHONE.toString());
                 return DeviceType.PHONE;
@@ -115,8 +116,7 @@ public class SurveyTracker {
 
         return "Android|"+deviceName+"|"+appId+"|"+osVersion+"|"+deviceType;
     };
-    public static String getAppendableCustomerVariables(Map parameters){
-
+    private static String getAppendableVariables(Map<String, String> parameters){
         String appendableTrackString="";
         Iterator<String> keys=parameters.keySet().iterator();
         while(keys.hasNext()){
@@ -126,30 +126,18 @@ public class SurveyTracker {
         }
         return appendableTrackString.replace(" ", "%20");
     }
+    public static void trackWithAlium(Context context,  Map<String, String> parameters ) {
+        try{
+            VolleyService volleyService=new VolleyService();
+            volleyService.loadRequestWithVolley(context, getUrl(context, parameters) );
+        }catch(Exception e){
+            Log.e("track", e.toString());
+        }
+    }
     @NonNull
-    public static String getUrl(Context context, String srvId, String uuid, String currentScreen, String srvOrgId, String customerId ){
+    private static String getUrl(Context context, Map<String, String> parameters ){
         Uri.Builder builder=getUriBuilder();
         builder.appendQueryParameter("ua", getUserAgent(context));
-
-        String surveyId="srvid="+srvId+"&";
-            String srvpid="srvtpid=6&";
-            String srvLng="srvLng=1&";
-            String vstid="vstid="+uuid+"&"  ;
-            String srvldid="srvldid="+uuid+"ppup"+ new Date().getTime()+"srv"+"&";
-            String srvpt="srvpt="+currentScreen+"&";
-//            String ua= "ua=Mozilla/5.0%20(Windows%20NT%2010.0%3B%20Win64%3B%20x64)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/122.0.0.0%20Safari/537.36&";
-            String ua="ua="+getUserAgent(context).replace(" ", "%20")+"&";
-        String ran="ran="+new Date().getTime()+"&";
-            String orgId="orgId="+srvOrgId+"&";
-            String cutomerData= "custSystemId=NA&custId="+customerId+"&custEmail=NA&custMobile=NA";
-        Log.d("builder", builder.build().toString()+
-                surveyId+srvpid+srvLng+srvldid+srvpt+vstid+ran+orgId+
-                cutomerData);
-        return builder.build().toString()+"&"+
-                surveyId+srvpid+srvLng+srvldid+srvpt+vstid+ran+orgId+
-                cutomerData;
-//            return BASE_URL+surveyId+srvpid+srvLng+srvldid+srvpt+ua+vstid+ran+orgId+
-//                    cutomerData;
-
+        return builder.build().toString()+getAppendableVariables(parameters);
     }
 }
