@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class AliumPreferences {
     private static AliumPreferences instance;
     private static final String ALIUM_PREFS = "AliumPrefs";
@@ -57,6 +60,29 @@ public class AliumPreferences {
         editor.putString(key,value);
         editor.apply();
 
+    }
+    public void handleFrequencyCounter(int freq, String key) throws JSONException {
+        JSONObject freqObj=new JSONObject();
+        Log.d("showFreq", " "+freq);
+        freqObj.put("showFreq",freq);
+        freqObj.put("counter", 0);
+
+        if (!aliumSharedPreferences.getString(key, "").isEmpty()) {
+            JSONObject storedFreq=
+                    new JSONObject(aliumSharedPreferences.getString(key, ""))
+                    ;
+
+            if(storedFreq.getInt("showFreq")!=freq){
+                freqObj.put("counter", 1);
+            }else if(storedFreq.getInt("counter")!=freq){
+                freqObj.put("counter", storedFreq.getInt("counter")+1);
+            }
+        } else {
+            freqObj.put("counter",1);
+        }
+        addToAliumPreferences(key, freqObj.toString());
+        Log.i("showFreq-changed", ""+aliumSharedPreferences.getString(key, "")
+                +" "+freqObj);
     }
 
 }
