@@ -52,7 +52,6 @@ public class SurveyDialog extends SurveyDialogCreator {
     private AppCompatButton nextQuestionBtn;
     private AppCompatImageView closeDialogBtn;
     LinearProgressIndicator bottomProgressBar;
-    VolleyService volleyService=new VolleyService();
     SurveyParameters surveyParameters;
     JSONObject surveyUi;
     JSONObject surveyInfo;
@@ -86,16 +85,18 @@ public class SurveyDialog extends SurveyDialogCreator {
 
     }
     public void show(){
-        initializeDialogUiElements();
+        initializeDialogUiElements(); //initializes elements and updates UI
         configureDialogWindow();
-        setNextQuestionBtn();
-        setSurveyCloseBtn();
-        if(surveyQuestions.length()>0 && currentIndx==0) showCurrentQuestion();
+        if(surveyQuestions.length()>0 && currentIndx==0) {
+            showCurrentQuestion();
+        }else{
+            dialog.dismiss();
+        }
         dialog.show();
-        recordTriggerOnPreferences();
-        trackWithAlium(context, generateTrackingParameters()); //convert to tracker class
+        if(!loadableSurveySpecs.surveyFreq.equals("untilresponse"))recordSurveyTriggerOnPreferences();
+        trackWithAlium(context, generateTrackingParameters());
     }
-    private void recordTriggerOnPreferences(){
+    private void recordSurveyTriggerOnPreferences(){
         switch (loadableSurveySpecs.surveyFreq) {
             case "onlyonce":
                 Log.i("srvshowfrq", "show survey frequency: onlyonce");
@@ -107,6 +108,8 @@ public class SurveyDialog extends SurveyDialogCreator {
                 break;
             case "untilresponse":
                 Log.i("srvshowfrq", "show survey frequency: untilresponse");
+                aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
+                        loadableSurveySpecs.surveyFreq);
                 break;
             default:
                    checkForFrequencyCount();
@@ -118,37 +121,14 @@ public class SurveyDialog extends SurveyDialogCreator {
     private void checkForFrequencyCount(){
             try{
                 int freq=Integer.parseInt(loadableSurveySpecs.surveyFreq);
-//        int  freq=  Integer.parseInt("1");
-        JSONObject freqObj=new JSONObject();
-        Log.d("showFreq", " "+freq);
-        freqObj.put("showFreq",freq);
-        freqObj.put("counter", 0);
-
-        if (!aliumPreferences.getAliumSharedPreferences().getString(loadableSurveySpecs.key, "").isEmpty()) {
-            JSONObject storedFreq=
-                    new JSONObject(aliumPreferences.getAliumSharedPreferences().getString(loadableSurveySpecs.key, ""))
-                    ;
-
-            if(storedFreq.getInt("showFreq")!=freq){
-                freqObj.put("counter", 1);
-            }else if(storedFreq.getInt("counter")!=freq){
-                freqObj.put("counter", storedFreq.getInt("counter")+1);
-            }
-
-
-
-        } else {
-            freqObj.put("counter",1);
-        }
-                aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key, freqObj.toString());
-                Log.i("showFreq-changed", ""+aliumPreferences.getAliumSharedPreferences().getString(loadableSurveySpecs.key, "")
-                        +" "+freqObj);
+                //        int  freq=  Integer.parseInt("1");
+            aliumPreferences.handleFrequencyCounter(freq, loadableSurveySpecs.key);
             }catch (Exception e){
             Log.e("SurveyFrequency", "Invalid Survey Frequency Provided");
-
         }
-
     }
+
+
     private void initializeDialogUiElements(){
         dialog=new Dialog(context, androidx.appcompat.R.style.Theme_AppCompat_Dialog);
         dialog.setContentView(R.layout.bottom_survey_layout);
@@ -164,8 +144,10 @@ public class SurveyDialog extends SurveyDialogCreator {
 //        poweredByValue=dialog.findViewById(R.id.powered_by_value);
         improveExpTxt=dialog.findViewById
                 (R.id.help_improve_experience_textview);
+        applySurveyUiColorScheme();
+        addListenersToNextAndCloseBtn();
     }
-    private void configureDialogWindow(){
+    private void updateDialogUi(){
         GradientDrawable gradientDrawable=(GradientDrawable)  dialog
                 .findViewById(R.id.dialog_layout).getBackground();
         gradientDrawable.setCornerRadius((int)(5* Resources.getSystem().getDisplayMetrics().density));
@@ -180,6 +162,9 @@ public class SurveyDialog extends SurveyDialogCreator {
         }catch (Exception e){
             Log.d("surveyUI", e.toString());
         }
+    }
+    private void configureDialogWindow(){
+
 
 //        dialog.setContentView(this.layoutView);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -191,39 +176,8 @@ public class SurveyDialog extends SurveyDialogCreator {
         lp.verticalMargin=0.0f;
         dialog.getWindow().setAttributes(lp);
     }
-    private void setSurveyCloseBtn(){
-        try{
-            if(surveyUi!=null) {
+    private void addListenersToNextAndCloseBtn(){
 
-                closeDialogBtn.setColorFilter(Color.parseColor(surveyUi
-                                .getJSONObject("nextCta")
-                                .getString("backgroundColor"))
-                        ,
-                        PorterDuff.Mode.MULTIPLY);
-
-            }
-        }catch (Exception e){
-            Log.e("nextQues", e.toString());
-        }
-        closeDialogBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-    }
-    private void setNextQuestionBtn(){
-        GradientDrawable nxtQuesDrawable=(GradientDrawable) nextQuestionBtn.getBackground();
-        try{
-            if(surveyUi!=null) {
-                nxtQuesDrawable.setColor(Color.parseColor(surveyUi
-                        .getJSONObject("nextCta").getString("backgroundColor")));
-                nextQuestionBtn.setTextColor(Color.parseColor(surveyUi
-                        .getJSONObject("nextCta").getString("textColor")));
-            }
-        }catch (Exception e){
-            Log.e("nextQues", e.toString());
-        }
         nextQuestionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -233,31 +187,35 @@ public class SurveyDialog extends SurveyDialogCreator {
 
             }
         });
+        closeDialogBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
     }
-    private Map<String ,String> generateTrackingParameters(){
-        Map<String, String> params=new HashMap<>(surveyParameters.customerVariables);
-        params.put("srvtpid", "6");
-        params.put("srvLng", "1");
-        params.put("vstid", uuid);
-        params.put("srvldid",uuid+"ppup"+ new Date().getTime()+"srv" );
-        params.put("srvpt", surveyParameters.screenName);
-        params.put("ran",""+new Date().getTime() );
-        params.put("custSystemId", "NA");
-        params.put("custId", aliumPreferences.getCustomerId());
-        params.put("custEmail", "NA");
-        params.put("custMobile", "NA");
+    private void setNextAndCloseBtnUI(){
+        GradientDrawable nxtQuesDrawable=(GradientDrawable) nextQuestionBtn.getBackground();
         try{
-            params.put("srvid", surveyInfo.getString("surveyId"));
-
-            params.put("orgId",surveyInfo.getString("orgId"));
+            if(surveyUi!=null) {
+                nxtQuesDrawable.setColor(Color.parseColor(surveyUi
+                        .getJSONObject("nextCta").getString("backgroundColor")));
+                nextQuestionBtn.setTextColor(Color.parseColor(surveyUi
+                        .getJSONObject("nextCta").getString("textColor")));
+                closeDialogBtn.setColorFilter(Color.parseColor(surveyUi
+                                .getJSONObject("nextCta")
+                                .getString("backgroundColor"))
+                        ,
+                        PorterDuff.Mode.MULTIPLY);
+            }
         }catch (Exception e){
-            Log.e("Generate Params Map", "Couldn't get srvid/orgId");
+            Log.e("nextQues", e.toString());
         }
-        Log.d("MAP of MAP", params.toString());
-        return params;
+
     }
 
-    private void checkForConditionMapping(JSONObject jsonObject){
+
+    private void handleConditionMapping(JSONObject jsonObject){
         try{
             if(jsonObject!=null && jsonObject.has("conditionMapping")){
                 JSONArray conditionMappingArray=jsonObject.getJSONArray("conditionMapping");
@@ -279,7 +237,7 @@ public class SurveyDialog extends SurveyDialogCreator {
             Log.e("Condition Map", e.toString());
         }
     }
-    private void submitResponse() throws JSONException {
+    private void submitResponse() {
         Map<String, String > responseMap=new HashMap<>(generateTrackingParameters());
         responseMap.put("qusid",""+(currentQuestionResponse.getQuestionId()+1));
         responseMap.put("qusrs",currentQuestionResponse.getQuestionResponse());
@@ -289,65 +247,67 @@ public class SurveyDialog extends SurveyDialogCreator {
     private void handleNextQuestion(){
         try{
             submitResponse();
-            //check for condition mapping, this updates the currentIndx
-            checkForConditionMapping(surveyQuestions.getJSONObject(currentIndx));
+            //handle condition mapping, this updates the currentIndx
+            handleConditionMapping(surveyQuestions.getJSONObject(currentIndx));
 
-            //check if to show next question or thank-you layout
-            if(surveyQuestions.length()>0) {
-                this.layout.removeAllViews();
-
-
+            resetElementsForNextQuestion();
+            //check if to show next question or else show thank-you layout
                 if( currentIndx< surveyQuestions.length()){
                     showCurrentQuestion();
-                }else if(currentIndx==surveyQuestions.length()){
-                    updateProgressIndicator();
-                    currentQuestion.setVisibility(View.GONE);
-                    improveExpTxt.setVisibility(View.GONE);
-                    nextQuestionBtn.setVisibility(View.GONE);
-                    View thankyou=LayoutInflater.from(context).inflate(R.layout.thankyou, null);
-                    AppCompatTextView thankYouText=thankyou.findViewById(R.id.thankyou_text);
-                    AppCompatTextView thankYouMsg=thankyou.findViewById(R.id.thankyou_msg);
-                    AppCompatImageView completedAnimation=thankyou.findViewById(R.id.completed_anim);
-                    if(surveyUi!=null){
-                        int color=Color.parseColor(surveyUi
-                    .getString("question"));
-                        thankYouMsg.setTextColor(color);
-                        thankYouText.setTextColor(color);
-                        DrawableCompat.setTint(
-                                DrawableCompat.wrap(completedAnimation.getDrawable()),
-                                color
-                        );
-//                        completedAnimation.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
-                    }
-                    thankYouMsg.setText(loadableSurveySpecs.thankYouMsg);
-                    AppCompatImageView imageView=thankyou.findViewById(R.id.completed_anim_container)
-                            .findViewById(R.id.completed_anim);
-                    imageView.setImageResource(R.drawable.avd_anim);
-                    Drawable drawable= imageView.getDrawable();
-                    if(drawable instanceof AnimatedVectorDrawableCompat){
-                        Log.d("Alium-instance", "AnimatedVectorDrawableCompat");
-                        AnimatedVectorDrawableCompat avd=(AnimatedVectorDrawableCompat)drawable;
-                        avd.start();
+                    return;
+                }
+                showThankYouAndDismiss();
 
-                    }else if(drawable instanceof AnimatedVectorDrawable){
-                        AnimatedVectorDrawable avd=(AnimatedVectorDrawable)drawable;
-                        Log.d("Alium-instance2", "AnimatedVectorDrawableCompat");
-                        avd.start();
-
-                    }
-                    this.layout.addView(thankyou);
-                    submitSurvey();
-                }}
         }catch(Exception e){
             Log.d("nextQuest",e.toString());
         }
 
     }
-    private void submitSurvey(){
-        if(loadableSurveySpecs.surveyFreq.equals("untilresponse")){
-            aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
-                    loadableSurveySpecs.surveyFreq);
+    private void resetElementsForNextQuestion(){
+        this.layout.removeAllViews();
+        setCtaEnabled(nextQuestionBtn, false);
+        updateProgressIndicator();
+    }
+    private void showThankYouAndDismiss() throws JSONException {
+        currentQuestion.setVisibility(View.GONE);
+        improveExpTxt.setVisibility(View.GONE);
+        nextQuestionBtn.setVisibility(View.GONE);
+        View thankyou=LayoutInflater.from(context).inflate(R.layout.thankyou, null);
+        AppCompatTextView thankYouText=thankyou.findViewById(R.id.thankyou_text);
+        AppCompatTextView thankYouMsg=thankyou.findViewById(R.id.thankyou_msg);
+        AppCompatImageView completedAnimation=thankyou.findViewById(R.id.completed_anim);
+        if(surveyUi!=null){
+            int color=Color.parseColor(surveyUi
+                    .getString("question"));
+            thankYouMsg.setTextColor(color);
+            thankYouText.setTextColor(color);
+            DrawableCompat.setTint(
+                    DrawableCompat.wrap(completedAnimation.getDrawable()),
+                    color
+            );
+//                        completedAnimation.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
         }
+        thankYouMsg.setText(loadableSurveySpecs.thankYouMsg);
+        AppCompatImageView imageView=thankyou.findViewById(R.id.completed_anim_container)
+                .findViewById(R.id.completed_anim);
+        imageView.setImageResource(R.drawable.avd_anim);
+        Drawable drawable= imageView.getDrawable();
+        if(drawable instanceof AnimatedVectorDrawableCompat){
+            Log.d("Alium-instance", "AnimatedVectorDrawableCompat");
+            AnimatedVectorDrawableCompat avd=(AnimatedVectorDrawableCompat)drawable;
+            avd.start();
+
+        }else if(drawable instanceof AnimatedVectorDrawable){
+            AnimatedVectorDrawable avd=(AnimatedVectorDrawable)drawable;
+            Log.d("Alium-instance2", "AnimatedVectorDrawableCompat");
+            avd.start();
+
+        }
+        this.layout.addView(thankyou);
+        submitSurvey();
+    }
+    private void submitSurvey(){
+        recordSurveyTriggerOnPreferences();
         Handler handler=new Handler();
         Runnable runnable=new Runnable() {
             @Override
@@ -385,13 +345,18 @@ public class SurveyDialog extends SurveyDialogCreator {
                    .getJSONObject(currentIndx).getString("responseType"));
            currentQuestion.setText(surveyQuestions.getJSONObject(currentIndx)
                    .getString("question"));
+           currentQuestionResponse.setIndexOfSelectedAnswer(0);
        }catch (Exception e){
            Log.d("updateQuestionResp", e.toString());
        }
     }
     private void applySurveyUiColorScheme(){
         try{
-            if(surveyUi!=null) {
+            updateDialogUi();
+            setNextAndCloseBtnUI();
+
+            if(surveyUi!=null && surveyUi
+                    .has("question")) {
                 int color=Color.parseColor(surveyUi
                         .getString("question"));
                 currentQuestion.setTextColor(color);
@@ -406,13 +371,12 @@ public class SurveyDialog extends SurveyDialogCreator {
         }
     }
     private void showCurrentQuestion( ){
-        setCtaEnabled(nextQuestionBtn, false);
         updateProgressIndicator();
         Log.i("question", "going to next question "+currentIndx);
         updateCurrentQuestionResponse();
-        applySurveyUiColorScheme();
+
         try {
-            currentQuestionResponse.setIndexOfSelectedAnswer(0);
+
             String responseType=surveyQuestions.getJSONObject(currentIndx).getString("responseType");
             generateQuestion(responseType); //matches response type and generates corresponding ques
             Log.d("surveyQuestion", "id: "+currentQuestionResponse.getQuestionId()
@@ -451,5 +415,25 @@ public class SurveyDialog extends SurveyDialogCreator {
                 break;
         }
     }
-
+    private Map<String ,String> generateTrackingParameters(){
+        Map<String, String> params=new HashMap<>(surveyParameters.customerVariables);
+        params.put("srvtpid", "6");
+        params.put("srvLng", "1");
+        params.put("vstid", uuid);
+        params.put("srvldid",uuid+"ppup"+ new Date().getTime()+"srv" );
+        params.put("srvpt", surveyParameters.screenName);
+        params.put("ran",""+new Date().getTime() );
+        params.put("custSystemId", "NA");
+        params.put("custId", aliumPreferences.getCustomerId());
+        params.put("custEmail", "NA");
+        params.put("custMobile", "NA");
+        try{
+            params.put("srvid", surveyInfo.getString("surveyId"));
+            params.put("orgId",surveyInfo.getString("orgId"));
+        }catch (Exception e){
+            Log.e("Generate Params Map", "Couldn't get srvid/orgId");
+        }
+        Log.d("MAP of MAP", params.toString());
+        return params;
+    }
 }
