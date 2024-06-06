@@ -78,6 +78,19 @@ public class AliumSurveyLoader {
                     Log.d("Alium-url-match",""+true);
                     try{
                         int freq=Integer.parseInt(srvshowfrq);
+                        Log.d("showFreq", "outside frequency comparison");
+                        String freqDetailString=aliumPreferences.getAliumSharedPreferences().getString(key,"");
+                        if(!freqDetailString.isEmpty()){
+
+                            JSONObject freqDetailJsonObject=new JSONObject(freqDetailString);
+                            Log.d("showFreq", "outside frequency comparison"+freqDetailJsonObject);
+                            if(freqDetailJsonObject.getInt("showFreq")==freq){
+                                if(freqDetailJsonObject.getInt("counter")==freq){
+                                    Log.d("showFreq", "compared and equal");
+                                    continue;
+                                }
+                            }
+                        }
                         loadSurvey( new LoadableSurveySpecs(key, srvshowfrq, spath, thankyouObj));
                     }catch (Exception e) {
                         Log.d("Exception","Exception occurred while trying to convert to integer" );
