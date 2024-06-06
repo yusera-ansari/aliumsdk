@@ -113,7 +113,7 @@ public class SurveyDialog extends SurveyDialogCreator {
                 int freq=Integer.parseInt(loadableSurveySpecs.surveyFreq);
 //        int  freq=  Integer.parseInt("5");
         JSONObject freqObj=new JSONObject();
-        Log.d("srvshowfrq", " "+freq);
+        Log.d("showFreq", " "+freq);
         freqObj.put("showFreq",freq);
         freqObj.put("counter", 0);
 
@@ -124,24 +124,23 @@ public class SurveyDialog extends SurveyDialogCreator {
 
             if(storedFreq.getInt("showFreq")!=freq){
                 freqObj.put("counter", 1);
-            }else{
+            }else if(storedFreq.getInt("counter")!=freq){
                 freqObj.put("counter", storedFreq.getInt("counter")+1);
             }
-            if(storedFreq.getInt("counter")!=storedFreq.getInt("showFreq")){
-                aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key, freqObj.toString());
-            }
-            Log.i("srvshowfrq-changed", ""+aliumPreferences.getAliumSharedPreferences().getString(loadableSurveySpecs.key, "")
-                    +" "+freqObj);
+
+
 
         } else {
             freqObj.put("counter",1);
-            aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
-                    freqObj.toString()
-            );
-        }}catch (Exception e){
+        }
+                aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key, freqObj.toString());
+                Log.i("showFreq-changed", ""+aliumPreferences.getAliumSharedPreferences().getString(loadableSurveySpecs.key, "")
+                        +" "+freqObj);
+            }catch (Exception e){
             Log.e("SurveyFrequency", "Invalid Survey Frequency Provided");
 
         }
+
     }
     private void initializeDialogUiElements(){
         dialog=new Dialog(context, androidx.appcompat.R.style.Theme_AppCompat_Dialog);
