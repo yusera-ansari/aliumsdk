@@ -20,6 +20,6 @@ public class TestActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
         next=findViewById(R.id.test_next);
-        Alium.trigger(this,  new SurveyParameters("firstscreen", new HashMap()));
+        Alium.trigger(this,  new SurveyParameters("secondscreen", new HashMap()));
     }
 }

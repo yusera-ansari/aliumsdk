@@ -1,14 +1,12 @@
 package com.dwao.alium.survey;
 
 
-import static com.dwao.alium.survey.SurveyTracker.trackWithAlium;
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -32,58 +30,39 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.dwao.alium.R;
-import com.dwao.alium.models.QuestionResponse;
-import com.dwao.alium.network.VolleyService;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
-import org.json.JSONArray;
+
 import org.json.JSONException;
-import org.json.JSONObject;
 
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
-public class SurveyDialog extends SurveyDialogCreator {
-    private final String uuid;
-    ExecutableSurveySpecs executableSurveySpecs;
-    private AppCompatButton nextQuestionBtn;
-    private AppCompatImageView closeDialogBtn;
-    LinearProgressIndicator bottomProgressBar;
-    SurveyParameters surveyParameters;
-    JSONObject surveyUi;
-    JSONObject surveyInfo;
-    private RelativeLayout layout;
-    QuestionResponse currentQuestionResponse=new QuestionResponse();
+public class SurveyDialog extends SurveyController {
     Dialog dialog;
-    Context context;
-    private int currentIndx=0;
-    private int previousIndx=-1;
-    JSONArray surveyQuestions;
-    private View layoutView;
-    private AppCompatTextView currentQuestion,improveExpTxt, poweredByText,poweredByValue;
-    private final LoadableSurveySpecs loadableSurveySpecs;
-    AliumPreferences aliumPreferences ;
+    View layoutView;
+    AppCompatButton nextQuestionBtn;
+    AppCompatImageView closeDialogBtn;
+    AppCompatTextView currentQuestion,improveExpTxt, poweredByText,poweredByValue;
+    LinearProgressIndicator bottomProgressBar;
+    RelativeLayout layout;
 
     public SurveyDialog(Context ctx, ExecutableSurveySpecs executableSurveySpecs,
                  SurveyParameters surveyParameters)
     {
+        super(executableSurveySpecs.getLoadableSurveySpecs());
         this.executableSurveySpecs=executableSurveySpecs;
-        this.uuid= UUID.randomUUID().toString();
         surveyQuestions=executableSurveySpecs.getSurveyQuestions();
         surveyUi=executableSurveySpecs.getSurveyUi();
         surveyInfo=executableSurveySpecs.getSurveyInfo();
         this.context=ctx;
         this.surveyParameters=surveyParameters;
-        this.loadableSurveySpecs=executableSurveySpecs.getLoadableSurveySpecs();
         this.aliumPreferences= AliumPreferences.getInstance(context);
 
-
-
-
     }
+    @Override
     public void show(){
         initializeDialogUiElements(); //initializes elements and updates UI
         configureDialogWindow();
@@ -91,42 +70,13 @@ public class SurveyDialog extends SurveyDialogCreator {
             showCurrentQuestion();
         }else{
             dialog.dismiss();
+            return;
         }
         dialog.show();
-        if(!loadableSurveySpecs.surveyFreq.equals("untilresponse"))recordSurveyTriggerOnPreferences();
-        trackWithAlium(context, generateTrackingParameters());
+        super.show();
     }
-    private void recordSurveyTriggerOnPreferences(){
-        switch (loadableSurveySpecs.surveyFreq) {
-            case "onlyonce":
-                Log.i("srvshowfrq", "show survey frequency: onlyonce");
-                aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
-                        loadableSurveySpecs.surveyFreq);
-                break;
-            case "overandover":
-                Log.i("srvshowfrq", "show survey frequency: overandover");
-                break;
-            case "untilresponse":
-                Log.i("srvshowfrq", "show survey frequency: untilresponse");
-                aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
-                        loadableSurveySpecs.surveyFreq);
-                break;
-            default:
-                   checkForFrequencyCount();
 
 
-        }
-
-    }
-    private void checkForFrequencyCount(){
-            try{
-                int freq=Integer.parseInt(loadableSurveySpecs.surveyFreq);
-                //        int  freq=  Integer.parseInt("1");
-            aliumPreferences.handleFrequencyCounter(freq, loadableSurveySpecs.key);
-            }catch (Exception e){
-            Log.e("SurveyFrequency", "Invalid Survey Frequency Provided");
-        }
-    }
 
 
     private void initializeDialogUiElements(){
@@ -164,8 +114,6 @@ public class SurveyDialog extends SurveyDialogCreator {
         }
     }
     private void configureDialogWindow(){
-
-
 //        dialog.setContentView(this.layoutView);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.setCancelable(false);
@@ -214,82 +162,59 @@ public class SurveyDialog extends SurveyDialogCreator {
 
     }
 
-
-    private void handleConditionMapping(JSONObject jsonObject){
+    @Override
+     protected void handleNextQuestion() {
         try{
-            if(jsonObject!=null && jsonObject.has("conditionMapping")){
-                JSONArray conditionMappingArray=jsonObject.getJSONArray("conditionMapping");
-                Log.e("condition-index", conditionMappingArray.toString()+"" +currentQuestionResponse.getIndexOfSelectedAnswer() );
-                int nextQuestIndx= conditionMappingArray.getInt(
-                        currentQuestionResponse.getIndexOfSelectedAnswer()
-                );
-                previousIndx=currentIndx;
-                if(nextQuestIndx==-2){
-                    currentIndx++;//next question
-                }else if(nextQuestIndx==-1){
-                    currentIndx=surveyQuestions.length();//thankyou
-                }else {
-                    currentIndx=nextQuestIndx;//set currentIndx as nextQuestIndx
-                }
-                Log.e("condition", "" +currentQuestionResponse.getIndexOfSelectedAnswer() );
-            }
-        }catch (Exception e){
-            Log.e("Condition Map", e.toString());
-        }
-    }
-    private void submitResponse() {
-        Map<String, String > responseMap=new HashMap<>(generateTrackingParameters());
-        responseMap.put("qusid",""+(currentQuestionResponse.getQuestionId()+1));
-        responseMap.put("qusrs",currentQuestionResponse.getQuestionResponse());
-        responseMap.put("restp",currentQuestionResponse.getResponseType());
-        trackWithAlium(context,responseMap );
-    }
-    private void handleNextQuestion(){
-        try{
-            submitResponse();
-            //handle condition mapping, this updates the currentIndx
-            handleConditionMapping(surveyQuestions.getJSONObject(currentIndx));
-
+         super.handleNextQuestion();
             resetElementsForNextQuestion();
             //check if to show next question or else show thank-you layout
-                if( currentIndx< surveyQuestions.length()){
-                    showCurrentQuestion();
-                    return;
-                }
-                showThankYouAndDismiss();
+            if( currentIndx< surveyQuestions.length()){
+                showCurrentQuestion();
+                return;
+            }
+            showThankYouAndDismiss();
 
         }catch(Exception e){
             Log.d("nextQuest",e.toString());
         }
 
     }
-    private void resetElementsForNextQuestion(){
-        this.layout.removeAllViews();
-        setCtaEnabled(nextQuestionBtn, false);
-        updateProgressIndicator();
-    }
-    private void showThankYouAndDismiss() throws JSONException {
+
+    private void clearDialogForThankYouLayout(){
         currentQuestion.setVisibility(View.GONE);
         improveExpTxt.setVisibility(View.GONE);
         nextQuestionBtn.setVisibility(View.GONE);
+    }
+    private void showThankYou() {
         View thankyou=LayoutInflater.from(context).inflate(R.layout.thankyou, null);
         AppCompatTextView thankYouText=thankyou.findViewById(R.id.thankyou_text);
         AppCompatTextView thankYouMsg=thankyou.findViewById(R.id.thankyou_msg);
         AppCompatImageView completedAnimation=thankyou.findViewById(R.id.completed_anim);
         if(surveyUi!=null){
-            int color=Color.parseColor(surveyUi
-                    .getString("question"));
-            thankYouMsg.setTextColor(color);
-            thankYouText.setTextColor(color);
-            DrawableCompat.setTint(
-                    DrawableCompat.wrap(completedAnimation.getDrawable()),
-                    color
-            );
+
+            try {
+               int color = Color.parseColor(surveyUi
+                        .getString("question"));
+                thankYouMsg.setTextColor(color);
+                thankYouText.setTextColor(color);
+                DrawableCompat.setTint(
+                        DrawableCompat.wrap(completedAnimation.getDrawable()),
+                        color
+                );
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+
 //                        completedAnimation.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
         }
         thankYouMsg.setText(loadableSurveySpecs.thankYouMsg);
         AppCompatImageView imageView=thankyou.findViewById(R.id.completed_anim_container)
                 .findViewById(R.id.completed_anim);
+        addThankYouAnimation(imageView);
+        this.layout.addView(thankyou);
+    }
+
+    private void addThankYouAnimation(AppCompatImageView imageView){
         imageView.setImageResource(R.drawable.avd_anim);
         Drawable drawable= imageView.getDrawable();
         if(drawable instanceof AnimatedVectorDrawableCompat){
@@ -303,29 +228,13 @@ public class SurveyDialog extends SurveyDialogCreator {
             avd.start();
 
         }
-        this.layout.addView(thankyou);
+    }
+    private void showThankYouAndDismiss() throws JSONException {
+        clearDialogForThankYouLayout();
+        showThankYou();
         submitSurvey();
     }
-    private void submitSurvey(){
-        recordSurveyTriggerOnPreferences();
-        Handler handler=new Handler();
-        Runnable runnable=new Runnable() {
-            @Override
-            public void run() {
 
-                dialog.dismiss();
-            }
-        };
-
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                handler.removeCallbacks(runnable);
-            }
-        });
-        handler.postDelayed(runnable, 2000);
-
-    }
 
     private void updateProgressIndicator(){
         Log.d("index", ""+currentIndx+" "+previousIndx);
@@ -337,18 +246,10 @@ public class SurveyDialog extends SurveyDialogCreator {
         animator.start();
 //        bottomProgressBar.setProgress(bottomProgressBar.getProgress()+progress);
     }
-    private void updateCurrentQuestionResponse(){
-       try{
-           currentQuestionResponse.setQuestionId(surveyQuestions.getJSONObject(currentIndx)
-                   .getInt("id"));
-           currentQuestionResponse.setResponseType(surveyQuestions
-                   .getJSONObject(currentIndx).getString("responseType"));
-           currentQuestion.setText(surveyQuestions.getJSONObject(currentIndx)
-                   .getString("question"));
-           currentQuestionResponse.setIndexOfSelectedAnswer(0);
-       }catch (Exception e){
-           Log.d("updateQuestionResp", e.toString());
-       }
+    private void resetElementsForNextQuestion(){
+        this.layout.removeAllViews();
+        setCtaEnabled(nextQuestionBtn, false);
+        updateProgressIndicator();
     }
     private void applySurveyUiColorScheme(){
         try{
@@ -370,17 +271,20 @@ public class SurveyDialog extends SurveyDialogCreator {
             Log.e("", e.toString());
         }
     }
-    private void showCurrentQuestion( ){
+    @Override
+    protected void showCurrentQuestion( ) {
+        super.showCurrentQuestion();
         updateProgressIndicator();
-        Log.i("question", "going to next question "+currentIndx);
-        updateCurrentQuestionResponse();
+        Log.i("question", "going to next question " + currentIndx);
+
 
         try {
-
-            String responseType=surveyQuestions.getJSONObject(currentIndx).getString("responseType");
+            currentQuestion.setText(surveyQuestions.getJSONObject(currentIndx)
+                    .getString("question"));
+            String responseType = surveyQuestions.getJSONObject(currentIndx).getString("responseType");
             generateQuestion(responseType); //matches response type and generates corresponding ques
-            Log.d("surveyQuestion", "id: "+currentQuestionResponse.getQuestionId()
-                    +" type: "+currentQuestionResponse.getResponseType());
+            Log.d("surveyQuestion", "id: " + currentQuestionResponse.getQuestionId()
+                    + " type: " + currentQuestionResponse.getResponseType());
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -415,7 +319,9 @@ public class SurveyDialog extends SurveyDialogCreator {
                 break;
         }
     }
-    private Map<String ,String> generateTrackingParameters(){
+
+    @Override
+    protected Map<String ,String> generateTrackingParameters(){
         Map<String, String> params=new HashMap<>(surveyParameters.customerVariables);
         params.put("srvtpid", "6");
         params.put("srvLng", "1");
@@ -435,5 +341,26 @@ public class SurveyDialog extends SurveyDialogCreator {
         }
         Log.d("MAP of MAP", params.toString());
         return params;
+    }
+    @Override
+    protected void submitSurvey() {
+        super.submitSurvey();
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+
+                dialog.dismiss();
+            }
+        };
+
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                handler.removeCallbacks(runnable);
+            }
+        });
+        handler.postDelayed(runnable, 2000);
+
     }
 }
