@@ -26,6 +26,7 @@
             android:label="second"
             android:exported="false" />
         <activity
+            android:configChanges="screenSize|orientation|screenLayout|keyboard"
             android:label="first"
             android:name="com.dwao.aliumandroidsdk.MainActivity"
             android:exported="true">

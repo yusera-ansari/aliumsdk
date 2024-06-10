@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
                 startActivity(intent);
             }
         });
-
-        Alium.loadAliumSurvey(this, new SurveyParameters("firstscreen", new HashMap()));
+Log.d("MainActivity", "Main Activity Running....")
+;        Alium.loadAliumSurvey(this, new SurveyParameters("secondscreen", new HashMap()));
     }
 }
