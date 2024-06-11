@@ -15,22 +15,31 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.dwao.alium.R;
+import com.dwao.alium.models.Survey;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class AliumSurveyActivity extends AppCompatActivity {
     public static boolean isActivityRunning = false;
-    private static List<String> activeSurveyList;
-    private static List<SurveyDialog> activeSurveyDialogs;
-    protected List<String> removeSurveyFromActiveList(SurveyDialog surveyDialog){
-        activeSurveyList.remove(surveyDialog.executableSurveySpecs.getLoadableSurveySpecs().key);
-        activeSurveyDialogs.remove(surveyDialog);
-        return activeSurveyList;
+    private static String canonicalClassName="";
+//    private static List<String> activeSurveyList;
+//    private static List<SurveyDialog> activeSurveyDialogs;
+    private static Map<String, List<SurveyDialog>> activeSurveyDetails;
+
+    protected List<SurveyDialog> removeSurveyFromActiveList(SurveyDialog surveyDialog){
+//        activeSurveyList.remove(surveyDialog.executableSurveySpecs.getLoadableSurveySpecs().key);
+//        activeSurveyDialogs.remove(surveyDialog);
+       List<SurveyDialog> list= activeSurveyDetails.get(canonicalClassName);
+       list.remove(surveyDialog);
+//
+        return list;
     }
 
     @Override
@@ -57,6 +66,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
             if(intent!=null && !isDestroyed() && !isFinishing()){
                         SurveyParameters surveyParameters=(SurveyParameters) intent
                 .getSerializableExtra("surveyParameters");
+                        canonicalClassName=intent.getStringExtra("canonicalClassName");
                 LoadableSurveySpecs loadableSurveySpecs=
                         (LoadableSurveySpecs) intent.getSerializableExtra("loadableSurveySpecs");
                 JSONObject jsonObject;
@@ -67,13 +77,30 @@ public class AliumSurveyActivity extends AppCompatActivity {
                 }
                 ExecutableSurveySpecs executableSurveySpecs=new ExecutableSurveySpecs(jsonObject
                         , loadableSurveySpecs);
-                activeSurveyList.add(loadableSurveySpecs.key);
-                Log.i("activesurveylist", activeSurveyList.toString());
+//                activeSurveyList.add(loadableSurveySpecs.key);
+//                Log.i("activesurveylist", activeSurveyList.toString());
                 SurveyDialog surveyDialog=new SurveyDialog(context, executableSurveySpecs,
                             surveyParameters)
                             ;
-                activeSurveyDialogs.add(surveyDialog);
-                surveyDialog.show();
+               if(!canonicalClassName.isEmpty()){
+                  if(!(activeSurveyDetails.get(canonicalClassName) ==null)){
+                      List<SurveyDialog> surveyDialogList=activeSurveyDetails
+                              .get(canonicalClassName);
+                      surveyDialogList.add(surveyDialog);
+                  }else{
+                      List<SurveyDialog > list=new ArrayList<>();
+                      list.add(surveyDialog);
+                      activeSurveyDetails.put(canonicalClassName, list);
+                  }
+               }
+Log.d("canonicalName", canonicalClassName+" "+
+        Alium.appLifeCycleListener.getCurrentActivity().getClass().getCanonicalName());
+
+               if(Alium.appLifeCycleListener.getCurrentActivity().getClass().getCanonicalName()
+                       .equals(canonicalClassName)){
+                   surveyDialog.show();
+//                   activeSurveyDialogs.add(surveyDialog);
+               }
             }
         }
     };
@@ -83,8 +110,9 @@ public class AliumSurveyActivity extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.alium_survey_activity);
         isActivityRunning = true;
-        activeSurveyList=new ArrayList<>();
-        activeSurveyDialogs=new ArrayList<>();
+//        activeSurveyList=new ArrayList<>();
+//        activeSurveyDialogs=new ArrayList<>();
+        activeSurveyDetails=new HashMap();
         IntentFilter intentFilter=new IntentFilter("survey_content_fetched");
         registerReceiver(broadcastReceiver, intentFilter);
         Window window = getWindow();
@@ -110,6 +138,24 @@ public class AliumSurveyActivity extends AppCompatActivity {
 
     }
     @Override
+    protected void onPause(){
+        super.onPause();
+        if(!activeSurveyDetails.isEmpty()){
+            List<SurveyDialog> list= activeSurveyDetails.get(canonicalClassName);
+            Iterator iterator= list.iterator();
+            while(iterator.hasNext()){
+                SurveyDialog survey= (SurveyDialog) iterator.next();
+                survey.dialog.dismiss();
+
+            }
+        }
+    }
+    @Override
+    protected  void onResume(){
+        super.onResume();
+
+    }
+    @Override
     protected void onStop() {
         super.onStop();
         isActivityRunning = false;}
@@ -117,15 +163,27 @@ public class AliumSurveyActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         isActivityRunning = false;
-        if(!activeSurveyDialogs.isEmpty()){
-            Iterator iterator=activeSurveyDialogs.iterator();
-           while(iterator.hasNext()){
-               SurveyDialog survey= (SurveyDialog) iterator.next();
-               survey.dialog.dismiss();
-               activeSurveyList.remove(survey.executableSurveySpecs.getLoadableSurveySpecs().key);
-               iterator.remove();
-           }
+
+        if(!activeSurveyDetails.isEmpty()){
+            List<SurveyDialog> list= activeSurveyDetails.get(canonicalClassName);
+            Iterator iterator= list.iterator();
+            while(iterator.hasNext()){
+                SurveyDialog survey= (SurveyDialog) iterator.next();
+                survey.dialog.dismiss();
+
+            }
         }
+//        if(!activeSurveyDialogs.isEmpty()){
+//            Iterator iterator=activeSurveyDialogs.iterator();
+//           while(iterator.hasNext()){
+//               SurveyDialog survey= (SurveyDialog) iterator.next();
+//               survey.dialog.dismiss();
+//               List<SurveyDialog> list= activeSurveyDetails.get(canonicalClassName);
+//               list.remove(survey);
+////               activeSurveyList.remove(survey.executableSurveySpecs.getLoadableSurveySpecs().key);
+//               iterator.remove();
+//           }
+//        }
         unregisterReceiver(broadcastReceiver);
 
     }

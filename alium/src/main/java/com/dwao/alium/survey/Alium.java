@@ -3,6 +3,7 @@ package com.dwao.alium.survey;
 import static com.dwao.alium.utils.Util.generateCustomerId;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -118,12 +119,14 @@ public class Alium {
         return currentScreen;
     }
 
+ static AppLifeCycleListener appLifeCycleListener;
 
-
-    public static void configure(String url){
+    public static void configure(Application application, String url){
             if(instance==null){
                 instance=new Alium();
             }
+            appLifeCycleListener=new AppLifeCycleListener();
+            application.registerActivityLifecycleCallbacks(appLifeCycleListener);
             configURL=url;
 //        volleyService=new VolleyService();
 //        surveyConfigJSON=new JSONObject();

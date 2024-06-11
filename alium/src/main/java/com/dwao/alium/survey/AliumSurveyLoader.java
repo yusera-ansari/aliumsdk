@@ -166,6 +166,7 @@ public class AliumSurveyLoader {
                 intent.putExtra("surveyJson", json.toString());
                 intent.putExtra("loadableSurveySpecs", loadableSurveySpecs);
                 intent.putExtra("surveyParameters", surveyParameters);
+                intent.putExtra("canonicalClassName", ((Activity)context).getClass().getCanonicalName());
                 context.sendBroadcast(intent);
 //                    new SurveyDialog(context, executableSurveySpecs,
 //                            surveyParameters)
