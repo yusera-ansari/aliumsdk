@@ -87,10 +87,11 @@ public class AliumSurveyLoader {
 
 //                    intent.putExtra("surveyParameters", surveyParameters);
 //                    intent.putExtra("surveyConfigJSON", surveyConfigJSON.toString());
-                        intent.setFlags(
-
-                                Intent.FLAG_ACTIVITY_RETAIN_IN_RECENTS|
-                                Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                        intent.setFlags(
+//                                Intent.FLAG_ACTIVITY_RETAIN_IN_RECENTS|
+//
+//                                Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //                    if(!AliumSurveyActivity.isActivityRunning)
                         context.startActivity(intent);
                         activityInstanceCreated=true;

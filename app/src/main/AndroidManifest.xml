@@ -18,15 +18,19 @@
         android:theme="@android:style/Theme.Light"
         tools:targetApi="31">
         <activity
+            android:configChanges="screenSize|orientation|screenLayout|keyboard"
+
             android:name=".activities.TestActivity"
             android:label="third"
             android:exported="false" />
         <activity
+            android:configChanges="screenSize|orientation|screenLayout|keyboard"
+
             android:name=".activities.DashboardActivity"
             android:label="second"
             android:exported="false" />
         <activity
-            android:configChanges="screenSize|orientation|screenLayout|keyboard"
+
             android:label="first"
             android:name="com.dwao.aliumandroidsdk.MainActivity"
             android:exported="true">

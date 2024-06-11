@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 public class ExecutableSurveySpecs {
     private JSONArray surveyQuestions=new JSONArray();
-    private JSONObject surveyUi=new JSONObject(), surveyInfo=new JSONObject();
+    private JSONObject surveyUi=new JSONObject(), surveyInfo=new JSONObject(), json=new JSONObject();
 
 
 
@@ -25,13 +25,16 @@ public class ExecutableSurveySpecs {
         return surveyInfo;
     }
 
-
+    public JSONObject getJson(){
+        return json;
+    }
 
     public LoadableSurveySpecs getLoadableSurveySpecs() {
         return loadableSurveySpecs;
     }
 
     public ExecutableSurveySpecs(JSONObject survey, LoadableSurveySpecs loadableSurveySpecs) {
+        json=survey;
         try {
             if(survey.has("surveyQuestions")){
                 surveyQuestions=survey.getJSONArray("surveyQuestions");
