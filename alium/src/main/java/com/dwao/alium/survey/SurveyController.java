@@ -68,7 +68,7 @@ abstract class SurveyController {
 
      @CallSuper
     protected  void submitSurvey(){
-        recordSurveyTriggerOnPreferences();
+         if(loadableSurveySpecs.surveyFreq.equals("untilresponse"))recordSurveyTriggerOnPreferences();
     };
      private void recordSurveyTriggerOnPreferences(){
           switch (loadableSurveySpecs.surveyFreq) {
