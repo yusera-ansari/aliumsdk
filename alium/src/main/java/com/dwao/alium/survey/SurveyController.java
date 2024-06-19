@@ -39,11 +39,14 @@ abstract class SurveyController {
     protected JSONArray surveyQuestions;
 
     protected final LoadableSurveySpecs loadableSurveySpecs;
+    private SurveyFrequencyManager surveyFrequencyManager;
     protected AliumPreferences aliumPreferences ;
-    protected SurveyController(LoadableSurveySpecs loadableSurveySpecs){
+    protected SurveyController( Context context,LoadableSurveySpecs loadableSurveySpecs){
+        this.context=context;
         this.uuid= UUID.randomUUID().toString();
         this.loadableSurveySpecs=loadableSurveySpecs;
-
+        this.aliumPreferences= AliumPreferences.getInstance(context);
+        this.surveyFrequencyManager=SurveyFrequencyManager.getInstance(aliumPreferences);
     }
 
     abstract protected void generateQuestion(String responseType) throws JSONException;
@@ -71,41 +74,64 @@ abstract class SurveyController {
         if(loadableSurveySpecs.surveyFreq.equals("untilresponse"))recordSurveyTriggerOnPreferences();
     };
     private void recordSurveyTriggerOnPreferences(){
-        switch (loadableSurveySpecs.surveyFreq) {
-            case "onlyonce":
-                Log.i("srvshowfrq", "show survey frequency: onlyonce");
-                aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
-                        loadableSurveySpecs.surveyFreq);
-                break;
-            case "overandover":
-                Log.i("srvshowfrq", "show survey frequency: overandover");
-                break;
-            case "untilresponse":
-                Log.i("srvshowfrq", "show survey frequency: untilresponse");
-                aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
-                        loadableSurveySpecs.surveyFreq);
-                break;
-            default:
-              if(loadableSurveySpecs.surveyFreq.matches("\\d+"))  checkForFrequencyCount();
-              else if(loadableSurveySpecs.surveyFreq.matches("\\d+-[dwm]")){
-                  String[] frequencyValue=loadableSurveySpecs.surveyFreq.split("-");
+        if(loadableSurveySpecs.surveyFreq.equals("onlyonce")
+                ||loadableSurveySpecs.surveyFreq.equals("untilresponse")){
+            Log.i("srvshowfrq", "show survey frequency: onlyonce");
+            aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
+                    loadableSurveySpecs.surveyFreq);
+        }else if(loadableSurveySpecs.surveyFreq.equals("overandover")){
+            Log.i("srvshowfrq", "show survey frequency: overandover");
+        }else if(loadableSurveySpecs.surveyFreq.matches("\\d+")) {
+            Log.i("srvshowfrq", "show survey frequency: integer");
+            checkForFrequencyCount();
+        }
+        else if(loadableSurveySpecs.surveyFreq.matches("\\d+-[dwm]")){
+            String[] frequencyValue=loadableSurveySpecs.surveyFreq.split("-");
 
-                          aliumPreferences.handlePeriodicFrequencyCount
-                                  (frequencyValue,
-                                          loadableSurveySpecs.key);
+            surveyFrequencyManager.handlePeriodicFrequencyCount
+                    (frequencyValue,
+                            loadableSurveySpecs.key);
 
 
 
-                  Log.e("showFrequency",frequencyValue[0]+".. "+frequencyValue[1]);
+            Log.e("showFrequency",frequencyValue[0]+".. "+frequencyValue[1]);
 
-              }
-        }  
+        }
+//        switch (loadableSurveySpecs.surveyFreq) {
+//            case "onlyonce":
+//                Log.i("srvshowfrq", "show survey frequency: onlyonce");
+//                aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
+//                        loadableSurveySpecs.surveyFreq);
+//                break;
+//            case "overandover":
+//                Log.i("srvshowfrq", "show survey frequency: overandover");
+//                break;
+//            case "untilresponse":
+//                Log.i("srvshowfrq", "show survey frequency: untilresponse");
+//                aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
+//                        loadableSurveySpecs.surveyFreq);
+//                break;
+//            default:
+//              if(loadableSurveySpecs.surveyFreq.matches("\\d+"))  checkForFrequencyCount();
+//              else if(loadableSurveySpecs.surveyFreq.matches("\\d+-[dwm]")){
+//                  String[] frequencyValue=loadableSurveySpecs.surveyFreq.split("-");
+//
+//                          aliumPreferences.handlePeriodicFrequencyCount
+//                                  (frequencyValue,
+//                                          loadableSurveySpecs.key);
+//
+//
+//
+//                  Log.e("showFrequency",frequencyValue[0]+".. "+frequencyValue[1]);
+//
+//              }
+//        }
     }
 
     private void checkForFrequencyCount(){
         try{
                 int freq=Integer.parseInt(loadableSurveySpecs.surveyFreq);
-                aliumPreferences.handleSimpleFrequencyCount(freq, loadableSurveySpecs.key);
+                surveyFrequencyManager.handleSimpleFrequencyCount(freq, loadableSurveySpecs.key);
         }catch (Exception e){
             Log.e("checkForFrequencyCount", e.toString());
            }

@@ -85,64 +85,10 @@ public class AliumSurveyLoader {
         Uri spath=Uri.parse(currentSurveyJson.getString("spath"));
         Log.d("URI", spath.toString());
 //        String srvshowfrq=ppupsrvObject.getString("srvshowfrq");
-        String srvshowfrq="overandover";
+        String srvshowfrq="3";
         String thankyouObj = ppupsrvObject.getString("thnkMsg");
 
-//        if(srvshowfrq.matches("\\d+")) {
-//                int freq=Integer.parseInt(srvshowfrq);
-//                Log.d("showFreq", "outside frequency comparison");
-//                String freqDetailString=aliumPreferences.getAliumSharedPreferences().getString(key,"");
-//                Log.d("showFreq", "outside frequency comparison"+ freqDetailString);
-//                //this only checks if survey has reached its frequency count
-//                if(!freqDetailString.isEmpty()){
-//
-//                    JSONObject freqDetailJsonObject=new JSONObject(freqDetailString);
-//                    Log.d("showFreq", "outside frequency comparison"+freqDetailJsonObject);
-//                    if(freqDetailJsonObject.getInt("showFreq")==freq){
-//                        if(freqDetailJsonObject.getInt("counter")==freq){
-//                            Log.d("showFreq", "compared and equal");
-//                            return;
-//                        }
-//                    }
-//                }
-//                Log.d("showFreq", "after frequency comparison");
-//
-//        }
-//        else if(srvshowfrq.matches("\\d+-[dwm]")) {
-//            //for periodic freq
-//            String[] periodicFreq=srvshowfrq.split("-");
-//                    int freqCount=Integer.parseInt(periodicFreq[0]);
-//                    if(!aliumPreferences.getAliumSharedPreferences().getString(key, "").isEmpty()){
-//                        JSONObject object=new JSONObject(aliumPreferences.getAliumSharedPreferences().getString(key, ""));
-//                        if(object.has("showFreq")){
-//                            if(object.getString("showFreq").equals(srvshowfrq)){
-//
-//                                if(object.has("counter")){
-//                                    if( freqCount==object.getInt("counter")){
-//                                        Date today= Calendar.getInstance().getTime();
-//                                        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
-//                                        String date=format.format(today);
-//                                        if(object.getString("lastShownOn").equals(date)){
-//                                            return;
-//                                        }
-//                                        if(periodicFreq[1].equals("m")||periodicFreq[1].equals("w")){
-//                                           if(
-//                                                   today.compareTo(format.parse(object.getString("nextShowOn")))
-//                                                   <0
-//                                           ){
-//                                               return;
-//                                           }
-//                                        }
-//
-//                                    }
-//                                }
-//                            }
-//                        }}
-//        }
-//        else if (!aliumPreferences.checkForUpdate(key, srvshowfrq)) {
-//            return;
-//        }
-       if(aliumPreferences.shouldSurveyLoad(key, srvshowfrq)){
+       if(SurveyFrequencyManager.getInstance(aliumPreferences).shouldSurveyLoad(key, srvshowfrq)){
            loadSurvey( new LoadableSurveySpecs(key, srvshowfrq, spath, thankyouObj));
        }
     }
