@@ -52,14 +52,13 @@ public class SurveyDialog extends SurveyController {
     public SurveyDialog(Context ctx, ExecutableSurveySpecs executableSurveySpecs,
                  SurveyParameters surveyParameters)
     {
-        super(executableSurveySpecs.getLoadableSurveySpecs());
+        super(ctx,executableSurveySpecs.getLoadableSurveySpecs());
         this.executableSurveySpecs=executableSurveySpecs;
         surveyQuestions=executableSurveySpecs.getSurveyQuestions();
         surveyUi=executableSurveySpecs.getSurveyUi();
         surveyInfo=executableSurveySpecs.getSurveyInfo();
-        this.context=ctx;
         this.surveyParameters=surveyParameters;
-        this.aliumPreferences= AliumPreferences.getInstance(context);
+
 
     }
     @Override
