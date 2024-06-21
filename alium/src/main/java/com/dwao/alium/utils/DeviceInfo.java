@@ -1,4 +1,4 @@
-package com.dwao.alium.survey;
+package com.dwao.alium.utils;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;

@@ -18,7 +18,7 @@ import java.util.Date;
 public class SurveyFrequencyManager {
     private AliumPreferences aliumPreferences;
     private static SurveyFrequencyManager instance;
-    
+
     public static SurveyFrequencyManager getInstance(AliumPreferences aliumPreferences) {
         if (instance == null) {
             synchronized (AliumPreferences.class) {
@@ -32,7 +32,7 @@ public class SurveyFrequencyManager {
 
     private SurveyFrequencyManager(AliumPreferences aliumPreferences) {
         this.aliumPreferences=aliumPreferences;
-        
+
     }
 
     public boolean checkForBasicFrequencyUpdate(String key, String freq) {
@@ -74,6 +74,66 @@ public class SurveyFrequencyManager {
         aliumPreferences.addToAliumPreferences(key, freqObj.toString());
         Log.i("showFreq-changed", ""+aliumPreferences.getFromAliumPreferences(key)
                 +" "+freqObj);
+    }
+    public void recordSurveyTriggerOnPreferences(String surveyKey, String survFreq){
+        if(survFreq.equals("onlyonce")
+                ||survFreq.equals("untilresponse")){
+            Log.i("srvshowfrq", "show survey frequency: onlyonce");
+            aliumPreferences.addToAliumPreferences( surveyKey,
+                    survFreq);
+        }else if(survFreq.equals("overandover")){
+            Log.i("srvshowfrq", "show survey frequency: overandover");
+        }else if(survFreq.matches("\\d+")) {
+            Log.i("srvshowfrq", "show survey frequency: integer");
+            try{
+                int freq=Integer.parseInt(survFreq);
+                handleSimpleFrequencyCount(freq, surveyKey);
+            }catch (Exception e){
+                Log.e("checkForFrequencyCount", e.toString());
+            }
+        }
+        else if(survFreq.matches("\\d+-[dwm]")){
+            String[] frequencyValue=survFreq.split("-");
+            try {
+                handlePeriodicFreqUpdate(frequencyValue, surveyKey,
+                        getPeriodCount(frequencyValue[1])
+                );
+            } catch (JSONException | ParseException e) {
+                Log.e("updatePeriodicCount", e.toString());
+            }
+            Log.e("showFrequency",frequencyValue[0]+".. "+frequencyValue[1]);
+        }
+
+
+//        switch (survFreq) {
+//            case "onlyonce":
+//                Log.i("srvshowfrq", "show survey frequency: onlyonce");
+//                aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
+//                        survFreq);
+//                break;
+//            case "overandover":
+//                Log.i("srvshowfrq", "show survey frequency: overandover");
+//                break;
+//            case "untilresponse":
+//                Log.i("srvshowfrq", "show survey frequency: untilresponse");
+//                aliumPreferences.addToAliumPreferences(loadableSurveySpecs.key,
+//                        survFreq);
+//                break;
+//            default:
+//              if(survFreq.matches("\\d+"))  checkForFrequencyCount();
+//              else if(survFreq.matches("\\d+-[dwm]")){
+//                  String[] frequencyValue=survFreq.split("-");
+//
+//                          aliumPreferences.handlePeriodicFrequencyCount
+//                                  (frequencyValue,
+//                                          loadableSurveySpecs.key);
+//
+//
+//
+//                  Log.e("showFrequency",frequencyValue[0]+".. "+frequencyValue[1]);
+//
+//              }
+//        }
     }
 
 
@@ -148,38 +208,32 @@ public class SurveyFrequencyManager {
         Log.d("final-frequency", freqObj.toString());
         aliumPreferences.addToAliumPreferences(key, freqObj.toString());
     }
-    public void handlePeriodicFrequencyCount(String[] freqData, String key)  {
-        try{
-            Log.d("handlePeriodicFreqCount", "frequency pppp"+ Arrays.toString(freqData));
-            int days=0;
-            switch (freqData[1]){
-                case "d": {
-                    days=1;
-                    break;
-                }
-                case "w": {
-                    days=7;
-                    break;
-                }
-                case "m":
-                {
-                    days=30;
-                    break;
-                }
+    public int getPeriodCount(String period)  {
 
-                case "y":
-                    Log.d("frequency[1]", "frequency[1] is   in range..."+ freqData[1]);
-                    break;
-                default:
-                    Log.d("frequency[1]", "frequency[1] is not in range..."+ freqData[1]);
-                    break;
+        Log.d("handlePeriodicFreqCount", "frequency pppp"+ period);
+        switch (period){
+            case "d": {
+                return 1;
 
             }
-            if(days>0)handlePeriodicFreqUpdate(freqData, key, days);
-        }catch (Exception e){
-            Log.e("handlePeriodicFrq", e.toString());
+            case "w": {
+                return 7;
+            }
+            case "m":
+            {
+                return 30;
+            }
+
+            case "y":
+                Log.d("frequency[1]", "frequency[1] is   in range..."+ period);
+                return 0;
+            default:
+                Log.d("frequency[1]", "frequency[1] is not in range..."+ period);
+                return 0;
+
         }
-    }
+
+    };
 
     public boolean shouldSurveyLoad(String key, String srvshowfrq) throws ParseException, JSONException {
         String freqDetailString=aliumPreferences.getFromAliumPreferences(key);
