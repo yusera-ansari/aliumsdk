@@ -1,4 +1,4 @@
-package com.dwao.alium.survey;
+package com.dwao.alium.questions;
 
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
@@ -19,11 +19,10 @@ import com.dwao.alium.models.QuestionResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.time.temporal.TemporalAdjuster;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RadioQuestionRenderer implements QuestionRenderer{
+public class RadioQuestionRenderer implements QuestionRenderer {
 
     JSONArray responseOptJSON;
     private RadioBtnAdapter adapter;

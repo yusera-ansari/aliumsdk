@@ -1,4 +1,4 @@
-package com.dwao.alium.survey;
+package com.dwao.alium.questions;
 
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 
 import com.dwao.alium.R;
-import com.dwao.alium.adapters.CheckBoxRecyViewAdapter;
 import com.dwao.alium.adapters.NpsGridViewAdapter;
 import com.dwao.alium.listeners.NpsOptionClickListener;
 import com.dwao.alium.models.QuestionResponse;
@@ -17,7 +16,7 @@ import com.dwao.alium.models.QuestionResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class NPSQuestionRenderer implements QuestionRenderer{
+public class NPSQuestionRenderer implements QuestionRenderer {
 
     private NpsGridViewAdapter npsGridViewAdapter;
     JSONArray responseOptJSON;

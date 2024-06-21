@@ -30,7 +30,11 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.dwao.alium.R;
-import com.dwao.alium.utils.preferences.AliumPreferences;
+import com.dwao.alium.questions.CheckBoxQuestionRenderer;
+import com.dwao.alium.questions.LongTextQuestionRenderer;
+import com.dwao.alium.questions.NPSQuestionRenderer;
+import com.dwao.alium.questions.QuestionRenderer;
+import com.dwao.alium.questions.RadioQuestionRenderer;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import org.json.JSONException;

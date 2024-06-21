@@ -1,29 +1,17 @@
 package com.dwao.alium.survey;
 
-import static com.dwao.alium.survey.DeviceInfo.getUserAgent;
+import static com.dwao.alium.utils.DeviceInfo.getUserAgent;
 
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.Build;
-import android.provider.Settings;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.dwao.alium.network.VolleyService;
 
-import org.json.JSONException;
-
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.UUID;
 
 public class SurveyTracker {
 

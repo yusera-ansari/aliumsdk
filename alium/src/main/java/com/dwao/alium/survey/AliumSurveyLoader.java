@@ -3,29 +3,19 @@ package com.dwao.alium.survey;
 import static com.dwao.alium.utils.Util.generateCustomerId;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Handler;
 import android.util.Log;
 
+import com.dwao.alium.frequencyManager.SurveyFrequencyManager;
 import com.dwao.alium.listeners.VolleyResponseListener;
 import com.dwao.alium.network.VolleyService;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 import com.google.gson.Gson;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.UUID;
 
 public class AliumSurveyLoader {
     AliumPreferences aliumPreferences;
@@ -75,21 +65,27 @@ public class AliumSurveyLoader {
                     loadSurveyIfShouldBeLoaded(jsonObject, key);
                 }
             } catch (Exception e) {
+                Log.i("error", "inside catch block");
                 e.printStackTrace();
             }
         }
     }
 
-    private void loadSurveyIfShouldBeLoaded(JSONObject currentSurveyJson, String key) throws Exception {
-        JSONObject ppupsrvObject = currentSurveyJson.getJSONObject("appsrv");
-        Uri spath=Uri.parse(currentSurveyJson.getString("spath"));
-        Log.d("URI", spath.toString());
-//        String srvshowfrq=ppupsrvObject.getString("srvshowfrq");
-        String srvshowfrq="3";
-        String thankyouObj = ppupsrvObject.getString("thnkMsg");
+    private void loadSurveyIfShouldBeLoaded(JSONObject currentSurveyJson, String key)  {
+       try{
+           JSONObject ppupsrvObject = currentSurveyJson.getJSONObject("appsrv");
+           Uri spath=Uri.parse(currentSurveyJson.getString("spath"));
+           Log.d("URI", spath.toString());
+           String srvshowfrq=ppupsrvObject.getString("srvshowfrq");
+//           String srvshowfrq="2-w";
+           String thankyouObj = ppupsrvObject.getString("thnkMsg");
 
-       if(SurveyFrequencyManager.getInstance(aliumPreferences).shouldSurveyLoad(key, srvshowfrq)){
-           loadSurvey( new LoadableSurveySpecs(key, srvshowfrq, spath, thankyouObj));
+           if(  SurveyFrequencyManager.getFrequencyManager(aliumPreferences, srvshowfrq)
+                   .shouldSurveyLoad(key, srvshowfrq)){
+               loadSurvey( new LoadableSurveySpecs(key, srvshowfrq, spath, thankyouObj));
+           }
+       }catch (Exception e){
+           Log.i("loadSurveyIfShouldLoad", e.toString());
        }
     }
     private void loadSurvey(LoadableSurveySpecs loadableSurveySpecs) {
