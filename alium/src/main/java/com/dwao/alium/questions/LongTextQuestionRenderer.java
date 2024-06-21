@@ -1,10 +1,9 @@
-package com.dwao.alium.survey;
+package com.dwao.alium.questions;
 
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,7 +19,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONObject;
 
-public class LongTextQuestionRenderer implements QuestionRenderer{
+public class LongTextQuestionRenderer implements QuestionRenderer {
     private JSONObject surveyUi;
     public LongTextQuestionRenderer setSurveyUi(JSONObject surveyUi){
         this.surveyUi=surveyUi;

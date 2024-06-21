@@ -1,4 +1,4 @@
-package com.dwao.alium.survey;
+package com.dwao.alium.questions;
 
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dwao.alium.R;
 import com.dwao.alium.adapters.CheckBoxRecyViewAdapter;
-import com.dwao.alium.adapters.RadioBtnAdapter;
 import com.dwao.alium.listeners.CheckBoxClickListener;
 import com.dwao.alium.models.QuestionResponse;
 
@@ -23,7 +22,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CheckBoxQuestionRenderer implements  QuestionRenderer{
+public class CheckBoxQuestionRenderer implements QuestionRenderer {
     private CheckBoxRecyViewAdapter checkBoxRecyViewAdapter;
     JSONArray responseOptJSON;
     JSONObject surveyUi;

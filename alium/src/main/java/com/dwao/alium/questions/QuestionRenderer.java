@@ -1,4 +1,4 @@
-package com.dwao.alium.survey;
+package com.dwao.alium.questions;
 
 import android.content.Context;
 import android.view.View;
