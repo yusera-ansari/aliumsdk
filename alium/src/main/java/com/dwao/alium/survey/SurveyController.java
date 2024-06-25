@@ -7,6 +7,7 @@ import android.util.Log;
 
 import androidx.annotation.CallSuper;
 
+import com.dwao.alium.frequencyManager.FrequencyManagerFactory;
 import com.dwao.alium.frequencyManager.SurveyFrequencyManager;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.utils.preferences.AliumPreferences;
@@ -44,7 +45,8 @@ abstract class SurveyController {
         this.uuid= UUID.randomUUID().toString();
         this.loadableSurveySpecs=loadableSurveySpecs;
         this.aliumPreferences= AliumPreferences.getInstance(context);
-        this.surveyFrequencyManager=SurveyFrequencyManager.getFrequencyManager(aliumPreferences,
+        this.surveyFrequencyManager=  FrequencyManagerFactory
+                .getFrequencyManager(aliumPreferences,
                 loadableSurveySpecs.surveyFreq,
                 loadableSurveySpecs.customSurveyData);
     }
