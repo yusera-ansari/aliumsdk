@@ -45,7 +45,8 @@ abstract class SurveyController {
         this.loadableSurveySpecs=loadableSurveySpecs;
         this.aliumPreferences= AliumPreferences.getInstance(context);
         this.surveyFrequencyManager=SurveyFrequencyManager.getFrequencyManager(aliumPreferences,
-                loadableSurveySpecs.surveyFreq);
+                loadableSurveySpecs.surveyFreq,
+                loadableSurveySpecs.customSurveyData);
     }
 
     abstract protected void generateQuestion(String responseType) throws JSONException;
