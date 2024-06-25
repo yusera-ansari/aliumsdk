@@ -7,6 +7,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.dwao.alium.frequencyManager.FrequencyManagerFactory;
 import com.dwao.alium.frequencyManager.SurveyFrequencyManager;
 import com.dwao.alium.listeners.VolleyResponseListener;
 import com.dwao.alium.network.VolleyService;
@@ -77,17 +78,28 @@ public class AliumSurveyLoader {
            Uri spath=Uri.parse(currentSurveyJson.getString("spath"));
            Log.d("URI", spath.toString());
 //           String srvshowfrq=ppupsrvObject.getString("srvshowfrq");
-           String srvshowfrq="3-d";
-          CustomFreqSurveyData customFreqSurveyData=new CustomFreqSurveyData(
-                  "2-d",
+           CustomFreqSurveyData customFreqSurveyData;
+//           if(ppupsrvObject.has("customSurveyDetails")){
+//               JSONObject customSurveyDetails=ppupsrvObject.getJSONObject("customSurveyDetails");
+//
+//               customFreqSurveyData=new CustomFreqSurveyData(
+//                       customSurveyDetails.getString("freq"),
+//                       customSurveyDetails.getString("startOn"),
+//                       customSurveyDetails.getString("endOn")
+//               );
+//           }
+           String srvshowfrq="custom";
+           customFreqSurveyData=new CustomFreqSurveyData(
+                  "2-min",
                   "immediately",
                   "never"
           );
 
            String thankyouObj = ppupsrvObject.getString("thnkMsg");
-           if(  SurveyFrequencyManager.getFrequencyManager(aliumPreferences, srvshowfrq,
+           if(   FrequencyManagerFactory
+                   .getFrequencyManager(aliumPreferences, srvshowfrq,
                            customFreqSurveyData)
-                   .shouldSurveyLoad(key, srvshowfrq, customFreqSurveyData)){
+                   .shouldSurveyLoad(key, srvshowfrq)){
                loadSurvey( new LoadableSurveySpecs(
                        key, srvshowfrq, spath, thankyouObj,
                        customFreqSurveyData
