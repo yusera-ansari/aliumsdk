@@ -2,6 +2,7 @@ package com.dwao.alium.frequencyManager;
 
 import android.util.Log;
 
+import com.dwao.alium.survey.CustomFreqSurveyData;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 
 import org.json.JSONException;
@@ -23,26 +24,28 @@ public abstract class SurveyFrequencyManager {
         
     }
     public static SurveyFrequencyManager getFrequencyManager(AliumPreferences aliumPreferences,
-                                                      String frq){
+                                                      String frq, CustomFreqSurveyData customFreqSurveyData){
      if(frq.matches("\\d+")){
          return new IntegerFrequencyManager(aliumPreferences);
      }
-     else if(frq.matches("\\d+-[dwm]")){
-         return new PeriodicFrequencyManager(aliumPreferences);
+//     else if(frq.matches("\\d+-[dwm]")){
+//         return new PeriodicFrequencyManager(aliumPreferences);
+//     }
+     else if(frq.matches("custom")){
+        return new CustomFrequencyManager(aliumPreferences, customFreqSurveyData);
      }
-      else  if(frq.matches("overandover")||frq.matches("onlyonce")||
+     else  if(frq.matches("overandover")||frq.matches("onlyonce")||
         frq.matches("untilresponse")){
             return new BasicFrequencyManager(aliumPreferences);
         }
      else{
          throw new InvalidFrequencyException("The survey show frequency type: \""+frq+ "\" doesn't exist");
-
      }
     }
 
     public abstract void handleFrequency(String survFreq, String survKey);
 
-    protected  boolean checkForBasicFrequencyUpdate(String key, String freq) {
+    private  boolean checkForBasicFrequencyUpdate(String key, String freq) {
         if (!aliumPreferences.getFromAliumPreferences(key).isEmpty()) {
             Log.i("srvshowfrq-changed", aliumPreferences.getFromAliumPreferences(key)+" "+key+ freq);
             if (!aliumPreferences.getFromAliumPreferences(key).equals(freq)) {
@@ -58,37 +61,36 @@ public abstract class SurveyFrequencyManager {
     }
 
 
-    public void recordSurveyTriggerOnPreferences(String surveyKey, String survFreq){
+    public void recordSurveyTriggerOnPreferences(String surveyKey, String survFreq
+                                                 ){
         handleFrequency(survFreq, surveyKey);
     }
 
 
-    public boolean shouldSurveyLoad(String key, String srvshowfrq) throws ParseException, JSONException {
-        String freqDetailString=aliumPreferences.getFromAliumPreferences(key);
-        Log.d("showFreq", "outside frequency comparison"+ freqDetailString);
-        JSONObject freqDetailJsonObject=new JSONObject();
-        if(!freqDetailString.isEmpty()&&((srvshowfrq.matches("\\d+")||
-                srvshowfrq.matches("\\d+-[dwm]"))
-        )) {
-            try {
-                freqDetailJsonObject = new JSONObject(freqDetailString);
-                if( srvshowfrq.matches("\\d+-[dwm]")){
-                    Date today=Calendar.getInstance().getTime();
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                    Date lastShownOn=simpleDateFormat.parse(freqDetailJsonObject.getString("lastShownOn"));
+    public boolean shouldSurveyLoad(String key, String srvshowfrq,
+                                    CustomFreqSurveyData customFreqSurveyData
+                                    ) throws ParseException, JSONException {
 
-                    if(today.before(lastShownOn)){
-                        Log.i("frequency", "todays before lastshown "+ today+" "+lastShownOn);
-                        aliumPreferences.removeFromAliumPreferences(key);
-                        return true;
-                    }
-                }
+        String freqDetailString=aliumPreferences.getFromAliumPreferences(key);
+        Log.d("showFreq", "outside frequency comparison---"+ freqDetailString);
+        JSONObject freqDetailJsonObject=new JSONObject();
+        if(freqDetailString.isEmpty()){
+            return true;
+        }
+        if(srvshowfrq.matches("\\d+")||
+                srvshowfrq.matches("custom")
+        ) {
+            try {
+                //check if stored frequency is an object -
+                // frq data for integer and custom must be an object
+                freqDetailJsonObject = new JSONObject(freqDetailString);
             } catch (JSONException e) {
                 Log.e("frequency-Exception", " removing the key: " + freqDetailString + e.toString());
                 aliumPreferences.removeFromAliumPreferences(key);
                 return true;
             }
         }else if (!checkForBasicFrequencyUpdate(key, srvshowfrq)) {
+            Log.e("frequency-Exception", "--removing the key: " + freqDetailString );
             return false;
         }
 
@@ -119,38 +121,168 @@ public abstract class SurveyFrequencyManager {
             Log.d("showFreq", "after frequency comparison");
 
         }
-        else if(srvshowfrq.matches("\\d+-[dwm]")) {
-            //for periodic freq
-            String[] periodicFreq=srvshowfrq.split("-");
-            int freqCount=Integer.parseInt(periodicFreq[0]);
+        else if(srvshowfrq.equals("custom")){
+            Log.i("handleShouldShowOnTime","custom freq");
+            
+            if(!customFreqSurveyData.freq.matches("\\d+-min$")
+                   &&
+                !customFreqSurveyData.freq.matches("\\d+-hrs$")
+                   &&
+                !customFreqSurveyData.freq.matches("\\d+-d$")
+            ){
+                return false;
+            }
+            Log.i("handleShouldShowOnTime", customFreqSurveyData.toString());
+            String[] freqData = customFreqSurveyData.freq.split("-");
 
-            if(freqDetailJsonObject.has("showFreq")){
-                if(freqDetailJsonObject.getString("showFreq").equals(srvshowfrq)){
+            if(freqData[1].equals("min")||freqData[1].equals("hrs")){
+                Log.i("handleShouldShowOnTime", customFreqSurveyData.toString());
+                return handleShouldShowOnTime(key,customFreqSurveyData); //throw invalid custom frequency error
+            }
+            else if(freqData[1].equals("d")) {
 
-                    if(freqDetailJsonObject.has("counter")){
-                        if( freqCount==freqDetailJsonObject.getInt("counter")){
-                            Date today= Calendar.getInstance().getTime();
-                            SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
-                            String date=format.format(today);
-                            if(freqDetailJsonObject.getString("lastShownOn").equals(date)){
-                                return false;
-                            }
-                            if(periodicFreq[1].equals("m")||periodicFreq[1].equals("w")){
-                                if(
-                                        today.compareTo(format.parse(freqDetailJsonObject.getString("nextShowOn")))
-                                                <0
-                                ){
-                                    return false;
-                                }
-                            }
+                String TAG="handleShouldShowForMin";
+                boolean showFreqIsNotEqual=!freqDetailJsonObject.getString("showFreq").equals("custom");
+                boolean freqPeriodIsNotEqual=!freqDetailJsonObject.getString("freq").equals(
+                        customFreqSurveyData.freq
+                );
 
+                boolean startDateIsNotEqual=!freqDetailJsonObject.getString("startOn").equals(
+                        customFreqSurveyData.startOn
+                );
+                if(showFreqIsNotEqual || freqPeriodIsNotEqual||startDateIsNotEqual){
+                    aliumPreferences.removeFromAliumPreferences(key);
+                    return true;
+                }
+                if(!freqDetailJsonObject.getString("startOn").equals("immediately")){
+                    try{
+                        Date today= Calendar.getInstance().getTime();
+                        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+                        String date=format.format(today);
+                        boolean isTodayBeforeStartDate=  today.compareTo(format.parse(freqDetailJsonObject.getString("startOn")))
+                                <0;
+                        if(
+                                isTodayBeforeStartDate
+                        ){
+                            return false;
                         }
+                    }catch (Exception e){
+                        Log.e("date", "frequency date"+e.toString());
+                        return false;
                     }
                 }
+
+                if(!freqDetailJsonObject.getString("endOn").equals("never")){
+                    try{
+                        Date today= Calendar.getInstance().getTime();
+                        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+                        String date=format.format(today);
+
+                        boolean isTodayAfterEndDate=today.compareTo(format.parse(freqDetailJsonObject.getString("endOn")))
+                                >0;
+                        if(
+                                isTodayAfterEndDate
+                        ){
+                            return false;
+                        }
+                    }catch (Exception e){
+                        Log.e("date", "frequency date"+e.toString());
+                    }
+                }
+              ///pending next count/reset count
+                Date todaysDate=Calendar.getInstance().getTime();
+                Calendar calendar=Calendar.getInstance();
+                SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+                Date lastShownOn=format.parse( freqDetailJsonObject.getString("lastShownOn"));
+                calendar.setTime(lastShownOn);
+                calendar.add(Calendar.DAY_OF_MONTH, Integer.parseInt(freqData[0]));
+                Date nextShowOn=calendar.getTime();
+
+
+                if(!((todaysDate.compareTo(nextShowOn)>0)||(todaysDate.compareTo(nextShowOn)==0))){//today is after next show
+
+                    Log.d("frequency", "else--- cant show next no match");
+                    return false;
+                }
+                return  true;
+
+
             }
 
         }
-
         return true;
+    }
+    boolean handleShouldShowOnTime(String key, CustomFreqSurveyData customFreqSurveyData) throws JSONException, ParseException {
+         String TAG="handleShouldShowForMin";
+
+
+
+        Log.i("handleShouldShowOnTime", customFreqSurveyData.toString());
+        String[] freqData = customFreqSurveyData. freq.split("-");
+        String freqDetailString=aliumPreferences.getFromAliumPreferences(key);
+        JSONObject freqDetailJsonObject=new JSONObject(freqDetailString);
+        boolean showFreqIsNotEqual=!freqDetailJsonObject.getString("showFreq").equals("custom");
+        boolean freqPeriodIsNotEqual=!freqDetailJsonObject.getString("freq").equals(
+                customFreqSurveyData.freq
+        );
+
+        boolean startDateIsNotEqual=!freqDetailJsonObject.getString("startOn").equals(
+                customFreqSurveyData. startOn
+        );
+        if(showFreqIsNotEqual || freqPeriodIsNotEqual||startDateIsNotEqual){
+            aliumPreferences.removeFromAliumPreferences(key);
+            return true;
+        }
+        if(!freqDetailJsonObject.getString("startOn").equals("immediately")){
+            try{
+                Date today= Calendar.getInstance().getTime();
+                SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+                String date=format.format(today);
+                boolean isTodayBeforeStartDate=  today.compareTo(format.parse(freqDetailJsonObject.getString("startOn")))
+                        <0;
+                if(
+                        isTodayBeforeStartDate
+                ){
+                    return false;
+                }
+            }catch (Exception e){
+                Log.e("date", "frequency date"+e.toString());
+                return false;
+            }
+        }
+
+       if(!freqDetailJsonObject.getString("endOn").equals("never")){
+           try{
+               Date today= Calendar.getInstance().getTime();
+               SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+               String date=format.format(today);
+
+               boolean isTodayAfterEndDate=today.compareTo(format.parse(freqDetailJsonObject.getString("endOn")))
+                       >0;
+               if(
+                       isTodayAfterEndDate
+               ){
+                   return false;
+               }
+           }catch (Exception e){
+               Log.e("date", "frequency date"+e.toString());
+           }
+       }
+        long intervalInMillis;
+       if(freqData[1].equals("min")){
+        intervalInMillis= (long) Integer.parseInt(freqData[0]) *60*1000;
+       }else{
+           intervalInMillis= (long) Integer.parseInt(freqData[0]) *60*60*1000;
+       }
+        boolean hasIntervalCrossed=(System.currentTimeMillis()-
+                freqDetailJsonObject.getLong("lastShownOnMillis")) >=intervalInMillis;
+        if(!hasIntervalCrossed){
+            Log.d(TAG, "interval hasn't crossed");
+            return false;
+        }
+
+
+
+        return  true;
     }
 }
