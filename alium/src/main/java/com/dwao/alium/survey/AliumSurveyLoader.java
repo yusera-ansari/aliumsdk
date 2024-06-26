@@ -78,7 +78,7 @@ public class AliumSurveyLoader {
            Uri spath=Uri.parse(currentSurveyJson.getString("spath"));
            Log.d("URI", spath.toString());
 //           String srvshowfrq=ppupsrvObject.getString("srvshowfrq");
-           CustomFreqSurveyData customFreqSurveyData;
+           CustomFreqSurveyData customFreqSurveyData=null;
 //           if(ppupsrvObject.has("customSurveyDetails")){
 //               JSONObject customSurveyDetails=ppupsrvObject.getJSONObject("customSurveyDetails");
 //
@@ -90,23 +90,23 @@ public class AliumSurveyLoader {
 //           }
            String srvshowfrq="custom";
            customFreqSurveyData=new CustomFreqSurveyData(
-                  "2-min",
-                  "immediately",
-                  "never"
+                  "2-d",
+                  "2024-06-23",
+                  "2024-06-27"
           );
 
            String thankyouObj = ppupsrvObject.getString("thnkMsg");
            if(   FrequencyManagerFactory
-                   .getFrequencyManager(aliumPreferences, srvshowfrq,
+                   .getFrequencyManager(aliumPreferences,key, srvshowfrq,
                            customFreqSurveyData)
-                   .shouldSurveyLoad(key, srvshowfrq)){
+                   .shouldSurveyLoad()){
                loadSurvey( new LoadableSurveySpecs(
                        key, srvshowfrq, spath, thankyouObj,
                        customFreqSurveyData
                ));
            }
        }catch (Exception e){
-           Log.i("loadSurveyIfShouldLoad", e.toString());
+           Log.e("loadSurveyIfShouldLoad", e.toString());
        }
     }
     private void loadSurvey(LoadableSurveySpecs loadableSurveySpecs) {

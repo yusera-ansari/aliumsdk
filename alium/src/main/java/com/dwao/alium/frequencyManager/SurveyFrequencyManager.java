@@ -16,22 +16,24 @@ import java.util.Date;
 public abstract class SurveyFrequencyManager {
     protected AliumPreferences aliumPreferences;
 
-
+    protected String surveyKey, srvShowFreq;
     private SurveyFrequencyManager() {}
 
-    protected SurveyFrequencyManager(AliumPreferences aliumPreferences) {
+    protected SurveyFrequencyManager(AliumPreferences aliumPreferences,
+                                     String srvKey, String srvShowFreq) {
         this.aliumPreferences=aliumPreferences;
-        
+        this.surveyKey=srvKey;
+        this.srvShowFreq=srvShowFreq;
     }
 
 
-    public abstract void handleFrequency(String survFreq, String survKey);
+    public abstract void handleFrequency();
 
-    public void recordSurveyTriggerOnPreferences(String surveyKey, String survFreq){
-        handleFrequency(survFreq, surveyKey);
+    public void recordSurveyTriggerOnPreferences(){
+        handleFrequency();
     }
 
-    public abstract boolean shouldSurveyLoad(String key, String srvshowfrq)
+    public abstract boolean shouldSurveyLoad()
             throws ParseException, JSONException;
 
 

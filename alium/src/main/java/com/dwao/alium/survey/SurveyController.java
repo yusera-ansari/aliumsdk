@@ -46,7 +46,7 @@ abstract class SurveyController {
         this.loadableSurveySpecs=loadableSurveySpecs;
         this.aliumPreferences= AliumPreferences.getInstance(context);
         this.surveyFrequencyManager=  FrequencyManagerFactory
-                .getFrequencyManager(aliumPreferences,
+                .getFrequencyManager(aliumPreferences, loadableSurveySpecs.key,
                 loadableSurveySpecs.surveyFreq,
                 loadableSurveySpecs.customSurveyData);
     }
@@ -68,7 +68,6 @@ abstract class SurveyController {
     @CallSuper
     protected void show(){
         if(!loadableSurveySpecs.surveyFreq.equals("untilresponse"))surveyFrequencyManager.recordSurveyTriggerOnPreferences(
-                loadableSurveySpecs.key, loadableSurveySpecs.surveyFreq
         );
         trackWithAlium(context, generateTrackingParameters());
     }
@@ -76,7 +75,6 @@ abstract class SurveyController {
     @CallSuper
     protected  void submitSurvey(){
         if(loadableSurveySpecs.surveyFreq.equals("untilresponse"))surveyFrequencyManager.recordSurveyTriggerOnPreferences(
-                loadableSurveySpecs.key, loadableSurveySpecs.surveyFreq
         );
     };
 
