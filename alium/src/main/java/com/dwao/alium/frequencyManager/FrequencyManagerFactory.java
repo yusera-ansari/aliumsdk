@@ -5,22 +5,28 @@ import com.dwao.alium.utils.preferences.AliumPreferences;
 
 public  class FrequencyManagerFactory{
     public static SurveyFrequencyManager getFrequencyManager(AliumPreferences aliumPreferences,
-                                                             String frq, CustomFreqSurveyData customFreqSurveyData){
-        if(frq.matches("\\d+")){
-            return new IntegerFrequencyManager(aliumPreferences);
+                                                             String key,
+                                                             String srvShowFreq, CustomFreqSurveyData customFreqSurveyData){
+        if(srvShowFreq.matches("\\d+")){
+            return new IntegerFrequencyManager(aliumPreferences, key, srvShowFreq);
         }
 //     else if(frq.matches("\\d+-[dwm]")){
 //         return new PeriodicFrequencyManager(aliumPreferences);
 //     }
-        else if(frq.matches("custom")){
-            return new CustomFrequencyManager(aliumPreferences, customFreqSurveyData);
+        else if(srvShowFreq.matches("custom")){
+            if(customFreqSurveyData==null){
+                throw new InvalidCustomFrequencyDataException("Custom frequency data cannot be null");
+            }
+            return new CustomFrequencyManager(aliumPreferences,
+                    key, srvShowFreq,
+                    customFreqSurveyData);
         }
-        else  if(frq.matches("overandover")||frq.matches("onlyonce")||
-                frq.matches("untilresponse")){
-            return new BasicFrequencyManager(aliumPreferences);
+        else  if(srvShowFreq.matches("overandover")||srvShowFreq.matches("onlyonce")||
+                srvShowFreq.matches("untilresponse")){
+            return new BasicFrequencyManager(aliumPreferences, key, srvShowFreq);
         }
         else{
-            throw new InvalidFrequencyException("The survey show frequency type: \""+frq+ "\" doesn't exist");
+            throw new InvalidFrequencyException("The survey show frequency type: \""+srvShowFreq+ "\" doesn't exist");
         }
     }
 }

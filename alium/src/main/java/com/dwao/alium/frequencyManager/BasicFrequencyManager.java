@@ -10,27 +10,30 @@ import org.json.JSONObject;
 import java.text.ParseException;
 
  class BasicFrequencyManager extends SurveyFrequencyManager {
-    public BasicFrequencyManager(AliumPreferences aliumPreferences) {
-        super(aliumPreferences);
+    public BasicFrequencyManager(AliumPreferences aliumPreferences
+    , String srvKey, String srvShowFreq
+    ) {
+        super(aliumPreferences, srvKey, srvShowFreq);
     }
 
     @Override
-    public void handleFrequency(String survFreq, String survKey) {
-        if(survFreq.equals("overandover")){
+    public void handleFrequency( ) {
+        if(this.srvShowFreq.equals("overandover")){
             Log.i("srvshowfrq", "show survey frequency: overandover");
             return;
         }
         Log.i("srvshowfrq", "show survey frequency: "
-        +survFreq);
-        aliumPreferences.addToAliumPreferences( survKey,
-                survFreq);
+        +this.srvShowFreq);
+        aliumPreferences.addToAliumPreferences( this.surveyKey,
+                this.srvShowFreq);
     }
-    private  boolean checkForBasicFrequencyUpdate(String key, String freq) {
-        if (!aliumPreferences.getFromAliumPreferences(key).isEmpty()) {
-            Log.i("srvshowfrq-changed", aliumPreferences.getFromAliumPreferences(key)+" "+key+ freq);
-            if (!aliumPreferences.getFromAliumPreferences(key).equals(freq)) {
-                Log.i("srvshowfrq-changed", "updating stored preferences data"+key+ freq);
-                aliumPreferences.removeFromAliumPreferences(key);
+    private  boolean checkForBasicFrequencyUpdate() {
+        if (!aliumPreferences.getFromAliumPreferences(this.surveyKey).isEmpty()) {
+            Log.i("srvshowfrq-changed", aliumPreferences.getFromAliumPreferences(this.surveyKey)+" "+this.surveyKey+
+                    this.srvShowFreq);
+            if (!aliumPreferences.getFromAliumPreferences(this.surveyKey).equals(this.srvShowFreq)) {
+                Log.i("srvshowfrq-changed", "updating stored preferences data"+this.surveyKey+ this.srvShowFreq);
+                aliumPreferences.removeFromAliumPreferences(this.surveyKey);
                 return true;
 
             } else {
@@ -40,10 +43,10 @@ import java.text.ParseException;
         return true;
     }
     @Override
-    public boolean shouldSurveyLoad(String key, String srvshowfrq) throws ParseException, JSONException {
-        String freqDetailString=aliumPreferences.getFromAliumPreferences(key);
+    public boolean shouldSurveyLoad() throws ParseException, JSONException {
+        String freqDetailString=aliumPreferences.getFromAliumPreferences(this.surveyKey);
         Log.d("showFreq", "outside frequency comparison---"+ freqDetailString);
-        if (!freqDetailString.isEmpty() &&!checkForBasicFrequencyUpdate(key, srvshowfrq)) {
+        if (!freqDetailString.isEmpty() &&!checkForBasicFrequencyUpdate()) {
             Log.e("frequency-Exception", "--removing the key: " + freqDetailString);
             return false;
         }
