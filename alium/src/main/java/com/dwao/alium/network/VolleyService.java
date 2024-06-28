@@ -37,7 +37,7 @@ public class VolleyService {
    public  void callVolley(Context context, String url, VolleyResponseListener volleyResponseListener){
        // Instantiate the RequestQueue.
        RequestQueue queue = Volley.newRequestQueue(context);
-
+    Log.d("fetch-main", url);
        // Request a string response from the provided URL.
        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                new Response.Listener<String>() {
