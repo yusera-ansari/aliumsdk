@@ -7,6 +7,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.dwao.alium.frequencyManager.FrequencyManagerFactory;
 import com.dwao.alium.frequencyManager.SurveyFrequencyManager;
 import com.dwao.alium.listeners.VolleyResponseListener;
 import com.dwao.alium.network.VolleyService;
@@ -77,15 +78,35 @@ public class AliumSurveyLoader {
            Uri spath=Uri.parse(currentSurveyJson.getString("spath"));
            Log.d("URI", spath.toString());
            String srvshowfrq=ppupsrvObject.getString("srvshowfrq");
-//           String srvshowfrq="2-w";
-           String thankyouObj = ppupsrvObject.getString("thnkMsg");
+           CustomFreqSurveyData customFreqSurveyData=null;
+           if(ppupsrvObject.has("customSurveyDetails")){
+               JSONObject customSurveyDetails=ppupsrvObject.getJSONObject("customSurveyDetails");
 
-           if(  SurveyFrequencyManager.getFrequencyManager(aliumPreferences, srvshowfrq)
-                   .shouldSurveyLoad(key, srvshowfrq)){
-               loadSurvey( new LoadableSurveySpecs(key, srvshowfrq, spath, thankyouObj));
+               customFreqSurveyData=new CustomFreqSurveyData(
+                       customSurveyDetails.getString("freq"),
+                       customSurveyDetails.getString("startOn"),
+                       customSurveyDetails.getString("endOn")
+               );
+           }
+//           String srvshowfrq="custom";
+//           customFreqSurveyData=new CustomFreqSurveyData(
+//                  "2-d",
+//                  "2024-06-23",
+//                  "2024-06-27"
+//          );
+
+           String thankyouObj = ppupsrvObject.getString("thnkMsg");
+           if(   FrequencyManagerFactory
+                   .getFrequencyManager(aliumPreferences,key, srvshowfrq,
+                           customFreqSurveyData)
+                   .shouldSurveyLoad()){
+               loadSurvey( new LoadableSurveySpecs(
+                       key, srvshowfrq, spath, thankyouObj,
+                       customFreqSurveyData
+               ));
            }
        }catch (Exception e){
-           Log.i("loadSurveyIfShouldLoad", e.toString());
+           Log.e("loadSurveyIfShouldLoad", e.toString());
        }
     }
     private void loadSurvey(LoadableSurveySpecs loadableSurveySpecs) {

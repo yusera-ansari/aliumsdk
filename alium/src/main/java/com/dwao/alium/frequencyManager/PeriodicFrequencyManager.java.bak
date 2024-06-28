@@ -2,15 +2,18 @@ package com.dwao.alium.frequencyManager;
 
 import android.util.Log;
 
+import com.dwao.alium.survey.CustomFreqSurveyData;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class PeriodicFrequencyManager extends SurveyFrequencyManager {
+ class PeriodicFrequencyManager extends SurveyFrequencyManager {
     private String TAG="PeriodicFrequencyManager";
     public PeriodicFrequencyManager(AliumPreferences aliumPreferences) {
         super(aliumPreferences);
@@ -94,6 +97,12 @@ public class PeriodicFrequencyManager extends SurveyFrequencyManager {
            Log.e(TAG, e.toString());
        }
     }
+
+    @Override
+    public boolean shouldSurveyLoad(String key, String srvshowfrq) throws ParseException, JSONException {
+        return false;
+    }
+
     private int getPeriodCount(String period)  {
 
         Log.d("handlePeriodicFreqCount", "frequency pppp"+ period);
