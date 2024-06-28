@@ -77,23 +77,23 @@ public class AliumSurveyLoader {
            JSONObject ppupsrvObject = currentSurveyJson.getJSONObject("appsrv");
            Uri spath=Uri.parse(currentSurveyJson.getString("spath"));
            Log.d("URI", spath.toString());
-//           String srvshowfrq=ppupsrvObject.getString("srvshowfrq");
+           String srvshowfrq=ppupsrvObject.getString("srvshowfrq");
            CustomFreqSurveyData customFreqSurveyData=null;
-//           if(ppupsrvObject.has("customSurveyDetails")){
-//               JSONObject customSurveyDetails=ppupsrvObject.getJSONObject("customSurveyDetails");
-//
-//               customFreqSurveyData=new CustomFreqSurveyData(
-//                       customSurveyDetails.getString("freq"),
-//                       customSurveyDetails.getString("startOn"),
-//                       customSurveyDetails.getString("endOn")
-//               );
-//           }
-           String srvshowfrq="custom";
-           customFreqSurveyData=new CustomFreqSurveyData(
-                  "2-d",
-                  "2024-06-23",
-                  "2024-06-27"
-          );
+           if(ppupsrvObject.has("customSurveyDetails")){
+               JSONObject customSurveyDetails=ppupsrvObject.getJSONObject("customSurveyDetails");
+
+               customFreqSurveyData=new CustomFreqSurveyData(
+                       customSurveyDetails.getString("freq"),
+                       customSurveyDetails.getString("startOn"),
+                       customSurveyDetails.getString("endOn")
+               );
+           }
+//           String srvshowfrq="custom";
+//           customFreqSurveyData=new CustomFreqSurveyData(
+//                  "2-d",
+//                  "2024-06-23",
+//                  "2024-06-27"
+//          );
 
            String thankyouObj = ppupsrvObject.getString("thnkMsg");
            if(   FrequencyManagerFactory
