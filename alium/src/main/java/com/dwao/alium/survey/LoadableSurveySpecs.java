@@ -3,13 +3,15 @@ package com.dwao.alium.survey;
 
 import android.net.Uri;
 
-public class LoadableSurveySpecs {
+import java.io.Serializable;
+
+public class LoadableSurveySpecs  implements Serializable {
     String key, surveyFreq, thankYouMsg;
-    Uri uri;
+    String uri;
 
     CustomFreqSurveyData customSurveyData;
 
-    public LoadableSurveySpecs(String key, String surveyFreq, Uri uri, String thankYouMsg, CustomFreqSurveyData customSurveyData) {
+    public LoadableSurveySpecs(String key, String surveyFreq, String uri, String thankYouMsg, CustomFreqSurveyData customSurveyData) {
         this.key = key;
         this.surveyFreq = surveyFreq;
         this.uri = uri;
