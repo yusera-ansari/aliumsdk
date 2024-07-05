@@ -4,6 +4,7 @@ package com.dwao.alium.survey;
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -142,6 +143,8 @@ public class SurveyDialog extends SurveyController {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+                ((AliumSurveyActivity)context).removeFromActiveSurveyList(SurveyDialog.this);
+
             }
         });
     }
@@ -354,6 +357,8 @@ public class SurveyDialog extends SurveyController {
             public void run() {
 
                 dialog.dismiss();
+                ((AliumSurveyActivity)context).removeFromActiveSurveyList(SurveyDialog.this);
+
             }
         };
 
