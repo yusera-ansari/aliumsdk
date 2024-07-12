@@ -91,7 +91,7 @@ public class AliumSurveyLoader {
                        customSurveyDetails.getString("endOn")
                );
            }
-//           String srvshowfrq="custom";
+//           String srvshowfrq="3";
 //           customFreqSurveyData=new CustomFreqSurveyData(
 //                  "2-d",
 //                  "2024-06-23",
@@ -129,18 +129,15 @@ public class AliumSurveyLoader {
             Log.d("Alium-survey loaded", json.toString());
             ExecutableSurveySpecs executableSurveySpecs=new ExecutableSurveySpecs(json
                     , loadableSurveySpecs);
-            if(!AliumSurveyActivity.isActivityRunning  || !activityInstanceCreated){
-                Intent intent=new Intent(context, AliumSurveyActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION|Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                        );
-                intent.putExtra("surveyJson", json.toString());
-                intent.putExtra("loadableSurveySpecs", loadableSurveySpecs);
-                intent.putExtra("surveyParameters", surveyParameters);
-                intent.putExtra("canonicalClassName", ((Activity)context).getClass().getCanonicalName());
-                        context.startActivity(intent);
-                        activityInstanceCreated=true;
-                        Log.d("alium-activity", "is not running");
-            }else{
+
+            if(!AliumSurveyActivity.isActivityRunning  || !activityInstanceCreated) {
+                Intent intent = new Intent(context, AliumSurveyActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                );
+                context.startActivity(intent);
+                activityInstanceCreated = true;
+            }
+
                 Handler handler=new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -156,7 +153,7 @@ public class AliumSurveyLoader {
                         Log.d("alium-activity", "is running");
                     }
                 }, 500);
-            }
+
             ((Activity)context).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
