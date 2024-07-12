@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.dwao.alium.R;
 import com.dwao.alium.models.Survey;
@@ -81,7 +82,8 @@ public class AliumSurveyActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND); // This flag is required to set otherwise the setDimAmount method will not show any effect
         window.setDimAmount(0.25f);
         IntentFilter intentFilter=new IntentFilter("survey_content_fetched");
-        registerReceiver(surveyContentReceiver, intentFilter);
+//        registerReceiver(surveyContentReceiver, intentFilter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(surveyContentReceiver,intentFilter);
         isActivityRunning=true;
     }
     @Override

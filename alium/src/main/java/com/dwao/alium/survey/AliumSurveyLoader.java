@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.dwao.alium.frequencyManager.FrequencyManagerFactory;
 import com.dwao.alium.frequencyManager.SurveyFrequencyManager;
 import com.dwao.alium.listeners.VolleyResponseListener;
@@ -149,7 +151,8 @@ public class AliumSurveyLoader {
                         intent.putExtra("loadableSurveySpecs", loadableSurveySpecs);
                         intent.putExtra("surveyParameters", surveyParameters);
                         intent.putExtra("canonicalClassName", ((Activity)context).getClass().getCanonicalName());
-                        context.sendBroadcast(intent);
+//                        context.sendBroadcast(intent);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         Log.d("alium-activity", "is running");
                     }
                 }, 500);
