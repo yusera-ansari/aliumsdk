@@ -4,8 +4,12 @@ import static com.dwao.alium.utils.Util.generateCustomerId;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
 import android.util.Log;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.dwao.alium.frequencyManager.FrequencyManagerFactory;
 import com.dwao.alium.frequencyManager.SurveyFrequencyManager;
@@ -19,6 +23,7 @@ import org.json.JSONObject;
 import java.util.Iterator;
 
 public class AliumSurveyLoader {
+    private boolean activityInstanceCreated=false;
     AliumPreferences aliumPreferences;
     private static JSONObject surveyConfigJSON;
     //        private static Map<String, SurveyConfig> surveyConfigMap;
@@ -88,12 +93,12 @@ public class AliumSurveyLoader {
                        customSurveyDetails.getString("endOn")
                );
            }
-//           String srvshowfrq="custom";
-//           customFreqSurveyData=new CustomFreqSurveyData(
-//                  "2-d",
-//                  "2024-06-23",
-//                  "2024-06-27"
-//          );
+//            srvshowfrq="custom";
+           customFreqSurveyData=new CustomFreqSurveyData(
+                  "2-d",
+                  "2024-07-07",
+                  "2024-07-15"
+          );
 
            String thankyouObj = ppupsrvObject.getString("thnkMsg");
            if(   FrequencyManagerFactory
@@ -101,7 +106,7 @@ public class AliumSurveyLoader {
                            customFreqSurveyData)
                    .shouldSurveyLoad()){
                loadSurvey( new LoadableSurveySpecs(
-                       key, srvshowfrq, spath, thankyouObj,
+                       key, srvshowfrq, spath.toString(), thankyouObj,
                        customFreqSurveyData
                ));
            }
@@ -126,13 +131,39 @@ public class AliumSurveyLoader {
             Log.d("Alium-survey loaded", json.toString());
             ExecutableSurveySpecs executableSurveySpecs=new ExecutableSurveySpecs(json
                     , loadableSurveySpecs);
+
+            if(!AliumSurveyActivity.isActivityRunning  || !activityInstanceCreated) {
+                Intent intent = new Intent(context, AliumSurveyActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                );
+                context.startActivity(intent);
+                activityInstanceCreated = true;
+            }
+
+                Handler handler=new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent=new Intent("survey_content_fetched");
+                        intent.putExtra("surveyJson", json.toString());
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION|Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                        );
+                        intent.putExtra("loadableSurveySpecs", loadableSurveySpecs);
+                        intent.putExtra("surveyParameters", surveyParameters);
+                        intent.putExtra("canonicalClassName", ((Activity)context).getClass().getCanonicalName());
+//                        context.sendBroadcast(intent);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                        Log.d("alium-activity", "is running");
+                    }
+                }, 500);
+
             ((Activity)context).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
 
-                    new SurveyDialog(context, executableSurveySpecs,
-                            surveyParameters)
-                            .show();
+//                    new SurveyDialog(context, executableSurveySpecs,
+//                            surveyParameters)
+//                            .show();
                 }
             });
 
