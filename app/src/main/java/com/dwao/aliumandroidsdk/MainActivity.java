@@ -37,6 +37,11 @@ public class MainActivity extends Activity {
     JSONObject json=null;
     TextView next;
     @Override
+    protected  void onPause(){
+        super.onPause();
+        Log.d("Pause", "MainActivity Paused");
+    }
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); //disable night mode
         super.onCreate(savedInstanceState);

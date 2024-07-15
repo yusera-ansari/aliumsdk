@@ -22,6 +22,7 @@
             android:label="third"
             android:exported="false" />
         <activity
+            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".activities.DashboardActivity"
             android:label="second"
             android:exported="false" />

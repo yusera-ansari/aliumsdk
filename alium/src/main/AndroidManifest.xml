@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-<!--    <application-->
-<!--        android:supportsRtl="true"-->
-<!--        >-->
-<!--        <activity-->
-<!--            android:launchMode="singleTask"-->
-<!--            android:name=".BottomSurveyActivity"-->
-<!--            android:exported="false"-->
-<!--            android:theme="@style/CDialogThemeBottom"/>-->
-<!--    </application>-->
+    <application>
+        <activity
+
+            android:theme="@style/Theme.AliumSurveyActivity"
+            android:exported="true"
+            android:name="com.dwao.alium.survey.AliumSurveyActivity"
+            android:launchMode="singleTop"
+            ></activity>
+    </application>
 
 </manifest>
