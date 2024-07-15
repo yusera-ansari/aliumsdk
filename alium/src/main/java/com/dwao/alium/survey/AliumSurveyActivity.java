@@ -138,7 +138,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
 
 //                Log.i("activesurveylist", activeSurveyList.toString());
                SurveyDialog surveyDialog = new SurveyDialog(this, executableSurveySpecs,
-                       surveyParameters);
+                       surveyParameters, false);
                activeSurveys.add(surveyDialog);
                surveyDialog.show();
            }
@@ -194,7 +194,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
                 , loadableSurveySpecs);
 
         SurveyDialog surveyDialog = new SurveyDialog(this, executableSurveySpecs,
-                surveyParameters);
+                surveyParameters, true);
         activeSurveys.add(surveyDialog);
         surveyDialog.show();
     }

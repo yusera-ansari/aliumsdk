@@ -55,9 +55,9 @@ public class SurveyDialog extends SurveyController {
     RelativeLayout layout;
 
     public SurveyDialog(Context ctx, ExecutableSurveySpecs executableSurveySpecs,
-                 SurveyParameters surveyParameters)
+                 SurveyParameters surveyParameters, boolean shouldUpdatePreferences)
     {
-        super(ctx,executableSurveySpecs.getLoadableSurveySpecs());
+        super(ctx,executableSurveySpecs.getLoadableSurveySpecs(), shouldUpdatePreferences);
         this.executableSurveySpecs=executableSurveySpecs;
         surveyQuestions=executableSurveySpecs.getSurveyQuestions();
         surveyUi=executableSurveySpecs.getSurveyUi();
