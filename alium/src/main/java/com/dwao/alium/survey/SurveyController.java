@@ -36,12 +36,15 @@ abstract class SurveyController {
     protected int currentIndx=0;
     protected  int previousIndx=-1;
     protected JSONArray surveyQuestions;
+    private boolean shouldUpdatePreferences;
 
     protected final LoadableSurveySpecs loadableSurveySpecs;
     private SurveyFrequencyManager surveyFrequencyManager;
     protected AliumPreferences aliumPreferences ;
-    protected SurveyController( Context context,LoadableSurveySpecs loadableSurveySpecs){
+    protected SurveyController( Context context,LoadableSurveySpecs loadableSurveySpecs,
+                                boolean shouldUpdatePreferences){
         this.context=context;
+        this.shouldUpdatePreferences=shouldUpdatePreferences;
         this.uuid= UUID.randomUUID().toString();
         this.loadableSurveySpecs=loadableSurveySpecs;
         this.aliumPreferences= AliumPreferences.getInstance(context);
@@ -67,9 +70,13 @@ abstract class SurveyController {
 
     @CallSuper
     protected void show(){
-        if(!loadableSurveySpecs.surveyFreq.equals("untilresponse"))surveyFrequencyManager.recordSurveyTriggerOnPreferences(
-        );
-        trackWithAlium(context, generateTrackingParameters());
+        if(shouldUpdatePreferences){
+            Log.i("shouldUpdatePreferences", ""+shouldUpdatePreferences);
+            if (!loadableSurveySpecs.surveyFreq.equals("untilresponse"))
+                surveyFrequencyManager.recordSurveyTriggerOnPreferences(
+                );
+            trackWithAlium(context, generateTrackingParameters());
+        }
     }
 
     @CallSuper

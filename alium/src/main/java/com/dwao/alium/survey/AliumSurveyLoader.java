@@ -93,12 +93,12 @@ public class AliumSurveyLoader {
                        customSurveyDetails.getString("endOn")
                );
            }
-//           String srvshowfrq="3";
-//           customFreqSurveyData=new CustomFreqSurveyData(
-//                  "2-d",
-//                  "2024-06-23",
-//                  "2024-06-27"
-//          );
+//            srvshowfrq="custom";
+           customFreqSurveyData=new CustomFreqSurveyData(
+                  "2-d",
+                  "2024-07-07",
+                  "2024-07-15"
+          );
 
            String thankyouObj = ppupsrvObject.getString("thnkMsg");
            if(   FrequencyManagerFactory
