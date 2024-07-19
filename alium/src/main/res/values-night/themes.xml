@@ -15,13 +15,28 @@
     </style>
     <style name="Theme.AliumSurveyActivity" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowFrame">@null</item>
-        <item name="android:backgroundDimEnabled">true</item>
-        <item name="android:windowIsFloating">false</item>
+        <!--        <item name="android:backgroundDimEnabled">true</item>-->
+        <!--        <item name="android:backgroundDimAmount">0 .1</item>-->
+        <!--    <item name="android:windowIsFloating">true</item>-->
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowActionBar">false</item>
+        <!--    <item name="android:windowActionBar">false</item>-->
         <!--        <item name="android:windowAnimationStyle">@style/DialogTransitionFromBottom</item>-->
-        <item name="android:windowBackground">#00000000</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowDisablePreview">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowNoTitle">true</item>
     </style>
+<!--    <style name="Theme.AliumSurveyActivity" parent="@style/Theme.AppCompat.Light.NoActionBar">-->
+<!--        <item name="android:windowFrame">@null</item>-->
+<!--        <item name="android:backgroundDimEnabled">true</item>-->
+<!--        <item name="android:windowIsFloating">false</item>-->
+<!--        <item name="android:windowIsTranslucent">true</item>-->
+<!--        <item name="android:windowActionBar">false</item>-->
+<!--        &lt;!&ndash;        <item name="android:windowAnimationStyle">@style/DialogTransitionFromBottom</item>&ndash;&gt;-->
+<!--        <item name="android:windowBackground">#00000000</item>-->
+<!--        <item name="android:windowContentOverlay">@null</item>-->
+<!--        <item name="android:windowNoTitle">true</item>-->
+<!--    </style>-->
 </resources>
