@@ -56,6 +56,6 @@ public class MainActivity extends Activity {
             }
         });
 
-        Alium.trigger(this, new SurveyParameters("secondscreen", new HashMap()));
+        Alium.trigger(this, new SurveyParameters("firstscreen"));
     }
 }
