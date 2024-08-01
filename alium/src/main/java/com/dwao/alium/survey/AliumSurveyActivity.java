@@ -159,6 +159,8 @@ public class AliumSurveyActivity extends AppCompatActivity {
             }
         }
 //        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(surveyContentReceiver);
     }
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
