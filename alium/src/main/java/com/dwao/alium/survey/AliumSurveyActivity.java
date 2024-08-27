@@ -20,6 +20,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.dwao.alium.R;
 import com.dwao.alium.models.Survey;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -100,7 +101,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
                 map.put("surveyParameters", surveyDialog.surveyParameters);
                 map.put("loadableSurveySpecs", surveyDialog.executableSurveySpecs.getLoadableSurveySpecs());
                 map.put("surveyJson", surveyDialog.
-                        executableSurveySpecs.getJson().toString());
+                        executableSurveySpecs.getSurvey());
 
                 activeSurveyMaps.add(map);
                 surveyDialog.dialog.dismiss();
@@ -127,13 +128,17 @@ public class AliumSurveyActivity extends AppCompatActivity {
                SurveyParameters surveyParameters = (SurveyParameters) map.get("surveyParameters");
                LoadableSurveySpecs loadableSurveySpecs =
                        (LoadableSurveySpecs) map.get("loadableSurveySpecs");
-               JSONObject jsonObject;
+               String json;
+               Gson gson=new Gson();
+               Survey survey=new Survey();
                try {
-                   jsonObject = new JSONObject(map.get("surveyJson").toString());
-               } catch (JSONException e) {
-                   throw new RuntimeException(e);
+                   json = map.get("surveyJson").toString();
+                   survey=gson.fromJson(json, Survey.class);
+               } catch (Exception e) {
+//                   throw new RuntimeException(e);
+                   continue;
                }
-               ExecutableSurveySpecs executableSurveySpecs = new ExecutableSurveySpecs(jsonObject
+               ExecutableSurveySpecs executableSurveySpecs = new ExecutableSurveySpecs(survey
                        , loadableSurveySpecs);
 
 //                Log.i("activesurveylist", activeSurveyList.toString());
@@ -185,14 +190,18 @@ public class AliumSurveyActivity extends AppCompatActivity {
             }
 
         }
-
-        JSONObject jsonObject=new JSONObject();
+        Gson gson=new Gson();
+        Survey survey=new Survey();
+        String json="";
         try {
-            jsonObject = new JSONObject(intent.getStringExtra("surveyJson"));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
+            json = intent.getStringExtra("surveyJson");
+            survey=gson.fromJson(json, Survey.class);
+        } catch (Exception e) {
+//            throw new RuntimeException(e);
+            Log.d("renderSurvey", e.toString());
+            return;
         }
-        ExecutableSurveySpecs executableSurveySpecs = new ExecutableSurveySpecs(jsonObject
+        ExecutableSurveySpecs executableSurveySpecs = new ExecutableSurveySpecs(survey
                 , loadableSurveySpecs);
 
         SurveyDialog surveyDialog = new SurveyDialog(this, executableSurveySpecs,
