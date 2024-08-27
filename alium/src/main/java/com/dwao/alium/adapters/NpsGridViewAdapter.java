@@ -16,6 +16,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import com.dwao.alium.R;
 import com.dwao.alium.listeners.NpsOptionClickListener;
 import com.dwao.alium.models.QuestionResponse;
+import com.dwao.alium.models.Survey;
 
 import org.json.JSONObject;
 
@@ -24,9 +25,10 @@ public class NpsGridViewAdapter extends BaseAdapter{
     Context ctx;
     int selectedOption=-1;
     NpsOptionClickListener npsOptionClickListener;
-    JSONObject surveyUi;
+    Survey.SurveyUI surveyUi;
     QuestionResponse currentQuestionResponse;
-    public NpsGridViewAdapter(Context ctx, NpsOptionClickListener npsOptionClickListener, QuestionResponse currentQuestionResponse, JSONObject surveyUi){
+    public NpsGridViewAdapter(Context ctx, NpsOptionClickListener npsOptionClickListener,
+                              QuestionResponse currentQuestionResponse, Survey.SurveyUI surveyUi){
     this.ctx=ctx;
     this.npsOptionClickListener=npsOptionClickListener;
     this.currentQuestionResponse=currentQuestionResponse;
@@ -82,11 +84,9 @@ public class NpsGridViewAdapter extends BaseAdapter{
         d.mutate();
         if(surveyUi!=null) {
             try {
-                if (surveyUi.has("options")) {
                     npsOption.setTextColor(Color.parseColor(surveyUi
-                            .getString("options")
+                            .getOptions()
                            ));
-                }
             } catch (Exception e) {
                 Log.e("surveyUICheckBox", e.toString());
             }
@@ -98,9 +98,9 @@ public class NpsGridViewAdapter extends BaseAdapter{
 //                d.setColor(Color.parseColor(surveyUi
 //                        .getJSONObject("nextCta").getString("backgroundColor") ));
                 d.setColorFilter(Color.parseColor(surveyUi
-                        .getJSONObject("nextCta").getString("backgroundColor") ),PorterDuff.Mode.SRC_IN);
+                        .getNextCta().getBackgroundColor() ),PorterDuff.Mode.SRC_IN);
                 d.setStroke(5,Color.parseColor(surveyUi
-                        .getJSONObject("nextCta").getString("textColor")));
+                        .getNextCta().getTextColor()));
             }catch(Exception e){
                 d.setColorFilter(Color.parseColor("#00ff00" ),PorterDuff.Mode.SRC_IN);
             }
@@ -108,7 +108,7 @@ public class NpsGridViewAdapter extends BaseAdapter{
         }else{
             try{
                d.setStroke(2,Color.parseColor(surveyUi
-                        .getJSONObject("nextCta").getString("backgroundColor") ));
+                        .getNextCta().getBackgroundColor() ));
             }
             catch (Exception e){
                 d.setStroke(2, Color.BLACK);

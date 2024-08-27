@@ -15,6 +15,7 @@ import com.dwao.alium.R;
 import com.dwao.alium.adapters.RadioBtnAdapter;
 import com.dwao.alium.listeners.RadioClickListener;
 import com.dwao.alium.models.QuestionResponse;
+import com.dwao.alium.models.Survey;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -24,15 +25,15 @@ import java.util.List;
 
 public class RadioQuestionRenderer implements QuestionRenderer {
 
-    JSONArray responseOptJSON;
+    List responseOpt ;
     private RadioBtnAdapter adapter;
-    JSONObject surveyUi;
-    public RadioQuestionRenderer setSurveyUi(JSONObject surveyUi){
+    Survey.SurveyUI surveyUi;
+    public RadioQuestionRenderer setSurveyUi(Survey.SurveyUI surveyUi){
         this.surveyUi=surveyUi;
         return this;
     }
-    public RadioQuestionRenderer setOptions(JSONArray options){
-        responseOptJSON=options;
+    public RadioQuestionRenderer setOptions(List options){
+        responseOpt =options;
         return this;
 
     }
@@ -40,15 +41,7 @@ public class RadioQuestionRenderer implements QuestionRenderer {
     public void renderQuestion(Context context, ViewGroup layout,
                                QuestionResponse currentQuestionResponse, View nextQuestionBtn) {
 
-        List<String> responseOptions=new ArrayList<>();
-       try{
-           for (int i=0; i<responseOptJSON.length(); i++){
-               responseOptions.add(responseOptJSON.getString(i));
-           }
-       }catch (Exception e){
-           Log.e("RadioQuestionRenderer", "Radio options invalid");
-           Log.e("RadioQuestionRenderer", e.toString());
-       }
+
         View radioQues= LayoutInflater.from(context).inflate(R.layout.radio_ques, null);
 //                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
 //                        .getString("question")));
@@ -70,7 +63,7 @@ public class RadioQuestionRenderer implements QuestionRenderer {
                 });
             }
         };
-        this.adapter=new RadioBtnAdapter(responseOptions,radioClickListener,
+        this.adapter=new RadioBtnAdapter(responseOpt,radioClickListener,
                 currentQuestionResponse, surveyUi );
         radioBtnRecyView.setAdapter(adapter);
 

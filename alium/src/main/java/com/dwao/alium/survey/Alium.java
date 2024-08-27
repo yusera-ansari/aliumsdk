@@ -2,12 +2,20 @@ package com.dwao.alium.survey;
 import android.content.Context;
 import android.util.Log;
 import com.dwao.alium.listeners.VolleyResponseListener;
+import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.network.VolleyService;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONObject;
+
+import java.lang.reflect.Type;
+import java.util.HashMap;
 
 
 public class Alium {
      private static JSONObject surveyConfigJSON;
+    private static HashMap<String, SurveyConfig> surveyConfigMap =new HashMap<>();
 
      private static  Alium instance;
 
@@ -35,12 +43,12 @@ public class Alium {
             if (configURL == null) {
                 throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
             }
-            if(surveyConfigJSON.length()==0) {
+            if(surveyConfigMap.isEmpty()) {
                 volleyService.callVolley(ctx, configURL, new ConfigURLResponseListener(ctx, parameters));
                 Log.d("Alium-initialized", "calling survey on" + parameters.screenName);
             }else{
                 Log.d("helllo", surveyConfigJSON.toString());
-                new AliumSurveyLoader(ctx, parameters, surveyConfigJSON)
+                new AliumSurveyLoader(ctx, parameters, surveyConfigMap)
                         .showSurvey();
             }
 
@@ -55,8 +63,15 @@ public class Alium {
             @Override
             public void onResponseReceived(JSONObject jsonObject) {
                 surveyConfigJSON=jsonObject;
-                Log.d("Alium-Config", jsonObject.toString());
-                new AliumSurveyLoader(context, surveyParameters, surveyConfigJSON)
+                Log.d("Alium-SurveyConfig", jsonObject.toString());
+                Gson gson=new Gson();
+                Type mapType = new TypeToken<HashMap<String,SurveyConfig >>(){}.getType();
+
+                surveyConfigMap = gson.fromJson(jsonObject.toString(), mapType);
+
+
+                Log.d("SurveyConfig", surveyConfigMap.toString());
+                new AliumSurveyLoader(context, surveyParameters, surveyConfigMap)
                         .showSurvey();
 
             }

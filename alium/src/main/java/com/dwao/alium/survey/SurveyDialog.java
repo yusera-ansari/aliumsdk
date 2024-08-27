@@ -31,6 +31,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.dwao.alium.R;
+import com.dwao.alium.models.Survey;
 import com.dwao.alium.questions.CheckBoxQuestionRenderer;
 import com.dwao.alium.questions.LongTextQuestionRenderer;
 import com.dwao.alium.questions.NPSQuestionRenderer;
@@ -54,14 +55,13 @@ public class SurveyDialog extends SurveyController {
     LinearProgressIndicator bottomProgressBar;
     RelativeLayout layout;
 
+
     public SurveyDialog(Context ctx, ExecutableSurveySpecs executableSurveySpecs,
                  SurveyParameters surveyParameters, boolean shouldUpdatePreferences)
     {
         super(ctx,executableSurveySpecs.getLoadableSurveySpecs(), shouldUpdatePreferences);
         this.executableSurveySpecs=executableSurveySpecs;
-        surveyQuestions=executableSurveySpecs.getSurveyQuestions();
-        surveyUi=executableSurveySpecs.getSurveyUi();
-        surveyInfo=executableSurveySpecs.getSurveyInfo();
+        survey=executableSurveySpecs.survey;
         this.surveyParameters=surveyParameters;
 
 
@@ -70,7 +70,7 @@ public class SurveyDialog extends SurveyController {
     public void show(){
         initializeDialogUiElements(); //initializes elements and updates UI
         configureDialogWindow();
-        if(surveyQuestions.length()>0 && currentIndx==0) {
+        if(survey.getQuestions().size()>0 && currentIndx==0) {
             showCurrentQuestion();
         }else{
             dialog.dismiss();
@@ -108,11 +108,14 @@ public class SurveyDialog extends SurveyController {
         gradientDrawable.setColor(Color.WHITE);
 
         try {
-            if(surveyUi!=null)gradientDrawable.setColor(Color.parseColor(surveyUi.getString("backgroundColor")));
+            if(survey.getSurveyUI()!=null)gradientDrawable.setColor(
+                    Color.parseColor(survey.getSurveyUI().getBackgroundColor()));
 
-            if(surveyUi!=null && surveyUi.has("borderColor")) gradientDrawable.setStroke((int)(2* Resources.getSystem()
-                            .getDisplayMetrics().density),
-                    Color.parseColor(surveyUi.getString("borderColor")));
+            if(survey.getSurveyUI()!=null && !survey.getSurveyUI().getBorderColor().isEmpty()) {
+                gradientDrawable.setStroke((int) (2 * Resources.getSystem()
+                                .getDisplayMetrics().density),
+                        Color.parseColor(survey.getSurveyUI().getBorderColor()));
+            }
         }catch (Exception e){
             Log.d("surveyUI", e.toString());
         }
@@ -151,14 +154,12 @@ public class SurveyDialog extends SurveyController {
     private void setNextAndCloseBtnUI(){
         GradientDrawable nxtQuesDrawable=(GradientDrawable) nextQuestionBtn.getBackground();
         try{
-            if(surveyUi!=null) {
-                nxtQuesDrawable.setColor(Color.parseColor(surveyUi
-                        .getJSONObject("nextCta").getString("backgroundColor")));
-                nextQuestionBtn.setTextColor(Color.parseColor(surveyUi
-                        .getJSONObject("nextCta").getString("textColor")));
-                closeDialogBtn.setColorFilter(Color.parseColor(surveyUi
-                                .getJSONObject("nextCta")
-                                .getString("backgroundColor"))
+            if(survey.getSurveyUI()!=null) {
+                nxtQuesDrawable.setColor(Color.parseColor(survey.getSurveyUI().getNextCta().getBackgroundColor()
+                ));
+                nextQuestionBtn.setTextColor(Color.parseColor(survey.getSurveyUI().getNextCta().getTextColor()));
+                closeDialogBtn.setColorFilter(Color.parseColor(survey.getSurveyUI().getNextCta()
+                                .getBackgroundColor())
                         ,
                         PorterDuff.Mode.MULTIPLY);
             }
@@ -174,7 +175,7 @@ public class SurveyDialog extends SurveyController {
          super.handleNextQuestion();
             resetElementsForNextQuestion();
             //check if to show next question or else show thank-you layout
-            if( currentIndx< surveyQuestions.length()){
+            if( currentIndx< survey.getQuestions().size()){
                 showCurrentQuestion();
                 return;
             }
@@ -196,21 +197,14 @@ public class SurveyDialog extends SurveyController {
         AppCompatTextView thankYouText=thankyou.findViewById(R.id.thankyou_text);
         AppCompatTextView thankYouMsg=thankyou.findViewById(R.id.thankyou_msg);
         AppCompatImageView completedAnimation=thankyou.findViewById(R.id.completed_anim);
-        if(surveyUi!=null){
-
-            try {
-               int color = Color.parseColor(surveyUi
-                        .getString("question"));
+        if(survey.getSurveyUI()!=null){
+               int color = Color.parseColor(survey.getSurveyUI().getQuestion());
                 thankYouMsg.setTextColor(color);
                 thankYouText.setTextColor(color);
                 DrawableCompat.setTint(
                         DrawableCompat.wrap(completedAnimation.getDrawable()),
                         color
                 );
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-
 //                        completedAnimation.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
         }
         thankYouMsg.setText(loadableSurveySpecs.thankYouMsg);
@@ -244,7 +238,7 @@ public class SurveyDialog extends SurveyController {
 
     private void updateProgressIndicator(){
         Log.d("index", ""+currentIndx+" "+previousIndx);
-        int progress=(10000/(surveyQuestions.length()+1))*(currentIndx-previousIndx);
+        int progress=(10000/(survey.getQuestions().size()+1))*(currentIndx-previousIndx);
         ObjectAnimator animator=ObjectAnimator.ofInt(bottomProgressBar,"progress"
         ,bottomProgressBar.getProgress(),(progress+bottomProgressBar.getProgress()));
         animator.setDuration(1000);
@@ -262,10 +256,9 @@ public class SurveyDialog extends SurveyController {
             updateDialogUi();
             setNextAndCloseBtnUI();
 
-            if(surveyUi!=null && surveyUi
-                    .has("question")) {
-                int color=Color.parseColor(surveyUi
-                        .getString("question"));
+            if(survey.getSurveyUI()!=null) {
+                int color=Color.parseColor(survey.getSurveyUI().getQuestion()
+                      );
                 currentQuestion.setTextColor(color);
                 improveExpTxt.setTextColor(color);
                 bottomProgressBar.getProgressDrawable().setColorFilter(
@@ -285,9 +278,9 @@ public class SurveyDialog extends SurveyController {
 
 
         try {
-            currentQuestion.setText(surveyQuestions.getJSONObject(currentIndx)
-                    .getString("question"));
-            String responseType = surveyQuestions.getJSONObject(currentIndx).getString("responseType");
+            currentQuestion.setText(survey.getQuestions().get(currentIndx)
+                    .getQuestion());
+            String responseType = survey.getQuestions().get(currentIndx).getResponseType();
             generateQuestion(responseType); //matches response type and generates corresponding ques
             Log.d("surveyQuestion", "id: " + currentQuestionResponse.getQuestionId()
                     + " type: " + currentQuestionResponse.getResponseType());
@@ -306,21 +299,21 @@ public class SurveyDialog extends SurveyController {
             case "2":
                 RadioQuestionRenderer radioQuestionRenderer = new RadioQuestionRenderer();
                 radioQuestionRenderer
-                        .setOptions(surveyQuestions.getJSONObject(currentIndx)
-                                .getJSONArray("responseOptions"))
-                        .setSurveyUi(surveyUi)
+                        .setOptions(survey.getQuestions().get(currentIndx)
+                                .getResponseOptions())
+                        .setSurveyUi(survey.getSurveyUI())
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
             case "3":
                 CheckBoxQuestionRenderer checkBoxQuestionRenderer = new CheckBoxQuestionRenderer();
-                checkBoxQuestionRenderer.setSurveyUi(surveyUi)
-                        .setOptions(surveyQuestions.getJSONObject(currentIndx)
-                                .getJSONArray("responseOptions"))
+                checkBoxQuestionRenderer.setSurveyUi(survey.getSurveyUI())
+                        .setOptions(survey.getQuestions().get(currentIndx)
+                                .getResponseOptions())
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
             case "4":
                 NPSQuestionRenderer npsQuestionRenderer = new NPSQuestionRenderer();
-                npsQuestionRenderer.setSurveyUi(surveyUi)
+                npsQuestionRenderer.setSurveyUi(survey.getSurveyUI())
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
         }
@@ -340,8 +333,8 @@ public class SurveyDialog extends SurveyController {
         params.put("custEmail", "NA");
         params.put("custMobile", "NA");
         try{
-            params.put("srvid", surveyInfo.getString("surveyId"));
-            params.put("orgId",surveyInfo.getString("orgId"));
+            params.put("srvid", survey.getSurveyInfo().getSurveyId());
+            params.put("orgId",survey.getSurveyInfo().getOrgId());
         }catch (Exception e){
             Log.e("Generate Params Map", "Couldn't get srvid/orgId");
         }

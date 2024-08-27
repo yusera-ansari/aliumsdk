@@ -34,6 +34,6 @@ public class DashboardActivity extends Activity {
         params.put("dim1", "alium_app"); //appName
         params.put("dim2", "mobile"); //surveyOn
         params.put("dim3", "android"); //os
-        Alium.trigger(this,  new SurveyParameters("firstscreen", params));
+        Alium.trigger(this,  new SurveyParameters("secondscreen", params));
     }
 }
