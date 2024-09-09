@@ -1,6 +1,8 @@
 package com.dwao.alium.models;
 
-public class QuestionResponse {
+import java.io.Serializable;
+
+public class QuestionResponse implements Serializable {
     int questionId, indexOfSelectedAnswer=0;
 
     public int getIndexOfSelectedAnswer() {

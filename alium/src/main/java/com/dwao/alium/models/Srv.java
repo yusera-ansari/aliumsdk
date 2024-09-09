@@ -2,7 +2,9 @@ package com.dwao.alium.models;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Srv{
+import java.io.Serializable;
+
+public class Srv implements Serializable {
     Srv(){}
     @SerializedName("urlmatch")
     String urlMatch;

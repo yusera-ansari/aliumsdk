@@ -34,6 +34,8 @@ import java.util.Map;
 
 public class AliumSurveyActivity extends AppCompatActivity {
     public static boolean isActivityRunning=false;
+    private static boolean stateRestored=false;
+
     private static List<SurveyDialog> activeSurveys=new ArrayList<>();
     BroadcastReceiver surveyContentReceiver=new BroadcastReceiver() {
         @Override
@@ -71,6 +73,9 @@ public class AliumSurveyActivity extends AppCompatActivity {
         super.onResume();
         Log.d("onResume", "AliumActivity onResume");
         Log.d("onResume",activeSurveys.toString());
+        if(!stateRestored){
+            Log.d("onresume", "state not restored");
+        }
     }
 
     @Override
@@ -112,7 +117,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
 
 
 
-        Log.d("onSaveInstanceState", "On saved Instance state");
+        Log.d("onSaveInstanceState", "On saved Instance state"+ activeSurveyMaps.size());
     }
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
@@ -122,6 +127,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
         List<Map<String, Serializable>> activeSurveyMapLists
                 = (List<Map<String, Serializable>>) savedInstanceState.get("activeSurveyLists");
        if(activeSurveyMapLists.size()>0){
+           Log.d("surveyList", "active survey list is >0");
            Iterator<Map<String, Serializable>> keys= activeSurveyMapLists.listIterator();
            while(keys.hasNext()) {
                Map<String, Serializable> map=keys.next();
@@ -132,10 +138,13 @@ public class AliumSurveyActivity extends AppCompatActivity {
                Gson gson=new Gson();
                Survey survey=new Survey();
                try {
-                   json = map.get("surveyJson").toString();
-                   survey=gson.fromJson(json, Survey.class);
+                   survey=(Survey) map.get("surveyJson");
+//                   json = map.get("surveyJson").toString();
+//                   survey=gson.fromJson(json, Survey.class);
                } catch (Exception e) {
 //                   throw new RuntimeException(e);
+                   Log.d("onstateRestore",map.get("surveyJson").toString());
+                   Log.e("onstateRestore", e.toString());
                    continue;
                }
                ExecutableSurveySpecs executableSurveySpecs = new ExecutableSurveySpecs(survey
@@ -148,6 +157,8 @@ public class AliumSurveyActivity extends AppCompatActivity {
                surveyDialog.show();
            }
        }
+       stateRestored=true;
+       Log.d("onrestoresate", activeSurveys.toString());
 
     }
     @Override
@@ -170,7 +181,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        Log.d("Instance", "on config changed");
+//        Log.d("Instance", "on config changed");
     }
 
     private void renderSurvey(Intent intent){
@@ -184,6 +195,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
             while(keys.hasNext()){
                 SurveyDialog dialog=keys.next();
                 if(dialog.loadableSurveySpecs.key.equals(loadableSurveySpecs.key)){
+                    Log.d("activeSurvey", "survey existes");
                     return;
                 }
 

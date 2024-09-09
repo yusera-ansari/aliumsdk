@@ -44,7 +44,7 @@ public class Survey implements Serializable {
         this.surveyInfo = surveyInfo;
     }
 
-    public class SurveyUI{
+    public class SurveyUI implements Serializable{
         String backgroundColor="#ffffff", borderColor="#ffffff", question="#000000", options="#000000";
         public NextCta nextCta=new NextCta();
 
@@ -99,7 +99,7 @@ public class Survey implements Serializable {
             this.nextCta = nextCta;
         }
 
-        public class NextCta{
+        public class NextCta implements Serializable{
             String textColor="#000000";
             String backgroundColor="#ffffff";
 
@@ -123,7 +123,7 @@ public class Survey implements Serializable {
 
         }
     }
-    public class SurveyInfo {
+    public class SurveyInfo implements Serializable {
         String orgId, customerId, surveyId, language, position, background, uniqueidentifier, theme, branding;
 
         public String getOrgId() {
