@@ -2,7 +2,9 @@ package com.dwao.alium.models;
 
 import com.google.gson.annotations.SerializedName;
 
-public class SurveyConfig {
+import java.io.Serializable;
+
+public class SurveyConfig implements Serializable {
     SurveyConfig(){}
     int active;
 
