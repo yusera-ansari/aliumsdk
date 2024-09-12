@@ -9,7 +9,9 @@ import androidx.annotation.CallSuper;
 
 import com.dwao.alium.frequencyManager.FrequencyManagerFactory;
 import com.dwao.alium.frequencyManager.SurveyFrequencyManager;
+import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
+import com.dwao.alium.models.Survey;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 
 import org.json.JSONArray;
@@ -17,25 +19,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 abstract class SurveyController {
     protected final String uuid;
-
+    Survey survey;
     protected ExecutableSurveySpecs executableSurveySpecs;
 
 
     protected SurveyParameters surveyParameters;
-    protected JSONObject surveyUi;
-    JSONObject surveyInfo;
-
     protected QuestionResponse currentQuestionResponse=new QuestionResponse();
 
     protected Context context;
     protected int currentIndx=0;
     protected  int previousIndx=-1;
-    protected JSONArray surveyQuestions;
     private boolean shouldUpdatePreferences;
 
     protected final LoadableSurveySpecs loadableSurveySpecs;
@@ -64,7 +63,7 @@ abstract class SurveyController {
     protected void handleNextQuestion() throws JSONException {
         submitResponse();
         //handle condition mapping, this updates the currentIndx
-        handleConditionMapping(surveyQuestions.getJSONObject(currentIndx));
+        handleConditionMapping(survey.getQuestions().get(currentIndx));
 
     };
 
@@ -86,19 +85,19 @@ abstract class SurveyController {
     };
 
 
-    private void handleConditionMapping(JSONObject jsonObject){
+    private void handleConditionMapping(Question question){
         try{
-            if(jsonObject!=null && jsonObject.has("conditionMapping")){
-                JSONArray conditionMappingArray=jsonObject.getJSONArray("conditionMapping");
+            if(question!=null && !question.getConditionMapping().isEmpty()){
+                List<Integer> conditionMappingArray=question.getConditionMapping();
                 Log.e("condition-index", conditionMappingArray.toString()+"" +currentQuestionResponse.getIndexOfSelectedAnswer() );
-                int nextQuestIndx= conditionMappingArray.getInt(
+                int nextQuestIndx= conditionMappingArray.get(
                         currentQuestionResponse.getIndexOfSelectedAnswer()
                 );
                 previousIndx=currentIndx;
                 if(nextQuestIndx==-2){
                     currentIndx++;//next question
                 }else if(nextQuestIndx==-1){
-                    currentIndx=surveyQuestions.length();//thankyou
+                    currentIndx=survey.getQuestions().size();//thankyou
                 }else {
                     currentIndx=nextQuestIndx;//set currentIndx as nextQuestIndx
                 }
@@ -119,10 +118,10 @@ abstract class SurveyController {
 
     private void updateCurrentQuestionResponse(){
         try{
-            currentQuestionResponse.setQuestionId(surveyQuestions.getJSONObject(currentIndx)
-                    .getInt("id"));
-            currentQuestionResponse.setResponseType(surveyQuestions
-                    .getJSONObject(currentIndx).getString("responseType"));
+            currentQuestionResponse.setQuestionId(survey.getQuestions().get(currentIndx)
+                    .getId());
+            currentQuestionResponse.setResponseType(survey.getQuestions().get(currentIndx)
+                    .getResponseType());
 
             currentQuestionResponse.setIndexOfSelectedAnswer(0);
         }catch (Exception e){

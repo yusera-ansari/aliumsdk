@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dwao.alium.R;
 import com.dwao.alium.listeners.RadioClickListener;
 import com.dwao.alium.models.QuestionResponse;
+import com.dwao.alium.models.Survey;
 
 import org.json.JSONObject;
 
@@ -25,9 +26,9 @@ public class RadioBtnAdapter extends RecyclerView.Adapter<RadioBtnAdapter.ViewHo
     List<String> radioBtnList;
     RadioClickListener radioClickListener;
     QuestionResponse currentQuestionResponse;
-    JSONObject surveyUi;
+    Survey.SurveyUI surveyUi;
      public RadioBtnAdapter(List<String> radioBtnList, RadioClickListener radioClickListener,
-                            QuestionResponse currentQuestionResponse, JSONObject surveyUi){
+                            QuestionResponse currentQuestionResponse, Survey.SurveyUI surveyUi){
          this.currentQuestionResponse=currentQuestionResponse;
         this.radioBtnList=radioBtnList;
         this.radioClickListener=radioClickListener;
@@ -52,11 +53,9 @@ public class RadioBtnAdapter extends RecyclerView.Adapter<RadioBtnAdapter.ViewHo
         holder.radioButton.setText(radioBtnList.get(position));
         if(surveyUi!=null){
             try{
-                if(surveyUi.has("options")){
                     holder.radioButton.setTextColor(Color.parseColor(surveyUi
-                            .getString("options")
+                            .getOptions()
                             ));
-                }
             }catch (Exception e){
                 Log.e("surveyUICheckBox", e.toString());
             }}
