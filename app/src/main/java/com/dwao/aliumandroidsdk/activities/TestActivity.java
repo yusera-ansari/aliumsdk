@@ -21,5 +21,6 @@ public class TestActivity extends Activity {
         setContentView(R.layout.activity_test);
         next=findViewById(R.id.test_next);
         Alium.trigger(this,  new SurveyParameters("thirdscreen"));
+
     }
 }

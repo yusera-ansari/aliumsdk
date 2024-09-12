@@ -95,11 +95,11 @@ public class AliumSurveyLoader {
                );
            }
 //            srvshowfrq="custom";
-           customFreqSurveyData=new CustomFreqSurveyData(
-                  "2-d",
-                  "2024-07-07",
-                  "2024-07-15"
-          );
+//           customFreqSurveyData=new CustomFreqSurveyData(
+//                  "2-min",
+//                  "2024-07-07",
+//                  "2024-09-15"
+//          );
 
            String thankyouObj = ppupsrvObject.getThankYouMsg();
            if(   FrequencyManagerFactory
