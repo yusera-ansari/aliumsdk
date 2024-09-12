@@ -1,6 +1,8 @@
 package com.dwao.alium.survey;
 
-public class CustomFreqSurveyData {
+import java.io.Serializable;
+
+public class CustomFreqSurveyData implements Serializable {
     public String freq;
     public String startOn;
     public String endOn;
