@@ -12,6 +12,7 @@ import com.dwao.alium.R;
 import com.dwao.alium.adapters.NpsGridViewAdapter;
 import com.dwao.alium.listeners.NpsOptionClickListener;
 import com.dwao.alium.models.QuestionResponse;
+import com.dwao.alium.models.Survey;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,8 +21,8 @@ public class NPSQuestionRenderer implements QuestionRenderer {
 
     private NpsGridViewAdapter npsGridViewAdapter;
     JSONArray responseOptJSON;
-    JSONObject surveyUi;
-    public NPSQuestionRenderer setSurveyUi(JSONObject surveyUi){
+    Survey.SurveyUI surveyUi;
+    public NPSQuestionRenderer setSurveyUi(Survey.SurveyUI surveyUi){
         this.surveyUi=surveyUi;
         return this;
     }

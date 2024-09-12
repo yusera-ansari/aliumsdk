@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -20,11 +21,15 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.dwao.alium.R;
 import com.dwao.alium.models.Survey;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,6 +38,11 @@ import java.util.Map;
 
 public class AliumSurveyActivity extends AppCompatActivity {
     public static boolean isActivityRunning=false;
+    private static boolean stateRestored=false;
+    Gson gson=new Gson();
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
+
     private static List<SurveyDialog> activeSurveys=new ArrayList<>();
     BroadcastReceiver surveyContentReceiver=new BroadcastReceiver() {
         @Override
@@ -70,6 +80,41 @@ public class AliumSurveyActivity extends AppCompatActivity {
         super.onResume();
         Log.d("onResume", "AliumActivity onResume");
         Log.d("onResume",activeSurveys.toString());
+        if(!stateRestored){
+          try{
+              Log.d("onresume", "state not restored");
+              Type type=new TypeToken<List<Map>>(){}.getType();
+              String data =sharedPreferences.getString("activeSurveyLists", "");
+              Log.d("data", data);
+              JSONArray jsonArray=new JSONArray(data);
+
+//              List<Map> surveyList=gson.fromJson(data, type);
+              if(jsonArray.length()>0){
+                  for(int i=0; i<jsonArray.length(); i++){
+                      Map map=new HashMap();
+                      JSONObject object=new JSONObject(jsonArray.getString(i));
+                      SurveyParameters surveyParameters=gson.fromJson( object.get("surveyParameters").toString(),
+                              SurveyParameters.class);
+                      LoadableSurveySpecs loadableSurveySpecs=gson.fromJson(object.get("loadableSurveySpecs").toString(),
+                              LoadableSurveySpecs.class);
+                      Survey survey=gson.fromJson(object.get("surveyJson").toString(),
+                              Survey.class);
+                      ExecutableSurveySpecs executableSurveySpecs = new ExecutableSurveySpecs(survey
+                              , loadableSurveySpecs);
+
+                      Log.d("afterResume", jsonArray.getString(i));
+                      SurveyDialog surveyDialog = new SurveyDialog(this, executableSurveySpecs,
+                              surveyParameters, false);
+                      activeSurveys.add(surveyDialog);
+                      surveyDialog.show();
+                  }
+              }
+              editor.remove("activeSurveyLists");
+              editor.apply();
+          }catch (Exception e){
+              Log.e("onResume", e.toString());
+          }
+        }
     }
 
     @Override
@@ -85,6 +130,8 @@ public class AliumSurveyActivity extends AppCompatActivity {
 //        registerReceiver(surveyContentReceiver, intentFilter);
         LocalBroadcastManager.getInstance(this).registerReceiver(surveyContentReceiver,intentFilter);
         isActivityRunning=true;
+        sharedPreferences=getSharedPreferences("SURVEY_RESTORE", MODE_PRIVATE);
+        editor=sharedPreferences.edit();
     }
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -100,7 +147,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
                 map.put("surveyParameters", surveyDialog.surveyParameters);
                 map.put("loadableSurveySpecs", surveyDialog.executableSurveySpecs.getLoadableSurveySpecs());
                 map.put("surveyJson", surveyDialog.
-                        executableSurveySpecs.getJson().toString());
+                        executableSurveySpecs.getSurvey());
 
                 activeSurveyMaps.add(map);
                 surveyDialog.dialog.dismiss();
@@ -109,9 +156,10 @@ public class AliumSurveyActivity extends AppCompatActivity {
             }
         outState.putSerializable("activeSurveyLists", (Serializable) activeSurveyMaps);
 
-
-
-        Log.d("onSaveInstanceState", "On saved Instance state");
+        String json=gson.toJson(activeSurveyMaps);
+        editor.putString("activeSurveyLists", json);
+        editor.apply();
+        Log.d("onSaveInstanceState", "On saved Instance state"+ activeSurveyMaps.size()+" "+json);
     }
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
@@ -121,19 +169,27 @@ public class AliumSurveyActivity extends AppCompatActivity {
         List<Map<String, Serializable>> activeSurveyMapLists
                 = (List<Map<String, Serializable>>) savedInstanceState.get("activeSurveyLists");
        if(activeSurveyMapLists.size()>0){
+           Log.d("surveyList", "active survey list is >0");
            Iterator<Map<String, Serializable>> keys= activeSurveyMapLists.listIterator();
            while(keys.hasNext()) {
                Map<String, Serializable> map=keys.next();
                SurveyParameters surveyParameters = (SurveyParameters) map.get("surveyParameters");
                LoadableSurveySpecs loadableSurveySpecs =
                        (LoadableSurveySpecs) map.get("loadableSurveySpecs");
-               JSONObject jsonObject;
+               String json;
+               Gson gson=new Gson();
+               Survey survey=new Survey();
                try {
-                   jsonObject = new JSONObject(map.get("surveyJson").toString());
-               } catch (JSONException e) {
-                   throw new RuntimeException(e);
+                   survey=(Survey) map.get("surveyJson");
+//                   json = map.get("surveyJson").toString();
+//                   survey=gson.fromJson(json, Survey.class);
+               } catch (Exception e) {
+//                   throw new RuntimeException(e);
+                   Log.d("onstateRestore",map.get("surveyJson").toString());
+                   Log.e("onstateRestore", e.toString());
+                   continue;
                }
-               ExecutableSurveySpecs executableSurveySpecs = new ExecutableSurveySpecs(jsonObject
+               ExecutableSurveySpecs executableSurveySpecs = new ExecutableSurveySpecs(survey
                        , loadableSurveySpecs);
 
 //                Log.i("activesurveylist", activeSurveyList.toString());
@@ -143,6 +199,8 @@ public class AliumSurveyActivity extends AppCompatActivity {
                surveyDialog.show();
            }
        }
+       stateRestored=true;
+       Log.d("onrestoresate", activeSurveys.toString());
 
     }
     @Override
@@ -165,7 +223,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        Log.d("Instance", "on config changed");
+//        Log.d("Instance", "on config changed");
     }
 
     private void renderSurvey(Intent intent){
@@ -179,20 +237,25 @@ public class AliumSurveyActivity extends AppCompatActivity {
             while(keys.hasNext()){
                 SurveyDialog dialog=keys.next();
                 if(dialog.loadableSurveySpecs.key.equals(loadableSurveySpecs.key)){
+                    Log.d("activeSurvey", "survey existes");
                     return;
                 }
 
             }
 
         }
-
-        JSONObject jsonObject=new JSONObject();
+        Gson gson=new Gson();
+        Survey survey=new Survey();
+        String json="";
         try {
-            jsonObject = new JSONObject(intent.getStringExtra("surveyJson"));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
+            json = intent.getStringExtra("surveyJson");
+            survey=gson.fromJson(json, Survey.class);
+        } catch (Exception e) {
+//            throw new RuntimeException(e);
+            Log.d("renderSurvey", e.toString());
+            return;
         }
-        ExecutableSurveySpecs executableSurveySpecs = new ExecutableSurveySpecs(jsonObject
+        ExecutableSurveySpecs executableSurveySpecs = new ExecutableSurveySpecs(survey
                 , loadableSurveySpecs);
 
         SurveyDialog surveyDialog = new SurveyDialog(this, executableSurveySpecs,

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dwao.alium.R;
 import com.dwao.alium.listeners.CheckBoxClickListener;
 import com.dwao.alium.models.QuestionResponse;
+import com.dwao.alium.models.Survey;
 
 import org.json.JSONObject;
 
@@ -27,9 +28,10 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
     CheckBoxClickListener listener;
     List<Integer> selectedItems;
     QuestionResponse currentQuestionResponse;
-    JSONObject surveyUi;
+    Survey.SurveyUI surveyUi;
     public CheckBoxRecyViewAdapter(List<String> checkBoxList,
-                                   CheckBoxClickListener listener, QuestionResponse currentQuestionResponse, JSONObject surveyUi){
+                                   CheckBoxClickListener listener,
+                                   QuestionResponse currentQuestionResponse, Survey.SurveyUI surveyUi){
         this.checkBoxList=checkBoxList;
         this.listener=listener;
         selectedItems=new ArrayList<>();
@@ -70,9 +72,9 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
         holder.checkBox.setText(checkBoxList.get(position));
         if(surveyUi!=null){
            try{
-               if(surveyUi.has("options")){
+               if(!surveyUi.getOptions().isEmpty()){
                 holder.checkBox.setTextColor(Color.parseColor(surveyUi
-                        .getString("options")
+                        .getOptions()
                         ));
                }
            }catch (Exception e){

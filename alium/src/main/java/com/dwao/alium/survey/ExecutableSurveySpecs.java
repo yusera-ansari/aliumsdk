@@ -2,55 +2,37 @@ package com.dwao.alium.survey;
 
 import android.util.Log;
 
+import com.dwao.alium.models.Survey;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class ExecutableSurveySpecs {
-    private JSONArray surveyQuestions=new JSONArray();
-    private JSONObject surveyUi=new JSONObject(), surveyInfo=new JSONObject(),
-    json=new JSONObject();
 
 
 
     private LoadableSurveySpecs loadableSurveySpecs;
 
-    public JSONArray getSurveyQuestions() {
-        return surveyQuestions;
-    }
-
-    public JSONObject getSurveyUi() {
-        return surveyUi;
-    }
-
-    public JSONObject getSurveyInfo() {
-        return surveyInfo;
-    }
-
-
+    public Survey survey=null;
 
     public LoadableSurveySpecs getLoadableSurveySpecs() {
         return loadableSurveySpecs;
     }
-    public JSONObject getJson(){
-        return json;
+
+    public void setLoadableSurveySpecs(LoadableSurveySpecs loadableSurveySpecs) {
+        this.loadableSurveySpecs = loadableSurveySpecs;
     }
 
-    public ExecutableSurveySpecs(JSONObject survey, LoadableSurveySpecs loadableSurveySpecs) {
-        json=survey;
-        try {
-            if(survey.has("surveyQuestions")){
-                surveyQuestions=survey.getJSONArray("surveyQuestions");
-            }
-//
-            if(survey.has("surveyUI")){
-                surveyUi=survey.getJSONObject("surveyUI");
-            }
-            if(survey.has("surveyInfo")){
-                surveyInfo=survey.getJSONObject("surveyInfo");
-            }
-        }catch (Exception e){
-            Log.e("ExecutableSurveySpecs", e.toString());
-        }
+    public Survey getSurvey() {
+        return survey;
+    }
+
+    public void setSurvey(Survey survey) {
+        this.survey = survey;
+    }
+
+    public ExecutableSurveySpecs(Survey survey, LoadableSurveySpecs loadableSurveySpecs) {
+        this.survey=survey;
         this.loadableSurveySpecs = loadableSurveySpecs;
     }
 }

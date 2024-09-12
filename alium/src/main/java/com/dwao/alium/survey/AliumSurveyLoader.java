@@ -14,21 +14,23 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.dwao.alium.frequencyManager.FrequencyManagerFactory;
 import com.dwao.alium.frequencyManager.SurveyFrequencyManager;
 import com.dwao.alium.listeners.VolleyResponseListener;
+import com.dwao.alium.models.CustomSurveyDetails;
+import com.dwao.alium.models.Srv;
+import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.network.VolleyService;
 import com.dwao.alium.utils.preferences.AliumPreferences;
-import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
 import java.util.Iterator;
+import java.util.Map;
 
 public class AliumSurveyLoader {
     private boolean activityInstanceCreated=false;
     AliumPreferences aliumPreferences;
-    private static JSONObject surveyConfigJSON;
+    private static Map<String, SurveyConfig> surveyConfigMap;
     //        private static Map<String, SurveyConfig> surveyConfigMap;
 
-    private  Gson gson;
     private  Context context;
 
     private static VolleyService volleyService;
@@ -36,12 +38,11 @@ public class AliumSurveyLoader {
     private SurveyParameters surveyParameters;
 
     private  AliumSurveyLoader(){}
-    public AliumSurveyLoader(Context context,SurveyParameters surveyParameters, JSONObject surveyConf){
+    public AliumSurveyLoader(Context context,SurveyParameters surveyParameters, Map<String, SurveyConfig> surveyConf){
         this.surveyParameters=surveyParameters;
-        surveyConfigJSON=surveyConf;
+        surveyConfigMap=surveyConf;
         volleyService=new VolleyService();
         this.context=context;
-        gson=new Gson();
         aliumPreferences= AliumPreferences.getInstance(context);
         if(aliumPreferences.getCustomerId().isEmpty()){
             aliumPreferences.setCustomerId(generateCustomerId());
@@ -60,13 +61,13 @@ public class AliumSurveyLoader {
 
     private void findAndLoadSurveyForCurrentScr() {
 //        Iterator<String> keys = surveyConfigMap.keySet().iterator();
-        Iterator<String> keys = surveyConfigJSON.keys();
+        Iterator<String> keys = surveyConfigMap.keySet().iterator();
         while(keys.hasNext()) {
             String key = keys.next();
             try {
-                JSONObject jsonObject = surveyConfigJSON.getJSONObject(key);
-                JSONObject ppupsrvObject = jsonObject.getJSONObject("appsrv");
-                String screenName = ppupsrvObject.getString("url");
+                SurveyConfig jsonObject = surveyConfigMap.get(key);
+                Srv ppupsrvObject = jsonObject.getSrv();
+                String screenName = ppupsrvObject.getUrl();
                 if (surveyParameters.screenName.equals(screenName)){
                     loadSurveyIfShouldBeLoaded(jsonObject, key);
                 }
@@ -77,20 +78,20 @@ public class AliumSurveyLoader {
         }
     }
 
-    private void loadSurveyIfShouldBeLoaded(JSONObject currentSurveyJson, String key)  {
+    private void loadSurveyIfShouldBeLoaded(SurveyConfig currentSurveyJson, String key)  {
        try{
-           JSONObject ppupsrvObject = currentSurveyJson.getJSONObject("appsrv");
-           Uri spath=Uri.parse(currentSurveyJson.getString("spath"));
+           Srv ppupsrvObject = currentSurveyJson.getSrv();
+           Uri spath=Uri.parse(currentSurveyJson.getSpath());
            Log.d("URI", spath.toString());
-           String srvshowfrq=ppupsrvObject.getString("srvshowfrq");
+           String srvshowfrq=ppupsrvObject.getSurveyShowFrequency();
            CustomFreqSurveyData customFreqSurveyData=null;
-           if(ppupsrvObject.has("customSurveyDetails")){
-               JSONObject customSurveyDetails=ppupsrvObject.getJSONObject("customSurveyDetails");
+           if(ppupsrvObject.getCustomSurveyDetails()!=null){
+               CustomSurveyDetails customSurveyDetails=ppupsrvObject.getCustomSurveyDetails();
 
                customFreqSurveyData=new CustomFreqSurveyData(
-                       customSurveyDetails.getString("freq"),
-                       customSurveyDetails.getString("startOn"),
-                       customSurveyDetails.getString("endOn")
+                       customSurveyDetails.getFreq(),
+                       customSurveyDetails.getStartOn(),
+                       customSurveyDetails.getEndOn()
                );
            }
 //            srvshowfrq="custom";
@@ -100,7 +101,7 @@ public class AliumSurveyLoader {
 //                  "2024-09-15"
 //          );
 
-           String thankyouObj = ppupsrvObject.getString("thnkMsg");
+           String thankyouObj = ppupsrvObject.getThankYouMsg();
            if(   FrequencyManagerFactory
                    .getFrequencyManager(aliumPreferences,key, srvshowfrq,
                            customFreqSurveyData)
@@ -129,8 +130,8 @@ public class AliumSurveyLoader {
         @Override
         public void onResponseReceived(JSONObject json) {
             Log.d("Alium-survey loaded", json.toString());
-            ExecutableSurveySpecs executableSurveySpecs=new ExecutableSurveySpecs(json
-                    , loadableSurveySpecs);
+//            ExecutableSurveySpecs executableSurveySpecs=new ExecutableSurveySpecs(json
+//                    , loadableSurveySpecs);
 
             if(!AliumSurveyActivity.isActivityRunning  || !activityInstanceCreated) {
                 Intent intent = new Intent(context, AliumSurveyActivity.class);
@@ -157,15 +158,15 @@ public class AliumSurveyLoader {
                     }
                 }, 500);
 
-            ((Activity)context).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-//                    new SurveyDialog(context, executableSurveySpecs,
-//                            surveyParameters)
-//                            .show();
-                }
-            });
+//            ((Activity)context).runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//
+////                    new SurveyDialog(context, executableSurveySpecs,
+////                            surveyParameters)
+////                            .show();
+//                }
+//            });
 
 
         }

@@ -2,9 +2,10 @@ package com.dwao.alium.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Survey {
+public class Survey implements Serializable {
     @SerializedName("surveyQuestions")
     List<Question> questions;
 
@@ -18,6 +19,14 @@ public class Survey {
 
     SurveyInfo surveyInfo=new SurveyInfo();
     SurveyUI surveyUI=new SurveyUI();
+
+    public SurveyUI getSurveyUI() {
+        return surveyUI;
+    }
+
+    public void setSurveyUI(SurveyUI surveyUI) {
+        this.surveyUI = surveyUI;
+    }
 
     public List<Question> getQuestions() {
         return questions;
@@ -35,8 +44,8 @@ public class Survey {
         this.surveyInfo = surveyInfo;
     }
 
-    private class SurveyUI{
-        String backgroundColor, borderColor, question, options;
+    public class SurveyUI implements Serializable{
+        String backgroundColor="#ffffff", borderColor="#ffffff", question="#000000", options="#000000";
         public NextCta nextCta=new NextCta();
 
         @Override
@@ -90,9 +99,9 @@ public class Survey {
             this.nextCta = nextCta;
         }
 
-        private class NextCta{
-            String textColor;
-            String backgroundColor;
+        public class NextCta implements Serializable{
+            String textColor="#000000";
+            String backgroundColor="#ffffff";
 
             public String getTextColor() {
                 return textColor;
@@ -114,7 +123,7 @@ public class Survey {
 
         }
     }
-    private class SurveyInfo {
+    public class SurveyInfo implements Serializable {
         String orgId, customerId, surveyId, language, position, background, uniqueidentifier, theme, branding;
 
         public String getOrgId() {

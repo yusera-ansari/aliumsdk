@@ -2,12 +2,16 @@ package com.dwao.alium.models;
 
 import com.google.gson.annotations.SerializedName;
 
-class Srv{
+import java.io.Serializable;
+
+public class Srv implements Serializable {
     Srv(){}
     @SerializedName("urlmatch")
     String urlMatch;
     String url="";
     int active;
+    public CustomSurveyDetails customSurveyDetails=null;
+
     String elmsltr,interval,device,trigger, theme, cstclr1,cstclr2,cstclr3,cstclr4,cstclr5,
             uniqueidentifier;
 
@@ -34,8 +38,17 @@ class Srv{
                 ", uniqueidentifier='" + uniqueidentifier + '\'' +
                 ", surveyShowFrequency='" + surveyShowFrequency + '\'' +
                 ", thankYouMsg='" + thankYouMsg + '\'' +
-                '}';
+                ", customeSurveyDetails= ' "+customSurveyDetails+
+                " }";
     }
+    public CustomSurveyDetails getCustomSurveyDetails() {
+        return customSurveyDetails;
+    }
+
+    public void setCustomSurveyDetails(CustomSurveyDetails customSurveyDetails) {
+        this.customSurveyDetails = customSurveyDetails;
+    }
+
 
     public void setUrlMatch(String urlMatch) {
         this.urlMatch = urlMatch;
