@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -21,11 +22,14 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.dwao.alium.R;
 import com.dwao.alium.models.Survey;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,6 +39,9 @@ import java.util.Map;
 public class AliumSurveyActivity extends AppCompatActivity {
     public static boolean isActivityRunning=false;
     private static boolean stateRestored=false;
+    Gson gson=new Gson();
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
 
     private static List<SurveyDialog> activeSurveys=new ArrayList<>();
     BroadcastReceiver surveyContentReceiver=new BroadcastReceiver() {
@@ -74,7 +81,39 @@ public class AliumSurveyActivity extends AppCompatActivity {
         Log.d("onResume", "AliumActivity onResume");
         Log.d("onResume",activeSurveys.toString());
         if(!stateRestored){
-            Log.d("onresume", "state not restored");
+          try{
+              Log.d("onresume", "state not restored");
+              Type type=new TypeToken<List<Map>>(){}.getType();
+              String data =sharedPreferences.getString("activeSurveyLists", "");
+              Log.d("data", data);
+              JSONArray jsonArray=new JSONArray(data);
+
+//              List<Map> surveyList=gson.fromJson(data, type);
+              if(jsonArray.length()>0){
+                  for(int i=0; i<jsonArray.length(); i++){
+                      Map map=new HashMap();
+                      JSONObject object=new JSONObject(jsonArray.getString(i));
+                      SurveyParameters surveyParameters=gson.fromJson( object.get("surveyParameters").toString(),
+                              SurveyParameters.class);
+                      LoadableSurveySpecs loadableSurveySpecs=gson.fromJson(object.get("loadableSurveySpecs").toString(),
+                              LoadableSurveySpecs.class);
+                      Survey survey=gson.fromJson(object.get("surveyJson").toString(),
+                              Survey.class);
+                      ExecutableSurveySpecs executableSurveySpecs = new ExecutableSurveySpecs(survey
+                              , loadableSurveySpecs);
+
+                      Log.d("afterResume", jsonArray.getString(i));
+                      SurveyDialog surveyDialog = new SurveyDialog(this, executableSurveySpecs,
+                              surveyParameters, false);
+                      activeSurveys.add(surveyDialog);
+                      surveyDialog.show();
+                  }
+              }
+              editor.remove("activeSurveyLists");
+              editor.apply();
+          }catch (Exception e){
+              Log.e("onResume", e.toString());
+          }
         }
     }
 
@@ -91,6 +130,8 @@ public class AliumSurveyActivity extends AppCompatActivity {
 //        registerReceiver(surveyContentReceiver, intentFilter);
         LocalBroadcastManager.getInstance(this).registerReceiver(surveyContentReceiver,intentFilter);
         isActivityRunning=true;
+        sharedPreferences=getSharedPreferences("SURVEY_RESTORE", MODE_PRIVATE);
+        editor=sharedPreferences.edit();
     }
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -115,9 +156,10 @@ public class AliumSurveyActivity extends AppCompatActivity {
             }
         outState.putSerializable("activeSurveyLists", (Serializable) activeSurveyMaps);
 
-
-
-        Log.d("onSaveInstanceState", "On saved Instance state"+ activeSurveyMaps.size());
+        String json=gson.toJson(activeSurveyMaps);
+        editor.putString("activeSurveyLists", json);
+        editor.apply();
+        Log.d("onSaveInstanceState", "On saved Instance state"+ activeSurveyMaps.size()+" "+json);
     }
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
