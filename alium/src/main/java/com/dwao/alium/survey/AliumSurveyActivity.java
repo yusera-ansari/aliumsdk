@@ -79,7 +79,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
     protected  void onResume(){
         super.onResume();
         Log.d("onResume", "AliumActivity onResume");
-        Log.d("onResume",activeSurveys.toString());
+        Log.d("onResume",activeSurveys.toString()+" "+stateRestored);
         if(!stateRestored){
           try{
               Log.d("onresume", "state not restored");
@@ -159,6 +159,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
         String json=gson.toJson(activeSurveyMaps);
         editor.putString("activeSurveyLists", json);
         editor.apply();
+        stateRestored=false;
         Log.d("onSaveInstanceState", "On saved Instance state"+ activeSurveyMaps.size()+" "+json);
     }
     @Override
@@ -208,6 +209,8 @@ public class AliumSurveyActivity extends AppCompatActivity {
         super.onDestroy();
         Log.d("onDestroy", "on activity destroy");
         isActivityRunning=false;
+        stateRestored=false;
+
         if(!activeSurveys.isEmpty()){
             Iterator<SurveyDialog> keys=activeSurveys.iterator();
             while(keys.hasNext()){
@@ -223,7 +226,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-//        Log.d("Instance", "on config changed");
+        Log.d("Instance", "on config changed");
     }
 
     private void renderSurvey(Intent intent){
