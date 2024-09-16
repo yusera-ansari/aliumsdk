@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
@@ -78,6 +80,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
     @Override
     protected  void onResume(){
         super.onResume();
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         Log.d("onResume", "AliumActivity onResume");
         Log.d("onResume",activeSurveys.toString());
         if(!stateRestored){
