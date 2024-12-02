@@ -1,6 +1,14 @@
 package com.dwao.alium.survey;
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
+import android.view.WindowManager;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ProcessLifecycleOwner;
+
 import com.dwao.alium.listeners.VolleyResponseListener;
 import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.network.VolleyService;
@@ -16,9 +24,12 @@ import java.util.HashMap;
 public class Alium {
      private static JSONObject surveyConfigJSON;
     private static HashMap<String, SurveyConfig> surveyConfigMap =new HashMap<>();
-
+    protected static AppLifeCycleListener appLifeCycleListener;
      private static  Alium instance;
-
+     private static boolean appState=false;
+    static boolean isAppInForeground(){
+        return appState;
+    }
      private static VolleyService volleyService;
      private static String configURL;
      private  Alium(){
@@ -26,7 +37,7 @@ public class Alium {
          surveyConfigJSON=new JSONObject();
      }
 
-    public static void config(String url){
+    public static void config(Application application,String url){
             if(instance==null){
                 instance=new Alium();
             }
@@ -37,9 +48,37 @@ public class Alium {
                 configURL = url;
                 surveyConfigJSON=new JSONObject();
             }
+//            application.registerActivityLifecycleCallbacks(new App());
+        appLifeCycleListener=new AppLifeCycleListener() {
+            @Override
+            public void onCreate(@NonNull LifecycleOwner owner) {
+
+                Log.d("LifeCycle", "oncraete listener"+owner.getLifecycle().getCurrentState().toString());
+            }
+
+            @Override
+            public void onDestroy(@NonNull LifecycleOwner owner) {
+                Log.d("LifeCycle", "ondestroy listener"+owner.getLifecycle().getCurrentState().toString());
+            }
+
+            @Override
+            public void onResume(@NonNull LifecycleOwner owner) {
+                Log.d("LifeCycle", "onResume listener"+owner.getLifecycle().getCurrentState().toString());
+                appState=true;
+            }
+
+            @Override
+            public void onPause(@NonNull LifecycleOwner owner) {
+                Log.d("LifeCycle", "onPause listener"+owner.getLifecycle().getCurrentState().toString());
+appState=false;
+            }
+        };
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(appLifeCycleListener);
         }
 
         public static void trigger(Context ctx, SurveyParameters parameters){
+            ((Activity)ctx).getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                    ,WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             if (configURL == null) {
                 throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
             }

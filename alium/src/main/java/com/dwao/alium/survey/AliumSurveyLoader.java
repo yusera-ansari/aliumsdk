@@ -6,9 +6,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.dwao.alium.frequencyManager.FrequencyManagerFactory;
@@ -24,7 +30,7 @@ import org.json.JSONObject;
 
 import java.util.Iterator;
 import java.util.Map;
-
+import androidx.lifecycle.ProcessLifecycleOwner;
 public class AliumSurveyLoader {
     private boolean activityInstanceCreated=false;
     AliumPreferences aliumPreferences;
@@ -37,8 +43,10 @@ public class AliumSurveyLoader {
 
     private SurveyParameters surveyParameters;
 
+
     private  AliumSurveyLoader(){}
     public AliumSurveyLoader(Context context,SurveyParameters surveyParameters, Map<String, SurveyConfig> surveyConf){
+
         this.surveyParameters=surveyParameters;
         surveyConfigMap=surveyConf;
         volleyService=new VolleyService();
@@ -47,6 +55,7 @@ public class AliumSurveyLoader {
         if(aliumPreferences.getCustomerId().isEmpty()){
             aliumPreferences.setCustomerId(generateCustomerId());
         }
+
     }
 
     public SurveyParameters getSurveyParameters() {
@@ -134,30 +143,41 @@ public class AliumSurveyLoader {
 //                    , loadableSurveySpecs);
 
             if(!AliumSurveyActivity.isActivityRunning  || !activityInstanceCreated) {
-                Intent intent = new Intent(context, AliumSurveyActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                );
-                context.startActivity(intent);
-                activityInstanceCreated = true;
+
+                        if(Alium.isAppInForeground() && !((Activity)context).isFinishing()){
+                            Intent intent = new Intent(context, AliumSurveyActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                            );
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+//                            );
+                            context.startActivity(intent);
+                            activityInstanceCreated = true;
+                        }
+
+
+
             }
 
                 Handler handler=new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Intent intent=new Intent("survey_content_fetched");
-                        intent.putExtra("surveyJson", json.toString());
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION|Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                        );
-                        intent.putExtra("loadableSurveySpecs", loadableSurveySpecs);
-                        intent.putExtra("surveyParameters", surveyParameters);
-                        intent.putExtra("canonicalClassName", ((Activity)context).getClass().getCanonicalName());
+                        if(Alium.isAppInForeground()){
+                            Intent intent = new Intent("survey_content_fetched");
+                            intent.putExtra("surveyJson", json.toString());
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                            );
+                            intent.putExtra("loadableSurveySpecs", loadableSurveySpecs);
+                            intent.putExtra("surveyParameters", surveyParameters);
+                            intent.putExtra("canonicalClassName", ((Activity) context).getClass().getCanonicalName());
 //                        context.sendBroadcast(intent);
-                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                        Log.d("alium-activity", "is running");
+                            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                            Log.d("alium-activity", "is running");
+                        }
                     }
                 }, 500);
-
+//            ((Activity)context).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+//                  );
 //            ((Activity)context).runOnUiThread(new Runnable() {
 //                @Override
 //                public void run() {

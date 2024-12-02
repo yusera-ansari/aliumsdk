@@ -16,11 +16,16 @@ import java.util.HashMap;
 public class TestActivity extends Activity {
     TextView next;
     @Override
+    protected void onResume(){
+        super.onResume();
+        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
+
+    }
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
         next=findViewById(R.id.test_next);
-        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
 
     }
 }

@@ -19,6 +19,16 @@ import java.util.Map;
 public class DashboardActivity extends Activity {
     TextView next;
     @Override
+    protected void onResume(){
+        super.onResume();
+        Map params=new HashMap();
+        params.put("dim1", "alium_app"); //appName
+        params.put("dim2", "mobile"); //surveyOn
+        params.put("dim3", "android"); //os
+        Alium.trigger(this,  new SurveyParameters("secondscreen", params));
+
+    }
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
@@ -30,10 +40,5 @@ public class DashboardActivity extends Activity {
                 startActivity(intent);
             }
         });
-        Map params=new HashMap();
-        params.put("dim1", "alium_app"); //appName
-        params.put("dim2", "mobile"); //surveyOn
-        params.put("dim3", "android"); //os
-        Alium.trigger(this,  new SurveyParameters("secondscreen", params));
-    }
+      }
 }
