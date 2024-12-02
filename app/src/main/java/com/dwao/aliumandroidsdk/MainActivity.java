@@ -42,6 +42,11 @@ public class MainActivity extends Activity {
         Log.d("Pause", "MainActivity Paused");
     }
     @Override
+    protected void onResume(){
+        super.onResume();
+        Alium.trigger(this, new SurveyParameters("firstscreen"));
+    }
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); //disable night mode
         super.onCreate(savedInstanceState);
@@ -56,6 +61,6 @@ public class MainActivity extends Activity {
             }
         });
 
-        Alium.trigger(this, new SurveyParameters("firstscreen"));
+
     }
 }

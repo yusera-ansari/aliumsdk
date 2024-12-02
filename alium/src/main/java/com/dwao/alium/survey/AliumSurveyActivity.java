@@ -49,6 +49,9 @@ public class AliumSurveyActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (intent != null && !isDestroyed() && !isFinishing()) {
                 Log.d("broadcast", "broadcast received in activity");
+                if(!Alium.isAppInForeground()){
+                    finish();
+                }
                 renderSurvey(intent);
             }
         }
@@ -113,6 +116,9 @@ public class AliumSurveyActivity extends AppCompatActivity {
               editor.apply();
           }catch (Exception e){
               Log.e("onResume", e.toString());
+              if(!Alium.isAppInForeground()){
+                  finish();
+              }
           }
         }
     }
@@ -266,4 +272,5 @@ public class AliumSurveyActivity extends AppCompatActivity {
         activeSurveys.add(surveyDialog);
         surveyDialog.show();
     }
+
 }
