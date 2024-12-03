@@ -18,7 +18,10 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 
 public class Alium {
@@ -27,8 +30,28 @@ public class Alium {
     protected static AppLifeCycleListener appLifeCycleListener;
      private static  Alium instance;
      private static boolean appState=false;
+     static List<SurveyDialog> activeSurveys=new ArrayList<>();
     static boolean isAppInForeground(){
         return appState;
+    }
+    static synchronized void  removeFromActiveSurveyList(SurveyDialog surveyDialog){
+        Log.d("ActiverSurveys", "outside "+activeSurveys);
+        if(!Alium.activeSurveys.isEmpty()){
+            Log.d("ActiverSurveys", ""+activeSurveys);
+            Iterator<SurveyDialog> keys= activeSurveys.iterator();
+            while(keys.hasNext()){
+                SurveyDialog dialog=keys.next();
+                if(dialog.loadableSurveySpecs.key.equals( surveyDialog.loadableSurveySpecs.key)){
+                    Log.d("activeSurvey", "survey existes");
+                    keys.remove();
+                    return;
+                }
+
+            }
+
+        }
+        activeSurveys.remove(surveyDialog);
+
     }
      private static VolleyService volleyService;
      private static String configURL;
@@ -77,8 +100,8 @@ appState=false;
         }
 
         public static void trigger(Context ctx, SurveyParameters parameters){
-            ((Activity)ctx).getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-                    ,WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//            ((Activity)ctx).getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+//                    ,WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             if (configURL == null) {
                 throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
             }
