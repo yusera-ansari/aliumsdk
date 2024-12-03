@@ -7,7 +7,9 @@ import com.dwao.alium.models.Survey;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class ExecutableSurveySpecs {
+import java.io.Serializable;
+
+public class ExecutableSurveySpecs implements Serializable {
 
 
 

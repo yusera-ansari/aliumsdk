@@ -16,7 +16,7 @@ import com.dwao.aliumandroidsdk.R;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DashboardActivity extends Activity {
+public class DashboardActivity extends AppCompatActivity {
     TextView next;
     @Override
     protected void onResume(){

@@ -45,6 +45,7 @@ public class MainActivity extends Activity {
     protected void onResume(){
         super.onResume();
         Alium.trigger(this, new SurveyParameters("firstscreen"));
+        Alium.trigger(this, new SurveyParameters("thirdscreen"));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +61,5 @@ public class MainActivity extends Activity {
                 startActivity(intent);
             }
         });
-
-
     }
 }

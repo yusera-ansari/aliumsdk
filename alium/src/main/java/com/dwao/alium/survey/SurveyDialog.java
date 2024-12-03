@@ -55,6 +55,18 @@ public class SurveyDialog extends SurveyController {
     LinearProgressIndicator bottomProgressBar;
     RelativeLayout layout;
 
+    public Dialog getInstance(){
+        initializeDialogUiElements(); //initializes elements and updates UI
+        configureDialogWindow();
+        if(survey.getQuestions().size()>0 && currentIndx==0) {
+            showCurrentQuestion();
+        }else{
+            dialog.dismiss();
+            return null;
+        }
+        super.show();
+        return dialog;
+    }
 
     public SurveyDialog(Context ctx, ExecutableSurveySpecs executableSurveySpecs,
                  SurveyParameters surveyParameters, boolean shouldUpdatePreferences)
@@ -145,8 +157,10 @@ public class SurveyDialog extends SurveyController {
         closeDialogBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Alium.removeFromActiveSurveyList(SurveyDialog.this);
+
                 dialog.dismiss();
-                ((AliumSurveyActivity)context).removeFromActiveSurveyList(SurveyDialog.this);
+//                ((AliumSurveyActivity)context).removeFromActiveSurveyList(SurveyDialog.this);
 
             }
         });
@@ -348,9 +362,10 @@ public class SurveyDialog extends SurveyController {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-
+                Alium.removeFromActiveSurveyList(SurveyDialog.this);
                 dialog.dismiss();
-                ((AliumSurveyActivity)context).removeFromActiveSurveyList(SurveyDialog.this);
+
+//                ((AliumSurveyActivity)context).removeFromActiveSurveyList(SurveyDialog.this);
 
             }
         };

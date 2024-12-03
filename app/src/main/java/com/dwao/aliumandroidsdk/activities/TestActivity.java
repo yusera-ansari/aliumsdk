@@ -13,7 +13,7 @@ import com.dwao.aliumandroidsdk.R;
 
 import java.util.HashMap;
 
-public class TestActivity extends Activity {
+public class TestActivity extends AppCompatActivity {
     TextView next;
     @Override
     protected void onResume(){
