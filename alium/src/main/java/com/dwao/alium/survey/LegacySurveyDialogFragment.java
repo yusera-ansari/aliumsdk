@@ -14,6 +14,8 @@ import androidx.fragment.app.FragmentManager;
 import com.dwao.alium.models.Survey;
 import com.google.gson.Gson;
 
+import java.util.Iterator;
+
 public class LegacySurveyDialogFragment extends android.app.DialogFragment {
     private SurveyDialog dialog ;
 
@@ -56,6 +58,7 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
         outState.putSerializable("surveyJson",gson.toJson(executableSurveySpecs.survey) );
         outState.putSerializable("loadableSurveySpecs", executableSurveySpecs.getLoadableSurveySpecs()
         );
+        Log.d("onSaveInstanceState", "saved state"+executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex());
         outState.putBoolean("shouldUpdatePreferences", shouldUpdatePreferences);
     }
 
@@ -68,9 +71,21 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("SurveyDialogFragment", "LegacySurveyDialog-outside oncreyae "+savedInstanceState);
+
+        Log.d("SurveyDialogFragment", " savedInstanceStateLegacySurveyDialog-outside oncreyae "+savedInstanceState);
         Log.d("SurveyDialogFragment", "LegacySurveyDialog-outside oncreyae "+getArguments());
-        if(getArguments()!=null){
+
+        if(savedInstanceState!=null){
+            Log.d("SurveyDialogFragment", "LegacySurveyDialog-inside oncreyae");
+            shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
+            surveyParameters=(SurveyParameters)getArguments().getSerializable("surveyParameters");
+            Gson gson=new Gson();
+            executableSurveySpecs=new ExecutableSurveySpecs(
+                    gson.fromJson(getArguments().getString("surveyJson"), Survey.class)
+                    , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
+            Log.d("SurveyDialogFragment", "saved state"+executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex());
+
+        }else if(getArguments()!=null){
             Log.d("SurveyDialogFragment", "LegacySurveyDialog-inside oncreyae");
             shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
             surveyParameters=(SurveyParameters)getArguments().getSerializable("surveyParameters");
@@ -80,6 +95,12 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
                     , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
 
         }
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        Log.d("ViewStateRestore", "Viewstate restored"+savedInstanceState);
     }
 
     @NonNull
@@ -93,6 +114,27 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
             setCancelable(false);
             if (savedInstanceState == null) {
                 Alium.activeSurveys.add(dialog);
+            }else{
+                boolean doesSurveyExist=false;
+                Log.d("ALium-survey", "Saved instance there, but list empty"+this.dialog);
+                if(!Alium.activeSurveys.isEmpty()){
+                    Log.d("ALium-survey", "contains-dialog"+Alium.activeSurveys.contains(dialog));
+
+                    Log.d("ActiverSurveys", ""+Alium.activeSurveys);
+                    Iterator<SurveyDialog> keys= Alium.activeSurveys.iterator();
+
+                    while(keys.hasNext()){
+                        SurveyDialog currDialog=keys.next();
+                        if(currDialog.loadableSurveySpecs.key.equals( dialog.loadableSurveySpecs.key)){
+                            Log.d("activeSurvey", "survey existes");
+                            doesSurveyExist=true;
+                        }
+
+                    }
+
+
+                }
+                if(!doesSurveyExist) Alium.activeSurveys.add(dialog);
             }
         }
         else {
@@ -107,5 +149,6 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
 
         return dialog.getInstance();
     }
+
 
 }

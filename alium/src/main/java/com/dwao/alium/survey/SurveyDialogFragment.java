@@ -21,6 +21,8 @@ import com.dwao.alium.R;
 import com.dwao.alium.models.Survey;
 import com.google.gson.Gson;
 
+import java.util.Iterator;
+
 public class SurveyDialogFragment extends DialogFragment implements LifecycleObserver {
     private SurveyDialog dialog ;
 
@@ -77,7 +79,16 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         super.onCreate(savedInstanceState);
         Log.d("SurveyDialogFragment", "outside oncreyae "+savedInstanceState);
         Log.d("SurveyDialogFragment", "outside oncreyae "+getArguments());
-  if(getArguments()!=null){
+        if(savedInstanceState!=null){
+            Log.d("SurveyDialogFragment", "LegacySurveyDialog-inside oncreyae");
+            shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
+            surveyParameters=(SurveyParameters)getArguments().getSerializable("surveyParameters");
+            Gson gson=new Gson();
+            executableSurveySpecs=new ExecutableSurveySpecs(
+                    gson.fromJson(getArguments().getString("surveyJson"), Survey.class)
+                    , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
+
+        }else if(getArguments()!=null){
       Log.d("SurveyDialogFragment", "inside oncreyae");
        shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
       surveyParameters=(SurveyParameters)getArguments().getSerializable("surveyParameters");
@@ -89,18 +100,54 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
   }
     }
 
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        Log.d("ViewStateRestore", "Viewstate restored"+savedInstanceState);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         Log.d("SurveyDialogFragment", "outside createDialog "+savedInstanceState);
         Log.d("SurveyDialogFragment", "outside oncreyae "+getArguments());
+        Dialog dialogInstance=null;
         if (executableSurveySpecs != null && surveyParameters != null) {
             Log.d("SurveyDialogFragment", "inside createDialog");
             dialog = new SurveyDialog(requireContext(), executableSurveySpecs, surveyParameters,savedInstanceState==null?true: false);
 setCancelable(false);
             if (savedInstanceState == null) {
                 Alium.activeSurveys.add(dialog);
+            }else{
+                boolean doesSurveyExist=false;
+                Log.d("ALium-survey", "Saved instance there, but list empty"+this.dialog);
+                if(!Alium.activeSurveys.isEmpty()){
+                    Log.d("ALium-survey", "contains-dialog"+Alium.activeSurveys.contains(dialog));
+
+                    Log.d("ActiverSurveys", "SDF"+Alium.activeSurveys);
+                    Iterator<SurveyDialog> keys= Alium.activeSurveys.iterator();
+
+                    while(keys.hasNext()){
+                        SurveyDialog currDialog=keys.next();
+                        if(currDialog.loadableSurveySpecs.key.equals( dialog.loadableSurveySpecs.key)){
+                            Log.d("activeSurvey", "SDF survey existes");
+                           doesSurveyExist=true;
+
+                        }
+
+                    }
+
+
+                }
+                if(!doesSurveyExist) Alium.activeSurveys.add(dialog);
             }
+            dialogInstance=dialog.getInstance();
         }
         else {
             throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");
@@ -111,9 +158,24 @@ setCancelable(false);
 //            } throw new IllegalStateException("SurveyDialog cannot be shown: activity paused.");
 
         }
-
-        return dialog.getInstance();
+dialogInstance.setOnCancelListener(new DialogInterface.OnCancelListener() {
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        Log.d("Dialog", "dialog instanve cancelled");
+    }
+});
+        dialogInstance.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                Log.d("Dialog", "diallog instance dissmised");
+            }
+        });
+        return dialogInstance;
     }
 
-
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d("Dialog", "detached");
+    }
 }

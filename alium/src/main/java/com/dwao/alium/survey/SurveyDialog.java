@@ -58,7 +58,7 @@ public class SurveyDialog extends SurveyController {
     public Dialog getInstance(){
         initializeDialogUiElements(); //initializes elements and updates UI
         configureDialogWindow();
-        if(survey.getQuestions().size()>0 && currentIndx==0) {
+        if(survey.getQuestions().size()>0 && currentIndx>=0) {
             showCurrentQuestion();
         }else{
             dialog.dismiss();
@@ -75,6 +75,7 @@ public class SurveyDialog extends SurveyController {
         this.executableSurveySpecs=executableSurveySpecs;
         survey=executableSurveySpecs.survey;
         this.surveyParameters=surveyParameters;
+        currentIndx= executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex();
 
 
     }
@@ -82,7 +83,7 @@ public class SurveyDialog extends SurveyController {
     public void show(){
         initializeDialogUiElements(); //initializes elements and updates UI
         configureDialogWindow();
-        if(survey.getQuestions().size()>0 && currentIndx==0) {
+        if(survey.getQuestions().size()>0 && currentIndx>=0) {
             showCurrentQuestion();
         }else{
             dialog.dismiss();
@@ -129,7 +130,7 @@ public class SurveyDialog extends SurveyController {
                         Color.parseColor(survey.getSurveyUI().getBorderColor()));
             }
         }catch (Exception e){
-            Log.d("surveyUI", e.toString());
+            Log.e("surveyUI", e.toString());
         }
     }
     private void configureDialogWindow(){
@@ -188,6 +189,7 @@ public class SurveyDialog extends SurveyController {
         try{
          super.handleNextQuestion();
             resetElementsForNextQuestion();
+            executableSurveySpecs.getLoadableSurveySpecs().setCurrentIndex(currentIndx);
             //check if to show next question or else show thank-you layout
             if( currentIndx< survey.getQuestions().size()){
                 showCurrentQuestion();
@@ -232,13 +234,13 @@ public class SurveyDialog extends SurveyController {
         imageView.setImageResource(R.drawable.avd_anim);
         Drawable drawable= imageView.getDrawable();
         if(drawable instanceof AnimatedVectorDrawableCompat){
-            Log.d("Alium-instance", "AnimatedVectorDrawableCompat");
+//            Log.d("Alium-instance", "AnimatedVectorDrawableCompat");
             AnimatedVectorDrawableCompat avd=(AnimatedVectorDrawableCompat)drawable;
             avd.start();
 
         }else if(drawable instanceof AnimatedVectorDrawable){
             AnimatedVectorDrawable avd=(AnimatedVectorDrawable)drawable;
-            Log.d("Alium-instance2", "AnimatedVectorDrawableCompat");
+//            Log.d("Alium-instance2", "AnimatedVectorDrawableCompat");
             avd.start();
 
         }
@@ -251,7 +253,7 @@ public class SurveyDialog extends SurveyController {
 
 
     private void updateProgressIndicator(){
-        Log.d("index", ""+currentIndx+" "+previousIndx);
+//        Log.d("index", ""+currentIndx+" "+previousIndx);
         int progress=(10000/(survey.getQuestions().size()+1))*(currentIndx-previousIndx);
         ObjectAnimator animator=ObjectAnimator.ofInt(bottomProgressBar,"progress"
         ,bottomProgressBar.getProgress(),(progress+bottomProgressBar.getProgress()));
@@ -296,8 +298,8 @@ public class SurveyDialog extends SurveyController {
                     .getQuestion());
             String responseType = survey.getQuestions().get(currentIndx).getResponseType();
             generateQuestion(responseType); //matches response type and generates corresponding ques
-            Log.d("surveyQuestion", "id: " + currentQuestionResponse.getQuestionId()
-                    + " type: " + currentQuestionResponse.getResponseType());
+//            Log.d("surveyQuestion", "id: " + currentQuestionResponse.getQuestionId()
+//                    + " type: " + currentQuestionResponse.getResponseType());
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -352,7 +354,7 @@ public class SurveyDialog extends SurveyController {
         }catch (Exception e){
             Log.e("Generate Params Map", "Couldn't get srvid/orgId");
         }
-        Log.d("MAP of MAP", params.toString());
+//        Log.d("MAP of MAP", params.toString());
         return params;
     }
     @Override
