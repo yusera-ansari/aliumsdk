@@ -112,30 +112,30 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
             Log.d("SurveyDialogFragment", "LegacySurveyDialog-inside createDialog");
             dialog = new SurveyDialog(getActivity(), executableSurveySpecs, surveyParameters, savedInstanceState==null?true: false);
             setCancelable(false);
-            if (savedInstanceState == null) {
-                Alium.activeSurveys.add(dialog);
-            }else{
-                boolean doesSurveyExist=false;
-                Log.d("ALium-survey", "Saved instance there, but list empty"+this.dialog);
-                if(!Alium.activeSurveys.isEmpty()){
-                    Log.d("ALium-survey", "contains-dialog"+Alium.activeSurveys.contains(dialog));
-
-                    Log.d("ActiverSurveys", ""+Alium.activeSurveys);
-                    Iterator<SurveyDialog> keys= Alium.activeSurveys.iterator();
-
-                    while(keys.hasNext()){
-                        SurveyDialog currDialog=keys.next();
-                        if(currDialog.loadableSurveySpecs.key.equals( dialog.loadableSurveySpecs.key)){
-                            Log.d("activeSurvey", "survey existes");
-                            doesSurveyExist=true;
-                        }
-
-                    }
-
-
-                }
-                if(!doesSurveyExist) Alium.activeSurveys.add(dialog);
-            }
+//            if (savedInstanceState == null) {
+//                Alium.activeSurveys.add(dialog);
+//            }else{
+//                boolean doesSurveyExist=false;
+//                Log.d("ALium-survey", "Saved instance there, but list empty"+this.dialog);
+//                if(!Alium.activeSurveys.isEmpty()){
+//                    Log.d("ALium-survey", "contains-dialog"+Alium.activeSurveys.contains(dialog));
+//
+//                    Log.d("ActiverSurveys", ""+Alium.activeSurveys);
+//                    Iterator<SurveyDialog> keys= Alium.activeSurveys.iterator();
+//
+//                    while(keys.hasNext()){
+//                        SurveyDialog currDialog=keys.next();
+//                        if(currDialog.loadableSurveySpecs.key.equals( dialog.loadableSurveySpecs.key)){
+//                            Log.d("activeSurvey", "survey existes");
+//                            doesSurveyExist=true;
+//                        }
+//
+//                    }
+//
+//
+//                }
+//                if(!doesSurveyExist) Alium.activeSurveys.add(dialog);
+//            }
         }
         else {
             throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");

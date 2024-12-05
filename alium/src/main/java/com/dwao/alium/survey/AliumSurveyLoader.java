@@ -42,7 +42,6 @@ public class AliumSurveyLoader {
     private boolean activityInstanceCreated=false;
     AliumPreferences aliumPreferences;
     private static Map<String, SurveyConfig> surveyConfigMap;
-    //        private static Map<String, SurveyConfig> surveyConfigMap;
 
     private  Context context;
 
@@ -77,7 +76,6 @@ public class AliumSurveyLoader {
 
 
     private void findAndLoadSurveyForCurrentScr() {
-//        Iterator<String> keys = surveyConfigMap.keySet().iterator();
         Iterator<String> keys = surveyConfigMap.keySet().iterator();
         while(keys.hasNext()) {
             String key = keys.next();
@@ -88,7 +86,6 @@ public class AliumSurveyLoader {
                 if (surveyParameters.screenName.equals(screenName)){
 //                    Log.d("ActiverSurveys", "before checking: "+Alium.activeSurveys);
                     //check if its already running
-                    if(!Alium.activeSurveys.isEmpty()){
                         if(context instanceof FragmentActivity) {
                             FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
                             Fragment fragment= fm.findFragmentByTag(key+"-"+surveyParameters.screenName);
@@ -104,19 +101,6 @@ public class AliumSurveyLoader {
                                 Log.d("activeSurvey", "survey existes");
                                 return;
                             }
-                        }
-//                        Log.d("ActiverSurveys", ""+Alium.activeSurveys);
-//                        Iterator<SurveyDialog> activeSurvKey=Alium.activeSurveys.iterator();
-//                        while(activeSurvKey.hasNext()){
-//                            SurveyDialog dialog=activeSurvKey.next();
-//                            if(dialog.loadableSurveySpecs.key.equals( key)){
-//                                Log.d("activeSurvey", "survey existes");
-//
-//                                return;
-//                            }
-//
-//                        }
-
                     }
                    loadSurveyIfShouldBeLoaded(jsonObject, key);
                 }
@@ -136,7 +120,6 @@ public class AliumSurveyLoader {
            CustomFreqSurveyData customFreqSurveyData=null;
            if(ppupsrvObject.getCustomSurveyDetails()!=null){
                CustomSurveyDetails customSurveyDetails=ppupsrvObject.getCustomSurveyDetails();
-
                customFreqSurveyData=new CustomFreqSurveyData(
                        customSurveyDetails.getFreq(),
                        customSurveyDetails.getStartOn(),
@@ -179,53 +162,41 @@ public class AliumSurveyLoader {
         @Override
         public void onResponseReceived(JSONObject json) {
 //            Log.d("Alium-survey loaded", json.toString());
-            Gson gson
-                    =new Gson();
-            ExecutableSurveySpecs executableSurveySpecs=new ExecutableSurveySpecs(
-                    gson.fromJson(json.toString(), Survey.class)
+           loadSurveyFromDialogFragment(json, loadableSurveySpecs);
+        }
+    }
+    private void loadSurveyFromDialogFragment(JSONObject json, LoadableSurveySpecs loadableSurveySpecs){
+        Gson gson
+                =new Gson();
+        ExecutableSurveySpecs executableSurveySpecs=new ExecutableSurveySpecs(
+                gson.fromJson(json.toString(), Survey.class)
+                , loadableSurveySpecs);
 
-                    , loadableSurveySpecs);
-//               executableSurveySpecs.getLoadableSurveySpecs().setCurrentIndex(0);
+        if(context instanceof FragmentActivity){
+            FragmentManager fm=((FragmentActivity)context).getSupportFragmentManager();
+            if(!fm.isStateSaved()){
+                fm.beginTransaction()
+                        .add(SurveyDialogFragment.newInstance(executableSurveySpecs,
+                                surveyParameters, false), loadableSurveySpecs.key+"-"+surveyParameters.screenName)
+                        .commit();
+            }
 
-//            loadSurveyFromDialog(json, loadableSurveySpecs);
-            if(context instanceof FragmentActivity){
-                FragmentManager fm=((FragmentActivity)context).getSupportFragmentManager();
-                if(!fm.isStateSaved()){
-                    fm.beginTransaction()
-                            .add(SurveyDialogFragment.newInstance(executableSurveySpecs,
-                                    surveyParameters, false), loadableSurveySpecs.key+"-"+surveyParameters.screenName)
-                            .commit();
-                }
-//                if(!fm.isStateSaved()){
-//                    if (Alium.isAppInForeground() && !((Activity) context).isFinishing()) {
-//                        SurveyDialogFragment.newInstance(executableSurveySpecs,
-//                                surveyParameters, false).show(((AppCompatActivity) context).getSupportFragmentManager(), "jk");
-//                        Log.d("App", "Instance of AppCompat");
-//                    }
-//                }
-            }else{
+        }else{
             android.app.FragmentManager fm=((Activity)context).getFragmentManager();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    if(!fm.isStateSaved()){
-                        fm.beginTransaction()
-                                .add(LegacySurveyDialogFragment.newInstance(executableSurveySpecs,
-                                        surveyParameters, false), loadableSurveySpecs.key+"-"+surveyParameters.screenName)
-                                .commit();
-                    }
-                }else{
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if(!fm.isStateSaved()){
                     fm.beginTransaction()
                             .add(LegacySurveyDialogFragment.newInstance(executableSurveySpecs,
                                     surveyParameters, false), loadableSurveySpecs.key+"-"+surveyParameters.screenName)
                             .commit();
                 }
-//                if(!fm.isStateSaved()){
-//                    if (Alium.isAppInForeground() && !((Activity) context).isFinishing()){
-//                    LegacySurveyDialogFragment.newInstance(executableSurveySpecs,
-//                                    surveyParameters, false)
-//
-//                            .show(((Activity) context).getFragmentManager(), "jh");
-//                }}
+            }else{
+                fm.beginTransaction()
+                        .add(LegacySurveyDialogFragment.newInstance(executableSurveySpecs,
+                                surveyParameters, false), loadableSurveySpecs.key+"-"+surveyParameters.screenName)
+                        .commitAllowingStateLoss();
             }
+
         }
     }
 private void loadSurveyFromActivity(JSONObject json, LoadableSurveySpecs loadableSurveySpecs){

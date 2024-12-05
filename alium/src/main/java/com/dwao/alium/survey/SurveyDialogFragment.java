@@ -121,32 +121,32 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         if (executableSurveySpecs != null && surveyParameters != null) {
             Log.d("SurveyDialogFragment", "inside createDialog");
             dialog = new SurveyDialog(requireContext(), executableSurveySpecs, surveyParameters,savedInstanceState==null?true: false);
-setCancelable(false);
-            if (savedInstanceState == null) {
-                Alium.activeSurveys.add(dialog);
-            }else{
-                boolean doesSurveyExist=false;
-                Log.d("ALium-survey", "Saved instance there, but list empty"+this.dialog);
-                if(!Alium.activeSurveys.isEmpty()){
-                    Log.d("ALium-survey", "contains-dialog"+Alium.activeSurveys.contains(dialog));
-
-                    Log.d("ActiverSurveys", "SDF"+Alium.activeSurveys);
-                    Iterator<SurveyDialog> keys= Alium.activeSurveys.iterator();
-
-                    while(keys.hasNext()){
-                        SurveyDialog currDialog=keys.next();
-                        if(currDialog.loadableSurveySpecs.key.equals( dialog.loadableSurveySpecs.key)){
-                            Log.d("activeSurvey", "SDF survey existes");
-                           doesSurveyExist=true;
-
-                        }
-
-                    }
-
-
-                }
-                if(!doesSurveyExist) Alium.activeSurveys.add(dialog);
-            }
+            setCancelable(false);
+//            if (savedInstanceState == null) {
+//                Alium.activeSurveys.add(dialog);
+//            }else{
+//                boolean doesSurveyExist=false;
+//                Log.d("ALium-survey", "Saved instance there, but list empty"+this.dialog);
+//                if(!Alium.activeSurveys.isEmpty()){
+//                    Log.d("ALium-survey", "contains-dialog"+Alium.activeSurveys.contains(dialog));
+//
+//                    Log.d("ActiverSurveys", "SDF"+Alium.activeSurveys);
+//                    Iterator<SurveyDialog> keys= Alium.activeSurveys.iterator();
+//
+//                    while(keys.hasNext()){
+//                        SurveyDialog currDialog=keys.next();
+//                        if(currDialog.loadableSurveySpecs.key.equals( dialog.loadableSurveySpecs.key)){
+//                            Log.d("activeSurvey", "SDF survey existes");
+//                           doesSurveyExist=true;
+//
+//                        }
+//
+//                    }
+//
+//
+//                }
+//                if(!doesSurveyExist) Alium.activeSurveys.add(dialog);
+//            }
             dialogInstance=dialog.getInstance();
         }
         else {
