@@ -3,6 +3,7 @@ package com.dwao.aliumandroidsdk;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +16,7 @@ public class MainApplication extends Application {
 
         super.onCreate();
         Alium.config(this,Config.BASE_URL);
+        Log.d("Application", "initialized");
        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
            @Override
            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {
