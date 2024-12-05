@@ -158,7 +158,7 @@ public class SurveyDialog extends SurveyController {
         closeDialogBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Alium.removeFromActiveSurveyList(SurveyDialog.this);
+//                Alium.removeFromActiveSurveyList(SurveyDialog.this);
 
                 dialog.dismiss();
 //                ((AliumSurveyActivity)context).removeFromActiveSurveyList(SurveyDialog.this);
@@ -364,7 +364,7 @@ public class SurveyDialog extends SurveyController {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                Alium.removeFromActiveSurveyList(SurveyDialog.this);
+//                Alium.removeFromActiveSurveyList(SurveyDialog.this);
                 dialog.dismiss();
 
 //                ((AliumSurveyActivity)context).removeFromActiveSurveyList(SurveyDialog.this);
