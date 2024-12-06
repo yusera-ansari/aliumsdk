@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
@@ -80,25 +82,77 @@ public class Alium {
         ProcessLifecycleOwner.get().getLifecycle().addObserver(appLifeCycleListener);
         }
 
-        public static void trigger(Context ctx, SurveyParameters parameters){
+        public static void trigger(Activity activity, SurveyParameters parameters){
             if (configURL == null) {
                 throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
             }
             if(surveyConfigMap.isEmpty()) {
-                volleyService.callVolley(ctx, configURL, new ConfigURLResponseListener(ctx, parameters));
+                volleyService.callVolley(activity, configURL, new ConfigURLResponseListener(activity, parameters));
                 Log.d("Alium-initialized", "calling survey on" + parameters.screenName);
             }else{
                 Log.d("helllo", surveyConfigJSON.toString());
-                new AliumSurveyLoader(ctx, parameters, surveyConfigMap)
+                new AliumSurveyLoader(activity, parameters, surveyConfigMap)
                         .showSurvey();
             }
 
         }
+//    public static void trigger(FragmentActivity activity, SurveyParameters parameters){
+//        if (configURL == null) {
+//            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
+//        }
+//        if(surveyConfigMap.isEmpty()) {
+//            volleyService.callVolley(activity, configURL, new ConfigURLResponseListener(activity, parameters));
+//            Log.d("Alium-initialized", "calling survey on" + parameters.screenName);
+//        }else{
+//            Log.d("helllo", surveyConfigJSON.toString());
+//            new AliumSurveyLoader(activity, parameters, surveyConfigMap)
+//                    .showSurvey();
+//        }
+//
+//    }
+    public static void trigger( Fragment fragment, SurveyParameters parameters){
+        if (configURL == null) {
+            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
+        }
+        if(surveyConfigMap.isEmpty()) {
+            volleyService.callVolley(fragment.getContext(), configURL, new ConfigURLResponseListener(fragment, parameters));
+            Log.d("Alium-initialized", "calling survey on" + parameters.screenName);
+        }else{
+            Log.d("helllo", surveyConfigJSON.toString());
+            new AliumSurveyLoader(fragment, parameters, surveyConfigMap)
+                    .showSurvey();
+        }
+
+    }
+    public static void trigger(android.app.Fragment fragment, SurveyParameters parameters){
+        if (configURL == null) {
+            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
+        }
+        if(surveyConfigMap.isEmpty()) {
+            volleyService.callVolley(fragment.getActivity(), configURL, new ConfigURLResponseListener(fragment, parameters));
+            Log.d("Alium-initialized", "calling survey on" + parameters.screenName);
+        }else{
+            Log.d("helllo", surveyConfigJSON.toString());
+            new AliumSurveyLoader(fragment, parameters, surveyConfigMap)
+                    .showSurvey();
+        }
+
+    }
         private static class ConfigURLResponseListener implements VolleyResponseListener{
-            Context context;
+            Activity activity;
             SurveyParameters surveyParameters;
-            ConfigURLResponseListener(Context ctx,SurveyParameters parameters){
-                context=ctx;
+            Fragment xfragment;
+            android.app.Fragment fragment;
+            ConfigURLResponseListener(Activity activity,SurveyParameters parameters){
+                this.activity=activity;
+                surveyParameters=parameters;
+            }
+            ConfigURLResponseListener(Fragment xfragment,SurveyParameters parameters){
+                this.xfragment=xfragment;
+                surveyParameters=parameters;
+            }
+            ConfigURLResponseListener(android.app.Fragment fragment,SurveyParameters parameters){
+                this.fragment=fragment;
                 surveyParameters=parameters;
             }
             @Override
@@ -112,8 +166,13 @@ public class Alium {
 
 
                 Log.d("SurveyConfig", surveyConfigMap.toString());
-                new AliumSurveyLoader(context, surveyParameters, surveyConfigMap)
-                        .showSurvey();
+              if(activity!=null){
+                  new AliumSurveyLoader(activity, surveyParameters, surveyConfigMap)
+                          .showSurvey();
+              }else if(fragment!=null){
+                  new AliumSurveyLoader(fragment, surveyParameters, surveyConfigMap)
+                          .showSurvey();
+              }
 
             }
         }
