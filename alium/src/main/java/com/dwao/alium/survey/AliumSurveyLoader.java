@@ -122,23 +122,33 @@ public class AliumSurveyLoader {
                             Log.d("activeSurvey", "survey existes");
                             return;
                         }
-                    }else
-                        if(activity instanceof FragmentActivity) {
-                            FragmentManager fm = ((FragmentActivity) activity).getSupportFragmentManager();
-                            Fragment fragment= fm.findFragmentByTag(key+"-"+surveyParameters.screenName);
+                    } else
+                        if(xfragment!=null){
+                             FragmentManager fm=xfragment.getChildFragmentManager();
+                             Fragment fragment= fm.findFragmentByTag(key+"-"+surveyParameters.screenName);
                             if(fragment!=null){
                                 Log.d("activeSurvey", "survey existes");
                                 return;
                             }
-                        }else{
 
-                            android.app.FragmentManager fm = activity.getFragmentManager();
-                            android.app.Fragment fragment= fm.findFragmentByTag(key+"-"+surveyParameters.screenName);
-                            if(fragment!=null){
-                                Log.d("activeSurvey", "survey existes");
-                                return;
+                    }else if(activity !=null){
+                            if (activity instanceof FragmentActivity) {
+                                FragmentManager fm = ((FragmentActivity) activity).getSupportFragmentManager();
+                                Fragment fragment = fm.findFragmentByTag(key + "-" + surveyParameters.screenName);
+                                if (fragment != null) {
+                                    Log.d("activeSurvey", "survey existes");
+                                    return;
+                                }
+                            } else {
+
+                                android.app.FragmentManager fm = activity.getFragmentManager();
+                                android.app.Fragment fragment = fm.findFragmentByTag(key + "-" + surveyParameters.screenName);
+                                if (fragment != null) {
+                                    Log.d("activeSurvey", "survey existes");
+                                    return;
+                                }
                             }
-                    }
+                        }
                    loadSurveyIfShouldBeLoaded(jsonObject, key);
                 }
             } catch (Exception e) {
@@ -234,31 +244,33 @@ public class AliumSurveyLoader {
                         .commitAllowingStateLoss();
             }
         }
-        if(activity instanceof FragmentActivity){
-            FragmentManager fm=((FragmentActivity)activity).getSupportFragmentManager();
-            if(!fm.isStateSaved()){
-                fm.beginTransaction()
-                        .add(SurveyDialogFragment.newInstance(executableSurveySpecs,
-                                surveyParameters, false), loadableSurveySpecs.key+"-"+surveyParameters.screenName)
-                        .commit();
-            }
-
-        }else{
-            android.app.FragmentManager fm=activity.getFragmentManager();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                if(!fm.isStateSaved()){
+        if(activity!=null){
+            if (activity instanceof FragmentActivity) {
+                FragmentManager fm = ((FragmentActivity) activity).getSupportFragmentManager();
+                if (!fm.isStateSaved()) {
                     fm.beginTransaction()
-                            .add(LegacySurveyDialogFragment.newInstance(executableSurveySpecs,
-                                    surveyParameters, false), loadableSurveySpecs.key+"-"+surveyParameters.screenName)
+                            .add(SurveyDialogFragment.newInstance(executableSurveySpecs,
+                                    surveyParameters, false), loadableSurveySpecs.key + "-" + surveyParameters.screenName)
                             .commit();
                 }
-            }else{
-                fm.beginTransaction()
-                        .add(LegacySurveyDialogFragment.newInstance(executableSurveySpecs,
-                                surveyParameters, false), loadableSurveySpecs.key+"-"+surveyParameters.screenName)
-                        .commitAllowingStateLoss();
-            }
 
+            } else {
+                android.app.FragmentManager fm = activity.getFragmentManager();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if (!fm.isStateSaved()) {
+                        fm.beginTransaction()
+                                .add(LegacySurveyDialogFragment.newInstance(executableSurveySpecs,
+                                        surveyParameters, false), loadableSurveySpecs.key + "-" + surveyParameters.screenName)
+                                .commit();
+                    }
+                } else {
+                    fm.beginTransaction()
+                            .add(LegacySurveyDialogFragment.newInstance(executableSurveySpecs,
+                                    surveyParameters, false), loadableSurveySpecs.key + "-" + surveyParameters.screenName)
+                            .commitAllowingStateLoss();
+                }
+
+            }
         }
     }
 private void loadSurveyFromActivity(JSONObject json, LoadableSurveySpecs loadableSurveySpecs){
