@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.ProcessLifecycleOwner;
+//import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.dwao.alium.listeners.VolleyResponseListener;
 import com.dwao.alium.models.SurveyConfig;
@@ -55,31 +55,31 @@ public class Alium {
                 surveyConfigJSON=new JSONObject();
             }
 //            application.registerActivityLifecycleCallbacks(new App());
-        appLifeCycleListener=new AppLifeCycleListener() {
-            @Override
-            public void onCreate(@NonNull LifecycleOwner owner) {
-
-                Log.d("LifeCycle", "oncraete listener"+owner.getLifecycle().getCurrentState().toString());
-            }
-
-            @Override
-            public void onDestroy(@NonNull LifecycleOwner owner) {
-                Log.d("LifeCycle", "ondestroy listener"+owner.getLifecycle().getCurrentState().toString());
-            }
-
-            @Override
-            public void onResume(@NonNull LifecycleOwner owner) {
-                Log.d("LifeCycle", "onResume listener"+owner.getLifecycle().getCurrentState().toString());
-                appState=true;
-            }
-
-            @Override
-            public void onPause(@NonNull LifecycleOwner owner) {
-                Log.d("LifeCycle", "onPause listener"+owner.getLifecycle().getCurrentState().toString());
-                appState=false;
-            }
-        };
-        ProcessLifecycleOwner.get().getLifecycle().addObserver(appLifeCycleListener);
+//        appLifeCycleListener=new AppLifeCycleListener() {
+//            @Override
+//            public void onCreate(@NonNull LifecycleOwner owner) {
+//
+//                Log.d("LifeCycle", "oncraete listener"+owner.getLifecycle().getCurrentState().toString());
+//            }
+//
+//            @Override
+//            public void onDestroy(@NonNull LifecycleOwner owner) {
+//                Log.d("LifeCycle", "ondestroy listener"+owner.getLifecycle().getCurrentState().toString());
+//            }
+//
+//            @Override
+//            public void onResume(@NonNull LifecycleOwner owner) {
+//                Log.d("LifeCycle", "onResume listener"+owner.getLifecycle().getCurrentState().toString());
+//                appState=true;
+//            }
+//
+//            @Override
+//            public void onPause(@NonNull LifecycleOwner owner) {
+//                Log.d("LifeCycle", "onPause listener"+owner.getLifecycle().getCurrentState().toString());
+//                appState=false;
+//            }
+//        };
+//        ProcessLifecycleOwner.get().getLifecycle().addObserver(appLifeCycleListener);
         }
 
         public static void trigger(Activity activity, SurveyParameters parameters){
