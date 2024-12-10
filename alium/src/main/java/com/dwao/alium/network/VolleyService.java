@@ -15,10 +15,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class VolleyService {
+    private RequestQueue queue;
+    public static final String SURVEY_REQUEST_TAG="SURVEY_REQ";
+     public RequestQueue getSurveyQueue(){
+         return this.queue;
+     }
+
     public void loadRequestWithVolley(Context context, String url){
         Log.d("post_url", url);
         // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(context);
+        RequestQueue config_queue = Volley.newRequestQueue(context);
         StringRequest stringRequest=new StringRequest(Request.Method.GET,url,
                 new Response.Listener<String>() {
                     @Override
@@ -32,11 +38,12 @@ public class VolleyService {
                 Log.e("trackWithAlium", "error: "+error.toString());
             }
         }) ;
-        queue.add(stringRequest);
+        config_queue.add(stringRequest);
+
     }
    public  void callVolley(Context context, String url, VolleyResponseListener volleyResponseListener){
        // Instantiate the RequestQueue.
-       RequestQueue queue = Volley.newRequestQueue(context);
+         queue = Volley.newRequestQueue(context);
     Log.d("fetch-main", url);
        // Request a string response from the provided URL.
        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -59,8 +66,9 @@ public class VolleyService {
                Log.d("error", error.toString());
            }
        });
-
+stringRequest.addMarker("SURVEY_REQ");
 // Add the request to the RequestQueue.
        queue.add(stringRequest);
+
    }
 }

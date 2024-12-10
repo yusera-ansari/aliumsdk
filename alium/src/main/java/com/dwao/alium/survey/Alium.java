@@ -1,16 +1,12 @@
 package com.dwao.alium.survey;
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.util.Log;
-import android.view.WindowManager;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.LifecycleOwner;
 //import androidx.lifecycle.ProcessLifecycleOwner;
 
+import com.dwao.alium.listeners.SurveyLoader;
 import com.dwao.alium.listeners.VolleyResponseListener;
 import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.network.VolleyService;
@@ -20,10 +16,8 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 
 
 public class Alium {
@@ -35,7 +29,7 @@ public class Alium {
     static boolean isAppInForeground(){
         return appState;
     }
-
+    static Map<String, SurveyLoader> surveyLoaderMap=new HashMap<>();
      private static VolleyService volleyService;
      private static String configURL;
      private  Alium(){
@@ -82,34 +76,34 @@ public class Alium {
 //        ProcessLifecycleOwner.get().getLifecycle().addObserver(appLifeCycleListener);
         }
 
-        public static void trigger(Activity activity, SurveyParameters parameters){
+        public static SurveyLoader trigger(Activity activity, SurveyParameters parameters){
             if (configURL == null) {
                 throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
             }
+            SurveyLoader surveyLoader=new SurveyLoaderObserver(parameters.screenName);
             if(surveyConfigMap.isEmpty()) {
-                volleyService.callVolley(activity, configURL, new ConfigURLResponseListener(activity, parameters));
+                volleyService.callVolley(activity, configURL, new ConfigURLResponseListener(activity, parameters, surveyLoader,
+                        new ConfigURLResponseListener.Callback() {
+                            @Override
+                            public void onCall() {
+                                AliumSurveyLoader aliumSurveyLoader= new AliumSurveyLoader(activity, parameters, surveyConfigMap);
+                                aliumSurveyLoader.showSurvey();
+                                surveyLoader.addSurveyLoader(aliumSurveyLoader);
+                            }
+                        }));
                 Log.d("Alium-initialized", "calling survey on" + parameters.screenName);
-            }else{
-                Log.d("helllo", surveyConfigJSON.toString());
-                new AliumSurveyLoader(activity, parameters, surveyConfigMap)
-                        .showSurvey();
+
             }
 
+                Log.d("helllo", surveyConfigJSON.toString());
+            AliumSurveyLoader aliumSurveyLoader= new AliumSurveyLoader(activity, parameters, surveyConfigMap);
+            aliumSurveyLoader.showSurvey();
+            surveyLoader.addSurveyLoader(aliumSurveyLoader);
+                return surveyLoader;
+
+
         }
-//    public static void trigger(FragmentActivity activity, SurveyParameters parameters){
-//        if (configURL == null) {
-//            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
-//        }
-//        if(surveyConfigMap.isEmpty()) {
-//            volleyService.callVolley(activity, configURL, new ConfigURLResponseListener(activity, parameters));
-//            Log.d("Alium-initialized", "calling survey on" + parameters.screenName);
-//        }else{
-//            Log.d("helllo", surveyConfigJSON.toString());
-//            new AliumSurveyLoader(activity, parameters, surveyConfigMap)
-//                    .showSurvey();
-//        }
-//
-//    }
+
     public static void trigger( Fragment fragment, SurveyParameters parameters){
         if (configURL == null) {
             throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
@@ -133,8 +127,8 @@ public class Alium {
             Log.d("Alium-initialized", "calling survey on" + parameters.screenName);
         }else{
             Log.d("helllo", surveyConfigJSON.toString());
-            new AliumSurveyLoader(fragment, parameters, surveyConfigMap)
-                    .showSurvey();
+         new AliumSurveyLoader(fragment, parameters, surveyConfigMap).showSurvey();
+
         }
 
     }
@@ -143,9 +137,16 @@ public class Alium {
             SurveyParameters surveyParameters;
             Fragment xfragment;
             android.app.Fragment fragment;
-            ConfigURLResponseListener(Activity activity,SurveyParameters parameters){
+            SurveyLoader surveyLoader;
+            Callback callback;
+             interface Callback{
+                public void onCall();
+            }
+            ConfigURLResponseListener(Activity activity,SurveyParameters parameters, SurveyLoader surveyLoader, Callback callback){
+                this.surveyLoader=surveyLoader;
                 this.activity=activity;
                 surveyParameters=parameters;
+                this.callback=callback;
             }
             ConfigURLResponseListener(Fragment xfragment,SurveyParameters parameters){
                 this.xfragment=xfragment;
@@ -166,12 +167,20 @@ public class Alium {
 
 
                 Log.d("SurveyConfig", surveyConfigMap.toString());
-              if(activity!=null){
-                  new AliumSurveyLoader(activity, surveyParameters, surveyConfigMap)
-                          .showSurvey();
-              }else if(fragment!=null){
-                  new AliumSurveyLoader(fragment, surveyParameters, surveyConfigMap)
-                          .showSurvey();
+              if(xfragment!=null){
+                  trigger(xfragment, surveyParameters);
+//                  new AliumSurveyLoader(fragment, surveyParameters, surveyConfigMap)
+//                          .showSurvey();
+              }   else if(fragment!=null){
+                  trigger(fragment, surveyParameters);
+//                  new AliumSurveyLoader(fragment, surveyParameters, surveyConfigMap)
+//                          .showSurvey();
+              }
+            else if(activity!=null) {
+                callback.onCall();
+//                  trigger(activity, surveyParameters);
+//                  new AliumSurveyLoader(activity, surveyParameters, surveyConfigMap)
+//                          .showSurvey();
               }
 
             }
