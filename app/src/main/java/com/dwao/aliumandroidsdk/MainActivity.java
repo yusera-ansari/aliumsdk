@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.dwao.alium.listeners.SurveyLoader;
 import com.dwao.alium.survey.Alium;
 import com.dwao.alium.survey.SurveyParameters;
 import com.dwao.aliumandroidsdk.activities.DashboardActivity;
@@ -35,16 +36,18 @@ import java.util.HashMap;
 
 public class MainActivity extends Activity {
     JSONObject json=null;
+    SurveyLoader surveyLoader;
     TextView next;
     @Override
     protected  void onPause(){
         super.onPause();
+        surveyLoader.stop();
         Log.d("Pause", "MainActivity Paused");
     }
     @Override
     protected void onResume(){
         super.onResume();
-        Alium.trigger(this, new SurveyParameters("firstscreen"));
+       surveyLoader= Alium.trigger(this, new SurveyParameters("firstscreen"));
         Alium.trigger(this, new SurveyParameters("thirdscreen"));
     }
     @Override
