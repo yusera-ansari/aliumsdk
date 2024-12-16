@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
+
         android:usesCleartextTraffic="true"
         android:name=".MainApplication"
         android:allowBackup="true"
@@ -23,12 +24,13 @@
             android:label="third"
             android:exported="false" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
+
             android:name=".activities.DashboardActivity"
             android:label="second"
             android:theme="@style/Theme.AppCompat.Light"
             android:exported="false" />
         <activity
+
             android:label="first"
             android:name="com.dwao.aliumandroidsdk.MainActivity"
             android:exported="true">
