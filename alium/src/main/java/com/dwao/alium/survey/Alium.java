@@ -22,14 +22,14 @@ import java.util.Map;
 
 public class Alium {
      private static JSONObject surveyConfigJSON;
-    private static HashMap<String, SurveyConfig> surveyConfigMap =new HashMap<>();
-    protected static AppLifeCycleListener appLifeCycleListener;
+     private static HashMap<String, SurveyConfig> surveyConfigMap =new HashMap<>();
+     protected static AppLifeCycleListener appLifeCycleListener;
      private static  Alium instance;
      private static boolean appState=false;
-    static boolean isAppInForeground(){
+     static boolean isAppInForeground(){
         return appState;
     }
-    static Map<String, SurveyLoader> surveyLoaderMap=new HashMap<>();
+     static Map<String, SurveyLoader> surveyLoaderMap=new HashMap<>();
      private static VolleyService volleyService;
      private static String configURL;
      private  Alium(){
@@ -48,59 +48,59 @@ public class Alium {
                 configURL = url;
                 surveyConfigJSON=new JSONObject();
             }
-//            application.registerActivityLifecycleCallbacks(new App());
-//        appLifeCycleListener=new AppLifeCycleListener() {
-//            @Override
-//            public void onCreate(@NonNull LifecycleOwner owner) {
-//
-//                Log.d("LifeCycle", "oncraete listener"+owner.getLifecycle().getCurrentState().toString());
-//            }
-//
-//            @Override
-//            public void onDestroy(@NonNull LifecycleOwner owner) {
-//                Log.d("LifeCycle", "ondestroy listener"+owner.getLifecycle().getCurrentState().toString());
-//            }
-//
-//            @Override
-//            public void onResume(@NonNull LifecycleOwner owner) {
-//                Log.d("LifeCycle", "onResume listener"+owner.getLifecycle().getCurrentState().toString());
-//                appState=true;
-//            }
-//
-//            @Override
-//            public void onPause(@NonNull LifecycleOwner owner) {
-//                Log.d("LifeCycle", "onPause listener"+owner.getLifecycle().getCurrentState().toString());
-//                appState=false;
-//            }
-//        };
-//        ProcessLifecycleOwner.get().getLifecycle().addObserver(appLifeCycleListener);
+
         }
 
         public static SurveyLoader trigger(Activity activity, SurveyParameters parameters){
+         Log.d("surveyObserver", ""+surveyLoaderMap);
             if (configURL == null) {
                 throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
             }
             SurveyLoader surveyLoader=new SurveyLoaderObserver(parameters.screenName);
+            surveyLoader.setIsStopped(false);
             if(surveyConfigMap.isEmpty()) {
                 volleyService.callVolley(activity, configURL, new ConfigURLResponseListener(activity, parameters, surveyLoader,
                         new ConfigURLResponseListener.Callback() {
                             @Override
                             public void onCall() {
-                                AliumSurveyLoader aliumSurveyLoader= new AliumSurveyLoader(activity, parameters, surveyConfigMap);
-                                aliumSurveyLoader.showSurvey();
-                                surveyLoader.addSurveyLoader(aliumSurveyLoader);
+                                AliumSurveyLoader aliumSurveyLoader=   AliumSurveyLoader.createInstance(activity, parameters, surveyConfigMap);
+                                Log.d("instance", ""+(aliumSurveyLoader!=null));
+                                if(aliumSurveyLoader!=null) {
+
+                                    aliumSurveyLoader.showSurvey();
+                                    if (surveyLoaderMap.get(parameters.screenName) != null) {
+                                        surveyLoaderMap.get(parameters.screenName).setIsStopped(false);
+                                        surveyLoaderMap.get(parameters.screenName).addSurveyLoader(aliumSurveyLoader);
+                                    } else {
+
+                                        surveyLoaderMap.put(parameters.screenName, surveyLoader);
+                                        surveyLoader.addSurveyLoader(aliumSurveyLoader);
+                                    }
+                                }
                             }
                         }));
                 Log.d("Alium-initialized", "calling survey on" + parameters.screenName);
 
             }
 
+           else {
                 Log.d("helllo", surveyConfigJSON.toString());
-            AliumSurveyLoader aliumSurveyLoader= new AliumSurveyLoader(activity, parameters, surveyConfigMap);
-            aliumSurveyLoader.showSurvey();
-            surveyLoader.addSurveyLoader(aliumSurveyLoader);
-                return surveyLoader;
+                AliumSurveyLoader aliumSurveyLoader =   AliumSurveyLoader.createInstance(activity, parameters, surveyConfigMap);
+                Log.d("instance", ""+(aliumSurveyLoader!=null));
+                if(aliumSurveyLoader!=null){
+                    aliumSurveyLoader.showSurvey();
+                    if (surveyLoaderMap.get(parameters.screenName) != null) {
+                        surveyLoaderMap.get(parameters.screenName).setIsStopped(false);
+                        surveyLoaderMap.get(parameters.screenName).addSurveyLoader(aliumSurveyLoader);
+                    } else {
+                        surveyLoaderMap.put(parameters.screenName, surveyLoader);
+                        surveyLoader.addSurveyLoader(aliumSurveyLoader);
 
+                    }
+                }
+            }
+
+            return surveyLoaderMap.get(parameters.screenName)!=null?surveyLoaderMap.get(parameters.screenName):surveyLoader;
 
         }
 

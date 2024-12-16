@@ -7,4 +7,5 @@ public interface SurveyLoader extends  Observer{
     public void addSurveyLoader(AliumSurveyLoader loader);
     public boolean isStopped();
     public String getScreenName();
+    public void setIsStopped(boolean stop);
 }
