@@ -28,22 +28,21 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
 
     boolean shouldUpdatePreferences;
     SurveyParameters surveyParameters;
+    private AliumSurveyLoader.SurveyDialogCallback callback;
     ExecutableSurveySpecs executableSurveySpecs;
-   public SurveyDialogFragment(){
-        Log.d("SurveyDialogFragment", "outside oncreyae ");
-        Log.d("SurveyDialogFragment", "outside oncreyae "+getArguments());
+    private String loaderId;
+    private boolean shouldCallOnStopCallback=true;
+    public SurveyDialogFragment(){
     }
     @Override
     public void show(@NonNull FragmentManager manager, @Nullable String tag) {
-
-
         super.show(manager, tag);
-
-
-        Log.d("SurveyDialogFragment", "Show dialog");
     }
+
     public static SurveyDialogFragment newInstance(ExecutableSurveySpecs executableSurveySpecs,
-                                                   SurveyParameters surveyParameters, boolean shouldUpdatePreferences){
+                                                   SurveyParameters surveyParameters, boolean shouldUpdatePreferences,
+                                                   String loaderId
+                                                   ){
         SurveyDialogFragment surveyDialogFragment=new SurveyDialogFragment();
         Bundle bundle=new Bundle();
         bundle.putSerializable("surveyParameters",surveyParameters);
@@ -51,7 +50,10 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         bundle.putSerializable("surveyJson",gson.toJson(executableSurveySpecs.survey) );
         bundle.putSerializable("loadableSurveySpecs", executableSurveySpecs.getLoadableSurveySpecs()
         );
+
         bundle.putBoolean("shouldUpdatePreferences", shouldUpdatePreferences);
+        bundle.putString("loaderId",loaderId );
+
         surveyDialogFragment.setArguments(bundle);
         return surveyDialogFragment;
     }
@@ -59,13 +61,14 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d("onSaveInstanceState", "onSaveInstanceState");
+        shouldCallOnStopCallback=false;
         outState.putSerializable("surveyParameters",surveyParameters);
         Gson gson=new Gson();
         outState.putSerializable("surveyJson",gson.toJson(executableSurveySpecs.survey) );
         outState.putSerializable("loadableSurveySpecs", executableSurveySpecs.getLoadableSurveySpecs()
         );
         outState.putBoolean("shouldUpdatePreferences", shouldUpdatePreferences);
+        outState.putString("loaderId", loaderId);
     }
 
 //    @Override
@@ -87,23 +90,30 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
             executableSurveySpecs=new ExecutableSurveySpecs(
                     gson.fromJson(getArguments().getString("surveyJson"), Survey.class)
                     , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
+            loaderId=getArguments().getString("loaderId");
+            if(loaderId!=null){
+                callback=Alium.reAttachCallback(loaderId, surveyParameters.screenName);
+            }
 
         }else if(getArguments()!=null){
-      Log.d("SurveyDialogFragment", "inside oncreyae");
        shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
       surveyParameters=(SurveyParameters)getArguments().getSerializable("surveyParameters");
       Gson gson=new Gson();
       executableSurveySpecs=new ExecutableSurveySpecs(
               gson.fromJson(getArguments().getString("surveyJson"), Survey.class)
               , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
+            loaderId=getArguments().getString("loaderId");
+            if(loaderId!=null){
+                callback=Alium.reAttachCallback(loaderId, surveyParameters.screenName);
+            }
 
   }
+shouldCallOnStopCallback=true;
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        Log.d("ViewStateRestore", "Viewstate restored"+savedInstanceState);
     }
 
     @Nullable
@@ -115,13 +125,18 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        Log.d("SurveyDialogFragment", "outside createDialog "+savedInstanceState);
-        Log.d("SurveyDialogFragment", "outside oncreyae "+getArguments());
         Dialog dialogInstance=null;
         if (executableSurveySpecs != null && surveyParameters != null) {
-            Log.d("SurveyDialogFragment", "inside createDialog");
             dialog = new SurveyDialog(requireContext(), executableSurveySpecs, surveyParameters,savedInstanceState==null?true: false);
             setCancelable(false);
+            if(savedInstanceState==null){
+             try{
+                 callback.onCreate(executableSurveySpecs.getLoadableSurveySpecs().key);
+             }
+             catch (Exception e){
+                 Log.e("callbalCreate", e.toString());
+             }
+            }
 //            if (savedInstanceState == null) {
 //                Alium.activeSurveys.add(dialog);
 //            }else{
@@ -158,21 +173,31 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
 //            } throw new IllegalStateException("SurveyDialog cannot be shown: activity paused.");
 
         }
-dialogInstance.setOnCancelListener(new DialogInterface.OnCancelListener() {
-    @Override
-    public void onCancel(DialogInterface dialog) {
-        Log.d("Dialog", "dialog instanve cancelled");
-    }
-});
-        dialogInstance.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                Log.d("Dialog", "diallog instance dissmised");
-            }
-        });
+
+
         return dialogInstance;
     }
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+       try {
+           if(shouldCallOnStopCallback) callback.onStop(executableSurveySpecs.getLoadableSurveySpecs().key);
+        }catch (Exception e){
+            Log.e("callbalstop", e.toString());
+        }
+    }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d("DialogFragment", "onDestroyView called");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("DialogFragment", "onDestroy called");
+    }
     @Override
     public void onDetach() {
         super.onDetach();
