@@ -34,8 +34,7 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
         Log.d("LegacySurveyDialog", "Show dialog");
     }
 
-
-    public static LegacySurveyDialogFragment newInstance(ExecutableSurveySpecs executableSurveySpecs,
+        public static LegacySurveyDialogFragment newInstance(ExecutableSurveySpecs executableSurveySpecs,
                                                    SurveyParameters surveyParameters, boolean shouldUpdatePreferences){
         LegacySurveyDialogFragment legacySurveyDialogFragment=new LegacySurveyDialogFragment();
         Bundle bundle=new Bundle();

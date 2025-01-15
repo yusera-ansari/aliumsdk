@@ -18,11 +18,33 @@ import java.util.HashMap;
 
 public class TestActivity extends AppCompatActivity {
     TextView next;
+
     @Override
     protected void onResume(){
         super.onResume();
         Alium.trigger(this,  new SurveyParameters("thirdscreen"));
+        //Alium.trigger(this,  new SurveyParameters("thirdscreen"));
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Alium.trigger(TestActivity.this , new SurveyParameters("thirdscreen"));
+            }
+        }, "thread-second").start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Alium.trigger(TestActivity.this , new SurveyParameters("thirdscreen" ));
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Alium.trigger(TestActivity.this , new SurveyParameters("thirdscreen" ));
+            }
+        }).start();
     }
 
     @Override
@@ -42,12 +64,19 @@ public class TestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
         next=findViewById(R.id.test_next);
-Log.d("onCreate", "Instance state- oncreate");
+        Log.d("onCreate", "Instance state- oncreate");
     }
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         Log.d("OnconfigChange", "Instance state - onconfig changed");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Alium.stop("thirdscreen");
+        Alium.stop("thirdscreen");
     }
 }

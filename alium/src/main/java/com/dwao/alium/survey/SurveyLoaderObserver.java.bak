@@ -40,14 +40,7 @@ public void setIsStopped(boolean stop){
             keys.remove();
         }
         isStopped=true;
-        //           for(AliumSurveyLoader loader: getList()){
-//               Log.d(TAG, "stop was caled on the loader");
-//               loader.stop();
-//           }
-//           for(int i=0; i<list.size(); i++){
-//               getList().remove(i);
-//           }
-//        }
+
 Log.d("stop-sync","after: "+ list);
     }
 

@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.dwao.alium.listeners.SurveyLoader;
 import com.dwao.alium.survey.Alium;
 import com.dwao.alium.survey.SurveyParameters;
 import com.dwao.aliumandroidsdk.Config;
@@ -18,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DashboardActivity extends AppCompatActivity {
-    SurveyLoader surveyLoader;
     TextView next;
     @Override
     protected void onResume(){
@@ -27,7 +25,29 @@ public class DashboardActivity extends AppCompatActivity {
         params.put("dim1", "alium_app"); //appName
         params.put("dim2", "mobile"); //surveyOn
         params.put("dim3", "android"); //os
-        surveyLoader= Alium.trigger(this,  new SurveyParameters("secondscreen", params));
+        Alium.trigger(this,  new SurveyParameters("secondscreen", params));
+//      Alium.trigger(this,  new SurveyParameters("secondscreen", params));
+       new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                Alium.trigger(DashboardActivity.this , new SurveyParameters("secondscreen", params));
+            }
+        }, "thread-second").start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                Alium.trigger(DashboardActivity.this , new SurveyParameters("secondscreen", params));
+            }
+        } ).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                Alium.trigger(DashboardActivity.this , new SurveyParameters("secondscreen", params));
+            }
+        } ).start();
 
     }
     protected  void onPause(){
@@ -44,8 +64,9 @@ public class DashboardActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                surveyLoader.stop();
+//                surveyLoader.stop();
                 startActivity(intent);
+//                Alium.stop("secondscreen");
             }
         });
       }
