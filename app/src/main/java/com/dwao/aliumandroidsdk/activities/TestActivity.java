@@ -22,29 +22,54 @@ public class TestActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
+//        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
+//        ThreadGroup threadGroup
+//                = Thread.currentThread().getThreadGroup();
+//
+//        // getting the total active count of the threads
+//        int threadCount = threadGroup.activeCount();
+//
+//        Thread threadList[] = new Thread[threadCount];
+//        // enumerating over the thread list
+//        threadGroup.enumerate(threadList);
+
+//        Log.d("TestActivity::","Active threads are:");
+
+        // iterating over the for loop to get the names of
+        // all the active threads.
+//        for (int i = 0; i < threadCount; i++) {
+//            Log.d("TestActivity::", threadList[i].getName()) ;
+//            for(StackTraceElement ele: threadList[i].getStackTrace()){
+//                Log.d("StackTraceEle: ","   "+ele);
+//            }
+//
+//        }
+
+
+
+
         Alium.trigger(this,  new SurveyParameters("thirdscreen"));
-        //Alium.trigger(this,  new SurveyParameters("thirdscreen"));
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Alium.trigger(TestActivity.this , new SurveyParameters("thirdscreen"));
-            }
-        }, "thread-second").start();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Alium.trigger(TestActivity.this , new SurveyParameters("thirdscreen" ));
-            }
-        }).start();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Alium.trigger(TestActivity.this , new SurveyParameters("thirdscreen" ));
-            }
-        }).start();
+        Alium.trigger(this,  new SurveyParameters("secondscreen"));
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Alium.trigger(TestActivity.this , new SurveyParameters("thirdscreen"));
+//            }
+//        }, "thread-second").start();
+//
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Alium.trigger(TestActivity.this , new SurveyParameters("thirdscreen" ));
+//            }
+//        }).start();
+//
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Alium.trigger(TestActivity.this , new SurveyParameters("thirdscreen" ));
+//            }
+//        }).start();
     }
 
     @Override
@@ -76,7 +101,7 @@ public class TestActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Alium.stop("thirdscreen");
+//        Alium.stop("thirdscreen");
         Alium.stop("thirdscreen");
     }
 }

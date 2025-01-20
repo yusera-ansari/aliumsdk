@@ -17,11 +17,33 @@ import org.json.JSONObject;
 public class VolleyService {
     private RequestQueue queue;
     public static final String SURVEY_REQUEST_TAG="SURVEY_REQ";
+    private static VolleyService instance;
+    private  Context context;
+    public static VolleyService getInstance(){
+        return instance;
+    }
+    public synchronized static VolleyService getInstance(Context context) {
+        if(instance==null){
+            synchronized (VolleyService.class){
+                if(instance==null){
+                    instance=new VolleyService(context);
+                }
+            }
+        }
+        return instance;
+    }
+    private VolleyService(Context context){
+        this.context=context;
+    }
+    private VolleyService(){
+
+    }
+
      public RequestQueue getSurveyQueue(){
          return this.queue;
      }
 
-    public void loadRequestWithVolley(Context context, String url){
+    public void loadRequestWithVolley(  String url){
         Log.d("post_url", url);
         // Instantiate the RequestQueue.
         RequestQueue config_queue = Volley.newRequestQueue(context);
@@ -41,7 +63,7 @@ public class VolleyService {
         config_queue.add(stringRequest);
 
     }
-   public  void callVolley(Context context, String url, VolleyResponseListener volleyResponseListener){
+   public  void callVolley(  String url, VolleyResponseListener volleyResponseListener){
        // Instantiate the RequestQueue.
          queue = Volley.newRequestQueue(context);
     Log.d("fetch-main", url);

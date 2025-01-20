@@ -108,7 +108,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
             }
 
   }
-shouldCallOnStopCallback=true;
+        shouldCallOnStopCallback=true;
     }
 
     @Override
@@ -180,11 +180,7 @@ shouldCallOnStopCallback=true;
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
-       try {
-           if(shouldCallOnStopCallback) callback.onStop(executableSurveySpecs.getLoadableSurveySpecs().key);
-        }catch (Exception e){
-            Log.e("callbalstop", e.toString());
-        }
+
     }
 
     @Override
@@ -196,6 +192,13 @@ shouldCallOnStopCallback=true;
     @Override
     public void onDestroy() {
         super.onDestroy();
+        try {
+            if(shouldCallOnStopCallback) callback.onStop(executableSurveySpecs.getLoadableSurveySpecs().key);
+            callback=null;
+            dialog=null;
+        }catch (Exception e){
+            Log.e("callbalstop", e.toString());
+        }
         Log.d("DialogFragment", "onDestroy called");
     }
     @Override
