@@ -39,11 +39,11 @@ public class Alium {
      private static VolleyService volleyService;
      private static String configURL;
      private static Map<String, ExecSurLoaderDM> surveyExecutingMap=new HashMap<>();
-     private static Queue<TriggerRequest> triggerRequestQueue=new LinkedList<>();
+     private  Queue<TriggerRequest> triggerRequestQueue=new LinkedList<>();
      private static volatile boolean isConfigFetching=false;
-
+     private static boolean isTriggerExecuting=false;
      private  Alium(){
-         volleyService=new VolleyService();
+
          surveyConfigJSON=new JSONObject();
      }
 
@@ -51,6 +51,7 @@ public class Alium {
             if(instance==null){
                 synchronized (Alium.class){
                     if(instance==null){
+                        volleyService=VolleyService.getInstance(application);
                         instance=new Alium();
                     }
                 }
@@ -105,10 +106,12 @@ public class Alium {
                      Log.d("Loaded-", "loaded Loader: "+loader);
                      if(loader.getLoaderId().equals(id)){
                         Log.d("Loaded-", "removing it loaded Loader: "+loader);
+                        loader.callback.onQuitLoader(loader);
                         iterator.remove();
+
                      }
                  }
-                Log.d("LOadd"," loaded queue: "+loadedQueue);
+                Log.d("LOadd"," loaded queue: "+loadedQueue+" "+execSurLoaderDM.aliumSurveyLoaderQueue);
              }
          }
      }
@@ -120,7 +123,7 @@ public class Alium {
         }
     }
 
-     private static boolean isTriggerExecuting=false;
+
 
      private synchronized void executeNextTrigger(){
          if(isTriggerExecuting||configURL==null||isConfigFetching||triggerRequestQueue.isEmpty()){
@@ -134,12 +137,11 @@ public class Alium {
              Log.d("THREAD", Thread.currentThread().getName());
              ExecSurLoaderDM  execSurLoaderDMTmp=new ExecSurLoaderDM(request.surveyParameters.screenName);
              surveyExecutingMap.put(request.surveyParameters.screenName, execSurLoaderDMTmp);
-             execSurLoaderDMTmp.offer(request, surveyConfigMap);
+             execSurLoaderDMTmp.offer(request  ,surveyConfigMap);
          }
          else{
-             execSurLoaderDM.offer(request, surveyConfigMap);
+             execSurLoaderDM.offer(request , surveyConfigMap);
          }
-
          isTriggerExecuting=false;
          executeNextTrigger();
     }
@@ -148,7 +150,7 @@ public class Alium {
         Log.d("MAPMAP: ","Survey config is empty!!: "+ isConfigFetching);
         isConfigFetching=true;
         Log.d("MAPMAP-2: ","Survey config is empty!!: "+ isConfigFetching);
-        volleyService.callVolley( context, configURL,
+        volleyService.callVolley(  configURL,
                 new Alium.ConfigURLResponseListener());
     }
 
@@ -156,10 +158,10 @@ public class Alium {
         if (configURL == null) {
             throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
         }
-        for(TriggerRequest request: triggerRequestQueue){
+        for(TriggerRequest request: instance.triggerRequestQueue){
             Log.d("My request", "request is not empty: "+request.surveyParameters.screenName);
         }
-        triggerRequestQueue.offer(new TriggerRequest(activity, parameters));
+        instance.triggerRequestQueue.offer(new TriggerRequest(activity, parameters));
         if(surveyConfigMap.isEmpty() && !isConfigFetching) {
             instance.fetchConfigJson(activity );
          }else{
@@ -171,10 +173,10 @@ public class Alium {
         if (configURL == null) {
             throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
         }
-        for(TriggerRequest request: triggerRequestQueue){
+        for(TriggerRequest request: instance.triggerRequestQueue){
             Log.d("My request", "request is not empty: "+request.surveyParameters.screenName);
         }
-        triggerRequestQueue.offer(new TriggerRequest(fragment, parameters));
+        instance.triggerRequestQueue.offer(new TriggerRequest(fragment, parameters));
         if(surveyConfigMap.isEmpty() && !isConfigFetching) {
             instance.fetchConfigJson(fragment.getActivity() );
         }else{
@@ -186,10 +188,10 @@ public class Alium {
         if (configURL == null) {
             throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
         }
-        for(TriggerRequest request: triggerRequestQueue){
+        for(TriggerRequest request: instance.triggerRequestQueue){
             Log.d("My request", "request is not empty: "+request.surveyParameters.screenName);
         }
-        triggerRequestQueue.offer(new TriggerRequest(fragment, parameters));
+        instance.triggerRequestQueue.offer(new TriggerRequest(fragment, parameters));
         if(surveyConfigMap.isEmpty() && !isConfigFetching) {
             instance.fetchConfigJson(fragment.getActivity() );
         }else{

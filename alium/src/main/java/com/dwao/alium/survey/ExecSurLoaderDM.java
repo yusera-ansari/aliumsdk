@@ -12,11 +12,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 //one for each screen and all the loaders for a screen stays here
 public class ExecSurLoaderDM {
-        Queue<AliumSurveyLoader> loadedQueue=new LinkedList<>();
-        Queue<AliumSurveyLoader> aliumSurveyLoaderQueue=new LinkedList<>();
+        Queue<AliumSurveyLoader> loadedQueue=new ConcurrentLinkedQueue<>();
+        Queue<AliumSurveyLoader> aliumSurveyLoaderQueue=new ConcurrentLinkedQueue<>();
         String screenName="";
         AliumSurveyLoader currentLoader=null;
         private ExecSurLoaderDM(){};
@@ -41,40 +42,43 @@ public class ExecSurLoaderDM {
 
                                         @Override
                                         public synchronized void onQuitLoader(AliumSurveyLoader loader) {
-                                            currentLoader=null;
-//                                            Iterator<AliumSurveyLoader> loaderIterator= loadedQueue.iterator();
-//                                            while(loaderIterator.hasNext()){
-//                                                AliumSurveyLoader ele=loaderIterator.next();
-//                                                if(ele.getLoaderId()==)
-//                                            }
-////                                        emptyLoadedQueue();
+                                            if(currentLoader !=null &&currentLoader.getLoaderId().equals(loader.getLoaderId())){
+                                                isAliumLoaderExecuting=false;
+                                                currentLoader=null;
+
+                                            }
                                         }
                                     });
-                            if(loader!=null)  aliumSurveyLoaderQueue.offer(  loader    );
+                            if(loader!=null) {
+                                //limitting the loader to one  && aliumSurveyLoaderQueue.size()==0 && loadedQueue.size()==0
+                                aliumSurveyLoaderQueue.add(loader);
+
+                            }
                             executeNextLoader();
-//
         }
 
     private synchronized void executeNextLoader(){
             Log.d("ExecNLoader", "loader list for: "+screenName+ " conatins: loadedQueue"+loadedQueue
             +" loading:  "+aliumSurveyLoaderQueue);
-            if(currentLoader!=null){
-                Log.d("CURRENT", "Current LOADER is not NULL");
-                loadedQueue.offer(currentLoader); //it should be added to loaded-queue
-                currentLoader=null;
-            }
+//            if(currentLoader!=null){
+//                Log.d("CURRENT", "Current LOADER is not NULL");
+//                loadedQueue.offer(currentLoader); //it should be added to loaded-queue
+//                currentLoader=null;
+//            }
 
             if(aliumSurveyLoaderQueue.isEmpty()||isAliumLoaderExecuting){
                 if(aliumSurveyLoaderQueue.isEmpty()){
-                    isAliumLoaderExecuting=false;
+                    Log.d("ISEMPTY", "ALIUM SURVEY lOSADER Queue is empty");
+                    isAliumLoaderExecuting=false; //reset the value
                 }
+                Log.d("isAliumLoaderExecuting", "ALIUM SURVEY lOSADER Queue isAliumLoaderExecuting " +isAliumLoaderExecuting);
                 return;
             }
 
             isAliumLoaderExecuting=true;
             AliumSurveyLoader aliumSurveyLoader= aliumSurveyLoaderQueue.poll();
-
             if(aliumSurveyLoader!=null){
+                loadedQueue.offer(aliumSurveyLoader);
                 currentLoader=aliumSurveyLoader;
                 aliumSurveyLoader.showSurvey();
             }
@@ -86,12 +90,12 @@ public class ExecSurLoaderDM {
             if(currentLoader!=null) currentLoader.stop();
             aliumSurveyLoaderQueue.clear();
            emptyLoadedQueue();
-        currentLoader=null;
+         currentLoader=null;
     }
     private synchronized void emptyLoadedQueue(){
         while(!loadedQueue.isEmpty()){
           AliumSurveyLoader loader=  loadedQueue.poll(); //why poll?
-          loader.stop();
+        if(loader!=null)  loader.stop();
         }
     }
     }
