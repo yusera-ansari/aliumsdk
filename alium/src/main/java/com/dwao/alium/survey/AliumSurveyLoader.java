@@ -408,7 +408,7 @@ public class AliumSurveyLoader implements Observer {
         if(isSurveyFragmentLoading||loadableSurveySpecsQueue.isEmpty()){
             if(loadableSurveySpecsQueue.isEmpty()){
                 callback.onAliumLoaderExcecuted();
-                cleanUp();
+//                cleanUp();
 
                 Log.d("LoaderComplete", "Loader is complete loadable surveys called!!");
             }
@@ -438,33 +438,32 @@ public class AliumSurveyLoader implements Observer {
         executorService.shutdownNow();
 //        handler.removeCallbacks();
 
-//        if(fm!=null ){
-//
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//              for(android.app.Fragment fragment:fm.getFragments()){
-//
-//                if(fragment.getTag()!=null &&fragment.getTag().contains(surveyParameters.screenName)){
-//                    fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
-//                }
-//              }
-//            }else{
-//                for(android.app.Fragment fragment:fm.getFragments()){
-//                    fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
-//                }
+        if(fm!=null ){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+              for(android.app.Fragment fragment:fm.getFragments()){
+
+                if(fragment.getTag()!=null &&fragment.getTag().contains(surveyParameters.screenName)){
+                    fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
+                }
+              }
+            }else{
+                for(android.app.Fragment fragment:fm.getFragments()){
+                    fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
+                }
+            }
+        }else if(xfm!=null){
+            if(executingSurveys.size()>0){
+                for(String key: executingSurveys){
+                    Fragment fragment=  xfm.findFragmentByTag(key+"-"+surveyParameters.screenName);
+                  if(fragment!=null)  xfm.beginTransaction().remove(fragment).commitAllowingStateLoss();
+                }
+            }
+//                for(Fragment fragment:xfm.getFragments()){
+//                    if(fragment.getTag().contains(surveyParameters.screenName)){
+//                        xfm.beginTransaction().remove(fragment).commitAllowingStateLoss();
+//                    }
 //            }
-//        }else if(xfm!=null){
-//            if(executingSurveys.size()>0){
-//                for(String key: executingSurveys){
-//                    Fragment fragment=  xfm.findFragmentByTag(key+"-"+surveyParameters.screenName);
-//                  if(fragment!=null)  xfm.beginTransaction().remove(fragment).commitAllowingStateLoss();
-//                }
-//            }
-////                for(Fragment fragment:xfm.getFragments()){
-////                    if(fragment.getTag().contains(surveyParameters.screenName)){
-////                        xfm.beginTransaction().remove(fragment).commitAllowingStateLoss();
-////                    }
-////            }
-//        }
+        }
         cleanUp();
     }
 

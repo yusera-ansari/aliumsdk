@@ -49,8 +49,8 @@ public class ExecSurLoaderDM {
                                             }
                                         }
                                     });
-                            if(loader!=null) {
-                                //limitting the loader to one  && aliumSurveyLoaderQueue.size()==0 && loadedQueue.size()==0
+                            if(loader!=null ) {
+                                //limiting the loader to one  && aliumSurveyLoaderQueue.size()==0 && loadedQueue.size()==0
                                 aliumSurveyLoaderQueue.add(loader);
 
                             }
@@ -93,9 +93,15 @@ public class ExecSurLoaderDM {
          currentLoader=null;
     }
     private synchronized void emptyLoadedQueue(){
-        while(!loadedQueue.isEmpty()){
-          AliumSurveyLoader loader=  loadedQueue.poll(); //why poll?
-        if(loader!=null)  loader.stop();
-        }
+            Iterator<AliumSurveyLoader> iterator= loadedQueue.iterator();
+            while (iterator.hasNext()){
+                AliumSurveyLoader loader=iterator.next();
+                if(loader!=null)loader.stop();
+                iterator.remove();
+            }
+//        while(!loadedQueue.isEmpty()){
+//          AliumSurveyLoader loader=  loadedQueue.poll(); //why poll?
+//        if(loader!=null)  loader.stop();
+//        }
     }
     }

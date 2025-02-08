@@ -1,9 +1,11 @@
 package com.dwao.aliumandroidsdk.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,7 +24,7 @@ public class TestActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-//        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
+        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
 //        ThreadGroup threadGroup
 //                = Thread.currentThread().getThreadGroup();
 //
@@ -48,8 +50,8 @@ public class TestActivity extends AppCompatActivity {
 
 
 
-        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
-        Alium.trigger(this,  new SurveyParameters("secondscreen"));
+//        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
+//        Alium.trigger(this,  new SurveyParameters("secondscreen"));
 //        new Thread(new Runnable() {
 //            @Override
 //            public void run() {
@@ -90,6 +92,11 @@ public class TestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_test);
         next=findViewById(R.id.test_next);
         Log.d("onCreate", "Instance state- oncreate");
+        Intent intent=new Intent(this, DashboardActivity.class);
+//        next.setOnClickListener((View v)->{
+//            Alium.stop("thirdscreen");
+//            startActivity(intent);
+//        });
     }
 
     @Override
@@ -102,6 +109,6 @@ public class TestActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 //        Alium.stop("thirdscreen");
-        Alium.stop("thirdscreen");
+//        Alium.stop("thirdscreen");
     }
 }
