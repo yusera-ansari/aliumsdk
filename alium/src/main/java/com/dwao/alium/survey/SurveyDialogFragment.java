@@ -61,6 +61,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        Log.d("onsave", "on save instnace state");
         shouldCallOnStopCallback=false;
         outState.putSerializable("surveyParameters",surveyParameters);
         Gson gson=new Gson();
@@ -83,7 +84,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         Log.d("SurveyDialogFragment", "outside oncreyae "+savedInstanceState);
         Log.d("SurveyDialogFragment", "outside oncreyae "+getArguments());
         if(savedInstanceState!=null){
-            Log.d("SurveyDialogFragment", "LegacySurveyDialog-inside oncreyae");
+            Log.d("SurveyDialogFragment", "instance saved-inside oncreyae");
             shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
             surveyParameters=(SurveyParameters)getArguments().getSerializable("surveyParameters");
             Gson gson=new Gson();
