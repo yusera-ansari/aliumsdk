@@ -11,21 +11,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.WindowManager;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.DefaultLifecycleObserver;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import com.android.volley.RequestQueue;
 import com.dwao.alium.frequencyManager.FrequencyManagerFactory;
-import com.dwao.alium.frequencyManager.SurveyFrequencyManager;
 import com.dwao.alium.listeners.Observer;
 import com.dwao.alium.listeners.VolleyResponseListener;
 import com.dwao.alium.models.CustomSurveyDetails;
@@ -87,13 +77,13 @@ public class AliumSurveyLoader implements Observer {
             =new SurveyDialogCallback() {
         @Override
         public void onStop(String key) {
-            Log.d("surveyDcallB", "on stop called "+executingSurveys);
+            Log.d("executingSurveys", "on stop called executing-surveys:"+executingSurveys);
             if(executingSurveys.contains(key)) {
                 Log.d("surveyDcallB", "on stop called and key was present: "+key);
                 executingSurveys.remove(key);
                 if (executingSurveys.isEmpty()) {
                     Log.d("ExecutingSurv", "Executing surveys is Empty()");
-                    Alium.updateExecLoaderData(getLoaderId(), surveyParameters.screenName);
+//                    Alium.updateExecLoaderData(getLoaderId(), surveyParameters.screenName);
                     callback.onQuitLoader(AliumSurveyLoader.this
                     );
                     callback.onAliumLoaderExcecuted();
@@ -195,8 +185,7 @@ public class AliumSurveyLoader implements Observer {
             Fragment fragment= xfm.findFragmentByTag(key+"-"+surveyParameters.screenName);
             if(fragment!=null){
                surveyDialogCallback.onStop(key);
-//                callback.onQuitLoader(this);
-//                callback.onAliumLoaderExcecuted();
+
                 return true;
             }
         }
@@ -205,8 +194,6 @@ public class AliumSurveyLoader implements Observer {
             android.app.Fragment fragment= fm.findFragmentByTag(key+"-"+surveyParameters.screenName);
             if(fragment!=null){
                 surveyDialogCallback.onStop(key);
-//                callback.onQuitLoader(this);
-//                callback.onAliumLoaderExcecuted();
                 return true;
             }
         } else if(activity !=null){
@@ -215,8 +202,6 @@ public class AliumSurveyLoader implements Observer {
                 Fragment fragment = xfm.findFragmentByTag(key + "-" + surveyParameters.screenName);
                 if (fragment != null) {
                     surveyDialogCallback.onStop(key);
-//                    callback.onQuitLoader(this);
-//                    callback.onAliumLoaderExcecuted();
                     return true;
                 }
             } else {
@@ -224,8 +209,6 @@ public class AliumSurveyLoader implements Observer {
                 android.app.Fragment fragment = fm.findFragmentByTag(key + "-" + surveyParameters.screenName);
                 if (fragment != null) {
                     surveyDialogCallback.onStop(key);
-//                    callback.onQuitLoader(this);
-//                    callback.onAliumLoaderExcecuted();
                     Log.d("Already", "Survey is already there!! "+ this);
                     return true;
                 }
@@ -247,20 +230,15 @@ public class AliumSurveyLoader implements Observer {
         }
     }
     public AliumSurveyLoader(Fragment xfragment,SurveyParameters surveyParameters, Map<String, SurveyConfig> surveyConf){
-
         this.surveyParameters=surveyParameters;
         surveyConfigMap=surveyConf;
-
         this.xfragment=new WeakReference<>(xfragment);
         aliumPreferences= AliumPreferences.getInstance(xfragment.getContext());
         if(aliumPreferences.getCustomerId().isEmpty()){
             aliumPreferences.setCustomerId(generateCustomerId());
         }
-
-
     }
     public AliumSurveyLoader(android.app.Fragment fragment,SurveyParameters surveyParameters, Map<String, SurveyConfig> surveyConf){
-
         this.surveyParameters=surveyParameters;
         surveyConfigMap=surveyConf;
         this.fragment=new WeakReference<>(fragment);
@@ -268,8 +246,6 @@ public class AliumSurveyLoader implements Observer {
         if(aliumPreferences.getCustomerId().isEmpty()){
             aliumPreferences.setCustomerId(generateCustomerId());
         }
-
-
     }
 
     public SurveyParameters getSurveyParameters() {
@@ -281,8 +257,9 @@ public class AliumSurveyLoader implements Observer {
                 Log.d("showSurvey", "ShowSurvey called on: "+surveyParameters.screenName);
                 Log.d("showSurvey", "Current THREAD: "+ Thread.currentThread().getName());
                 findAndLoadSurveyForCurrentScr();
-
         });
+
+
         executorService.shutdown(); //very imp
     }
 
@@ -304,8 +281,6 @@ public class AliumSurveyLoader implements Observer {
                         android.app.Fragment fragment= fm.findFragmentByTag(key+"-"+surveyParameters.screenName);
                         if(fragment!=null){
                             surveyDialogCallback.onStop(key);
-//                            callback.onQuitLoader(this);
-//                            callback.onAliumLoaderExcecuted();
                             continue;
                         }
                     } else
@@ -314,8 +289,6 @@ public class AliumSurveyLoader implements Observer {
                              Fragment fragment= xfm.findFragmentByTag(key+"-"+surveyParameters.screenName);
                             if(fragment!=null){
                                 surveyDialogCallback.onStop(key);
-//                                callback.onQuitLoader(this);
-//                                callback.onAliumLoaderExcecuted();
                                 continue;
                             }
 
@@ -325,9 +298,7 @@ public class AliumSurveyLoader implements Observer {
                                 Fragment fragment = xfm.findFragmentByTag(key + "-" + surveyParameters.screenName);
                                 if (fragment != null) {
                                     Log.d("findAndLoad", "and we return from here as survey fragment exists");
-//                                    callback.onQuitLoader(this);
                                     surveyDialogCallback.onStop(key);
-//                                    callback.onAliumLoaderExcecuted();
                                     continue;
                                 }
                             } else {
@@ -335,11 +306,11 @@ public class AliumSurveyLoader implements Observer {
                                 android.app.Fragment fragment = fm.findFragmentByTag(key + "-" + surveyParameters.screenName);
                                 if (fragment != null) {
                                     surveyDialogCallback.onStop(key);
-//                                    callback.onQuitLoader(this);
-//                                    callback.onAliumLoaderExcecuted();
                                     continue;
                                 }
                             }
+                        }else{
+                            continue;
                         }
 
                    loadSurveyIfShouldBeLoaded(jsonObject, key);
@@ -394,9 +365,7 @@ public class AliumSurveyLoader implements Observer {
 //                       customFreqSurveyData
 //               ));
            }else{
-//               callback.onQuitLoader(this);
                surveyDialogCallback.onStop(key);
-//               callback.onAliumLoaderExcecuted();
            }
        }catch (Exception e){
            Log.e("loadSurveyIfShouldLoad", e.toString());
@@ -436,19 +405,11 @@ public class AliumSurveyLoader implements Observer {
             volleyService.getSurveyQueue().cancelAll(VolleyService.SURVEY_REQUEST_TAG);
         }
         executorService.shutdownNow();
-//        handler.removeCallbacks();
-
         if(fm!=null ){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-              for(android.app.Fragment fragment:fm.getFragments()){
-
-                if(fragment.getTag()!=null &&fragment.getTag().contains(surveyParameters.screenName)){
-                    fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
-                }
-              }
-            }else{
-                for(android.app.Fragment fragment:fm.getFragments()){
-                    fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
+            if(executingSurveys.size()>0){
+                for(String key: executingSurveys){
+                    android.app.Fragment fragment=  fm.findFragmentByTag(key+"-"+surveyParameters.screenName);
+                    if(fragment!=null)  fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
                 }
             }
         }else if(xfm!=null){
@@ -458,11 +419,7 @@ public class AliumSurveyLoader implements Observer {
                   if(fragment!=null)  xfm.beginTransaction().remove(fragment).commitAllowingStateLoss();
                 }
             }
-//                for(Fragment fragment:xfm.getFragments()){
-//                    if(fragment.getTag().contains(surveyParameters.screenName)){
-//                        xfm.beginTransaction().remove(fragment).commitAllowingStateLoss();
-//                    }
-//            }
+
         }
         cleanUp();
     }
@@ -517,7 +474,7 @@ public class AliumSurveyLoader implements Observer {
                         if (!fm.isStateSaved()) {
                             fm.beginTransaction()
                                     .add(LegacySurveyDialogFragment.newInstance(executableSurveySpecs,
-                                                    surveyParameters, false
+                                                    surveyParameters, false, getLoaderId()
                                             ),
                                             loadableSurveySpecs.key + "-" + surveyParameters.screenName)
                                     .commit();
@@ -525,7 +482,7 @@ public class AliumSurveyLoader implements Observer {
                     } else {
                         fm.beginTransaction()
                                 .add(LegacySurveyDialogFragment.newInstance(executableSurveySpecs,
-                                        surveyParameters, false), loadableSurveySpecs.key + "-" + surveyParameters.screenName)
+                                        surveyParameters, false, getLoaderId()), loadableSurveySpecs.key + "-" + surveyParameters.screenName)
                                 .commitAllowingStateLoss();
                     }
                 }
@@ -545,13 +502,13 @@ public class AliumSurveyLoader implements Observer {
                         if (!fm.isStateSaved()) {
                             fm.beginTransaction()
                                     .add(LegacySurveyDialogFragment.newInstance(executableSurveySpecs,
-                                            surveyParameters, false), loadableSurveySpecs.key + "-" + surveyParameters.screenName)
+                                            surveyParameters, false, getLoaderId()), loadableSurveySpecs.key + "-" + surveyParameters.screenName)
                                     .commit();
                         }
                     } else {
                         fm.beginTransaction()
                                 .add(LegacySurveyDialogFragment.newInstance(executableSurveySpecs,
-                                        surveyParameters, false), loadableSurveySpecs.key + "-" + surveyParameters.screenName)
+                                        surveyParameters, false, getLoaderId()), loadableSurveySpecs.key + "-" + surveyParameters.screenName)
                                 .commitAllowingStateLoss();
                     }
 

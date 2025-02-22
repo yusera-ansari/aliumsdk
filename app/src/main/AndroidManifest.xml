@@ -19,12 +19,13 @@
         android:theme="@android:style/Theme.Light"
         tools:targetApi="31">
         <activity
+            android:configChanges="orientation|screenSize|screenLayout"
             android:theme="@style/Theme.AppCompat.Light"
             android:name=".activities.TestActivity"
             android:label="third"
             android:exported="false" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
+
             android:name=".activities.DashboardActivity"
             android:label="second"
             android:theme="@style/Theme.AppCompat.Light"
