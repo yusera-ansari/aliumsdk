@@ -66,7 +66,7 @@ public class LongTextQuestionRenderer implements QuestionRenderer {
                 currentQuestionResponse.setQuestionResponse(input.getText().toString().trim()
                         .replace(" ", "%20"));
                 setCtaEnabled(nextQuestionBtn, !currentQuestionResponse.getQuestionResponse().isEmpty());
-                Log.d("Alium-input", currentQuestionResponse.getQuestionResponse());
+//                Log.d("Alium-input", currentQuestionResponse.getQuestionResponse());
             }
 
             @Override
