@@ -25,15 +25,16 @@ import java.util.Iterator;
 
 public class SurveyDialogFragment extends DialogFragment implements LifecycleObserver {
     private SurveyDialog dialog ;
-
     boolean shouldUpdatePreferences;
     SurveyParameters surveyParameters;
     private AliumSurveyLoader.SurveyDialogCallback callback;
     ExecutableSurveySpecs executableSurveySpecs;
     private String loaderId;
     private boolean shouldCallOnStopCallback=true;
+
     public SurveyDialogFragment(){
     }
+
     @Override
     public void show(@NonNull FragmentManager manager, @Nullable String tag) {
         super.show(manager, tag);
@@ -50,7 +51,6 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         bundle.putSerializable("surveyJson",gson.toJson(executableSurveySpecs.survey) );
         bundle.putSerializable("loadableSurveySpecs", executableSurveySpecs.getLoadableSurveySpecs()
         );
-
         bundle.putBoolean("shouldUpdatePreferences", shouldUpdatePreferences);
         bundle.putString("loaderId",loaderId );
 
@@ -72,11 +72,6 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         outState.putString("loaderId", loaderId);
     }
 
-//    @Override
-//    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-//        super.onViewStateRestored(savedInstanceState);
-//        Log.d("onViewStateRestored","onViewStateRestored");
-//    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,7 +88,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
                     , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
             loaderId=getArguments().getString("loaderId");
             if(loaderId!=null){
-                callback=Alium.reAttachCallback(loaderId, surveyParameters.screenName);
+                callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
 
         }else if(getArguments()!=null){
@@ -105,7 +100,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
               , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
             loaderId=getArguments().getString("loaderId");
             if(loaderId!=null){
-                callback=Alium.reAttachCallback(loaderId, surveyParameters.screenName);
+                callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
 
   }
@@ -138,43 +133,11 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
                  Log.e("callbalCreate", e.toString());
              }
             }
-//            if (savedInstanceState == null) {
-//                Alium.activeSurveys.add(dialog);
-//            }else{
-//                boolean doesSurveyExist=false;
-//                Log.d("ALium-survey", "Saved instance there, but list empty"+this.dialog);
-//                if(!Alium.activeSurveys.isEmpty()){
-//                    Log.d("ALium-survey", "contains-dialog"+Alium.activeSurveys.contains(dialog));
-//
-//                    Log.d("ActiverSurveys", "SDF"+Alium.activeSurveys);
-//                    Iterator<SurveyDialog> keys= Alium.activeSurveys.iterator();
-//
-//                    while(keys.hasNext()){
-//                        SurveyDialog currDialog=keys.next();
-//                        if(currDialog.loadableSurveySpecs.key.equals( dialog.loadableSurveySpecs.key)){
-//                            Log.d("activeSurvey", "SDF survey existes");
-//                           doesSurveyExist=true;
-//
-//                        }
-//
-//                    }
-//
-//
-//                }
-//                if(!doesSurveyExist) Alium.activeSurveys.add(dialog);
-//            }
             dialogInstance=dialog.getInstance();
         }
         else {
             throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");
         }
-        if(((Activity)getContext()).isFinishing()||((Activity)getContext()).isDestroyed()){
-//            if(isVisible()) {
-//                dismiss();
-//            } throw new IllegalStateException("SurveyDialog cannot be shown: activity paused.");
-
-        }
-
 
         return dialogInstance;
     }
@@ -202,6 +165,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         }
         Log.d("DialogFragment", "onDestroy called");
     }
+
     @Override
     public void onDetach() {
         super.onDetach();

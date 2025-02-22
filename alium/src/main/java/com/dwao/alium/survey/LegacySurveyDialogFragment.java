@@ -1,9 +1,12 @@
 package com.dwao.alium.survey;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -18,15 +21,16 @@ import java.util.Iterator;
 
 public class LegacySurveyDialogFragment extends android.app.DialogFragment {
     private SurveyDialog dialog ;
-
+    private String loaderId;
     boolean shouldUpdatePreferences;
     SurveyParameters surveyParameters;
     ExecutableSurveySpecs executableSurveySpecs;
-    public LegacySurveyDialogFragment(){
-        Log.d("LegacySurveyDialog", "outside oncreyae ");
-        Log.d("LegacySurveyDialog", "outside oncreyae "+getArguments());
-    }
+    private boolean shouldCallOnStopCallback=true;
+    private AliumSurveyLoader.SurveyDialogCallback callback;
 
+    public LegacySurveyDialogFragment(){
+
+    }
 
     @Override
     public void show(android.app.FragmentManager manager, String tag) {
@@ -35,7 +39,9 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
     }
 
         public static LegacySurveyDialogFragment newInstance(ExecutableSurveySpecs executableSurveySpecs,
-                                                   SurveyParameters surveyParameters, boolean shouldUpdatePreferences){
+                                                             SurveyParameters surveyParameters, boolean shouldUpdatePreferences,
+                                                             String loaderId
+        ){
         LegacySurveyDialogFragment legacySurveyDialogFragment=new LegacySurveyDialogFragment();
         Bundle bundle=new Bundle();
         bundle.putSerializable("surveyParameters",surveyParameters);
@@ -44,6 +50,7 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
         bundle.putSerializable("loadableSurveySpecs", executableSurveySpecs.getLoadableSurveySpecs()
         );
         bundle.putBoolean("shouldUpdatePreferences", shouldUpdatePreferences);
+        bundle.putString("loaderId",loaderId );
         legacySurveyDialogFragment.setArguments(bundle);
         return legacySurveyDialogFragment;
     }
@@ -51,7 +58,8 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d("onSaveInstanceState", "LegacySurveyDialog-onSaveInstanceState");
+        Log.d("onsave", "on save instnace state");
+        shouldCallOnStopCallback=false;
         outState.putSerializable("surveyParameters",surveyParameters);
         Gson gson=new Gson();
         outState.putSerializable("surveyJson",gson.toJson(executableSurveySpecs.survey) );
@@ -59,13 +67,9 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
         );
         Log.d("onSaveInstanceState", "saved state"+executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex());
         outState.putBoolean("shouldUpdatePreferences", shouldUpdatePreferences);
+        outState.putString("loaderId", loaderId);
     }
 
-//    @Override
-//    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-//        super.onViewStateRestored(savedInstanceState);
-//        Log.d("onViewStateRestored","onViewStateRestored");
-//    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,7 +87,10 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
                     gson.fromJson(getArguments().getString("surveyJson"), Survey.class)
                     , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
             Log.d("SurveyDialogFragment", "saved state"+executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex());
-
+            loaderId=getArguments().getString("loaderId");
+            if(loaderId!=null){
+                callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);
+            }
         }else if(getArguments()!=null){
             Log.d("SurveyDialogFragment", "LegacySurveyDialog-inside oncreyae");
             shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
@@ -92,8 +99,12 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
             executableSurveySpecs=new ExecutableSurveySpecs(
                     gson.fromJson(getArguments().getString("surveyJson"), Survey.class)
                     , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
-
+            loaderId=getArguments().getString("loaderId");
+            if(loaderId!=null){
+                callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);
+            }
         }
+        shouldCallOnStopCallback=true;
     }
 
     @Override
@@ -105,49 +116,56 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        Log.d("SurveyDialogFragment", "LegacySurveyDialog-outside createDialog "+savedInstanceState);
-        Log.d("SurveyDialogFragment", "LegacySurveyDialog-outside oncreyae "+getArguments());
+        Dialog dialogInstance=null;
         if (executableSurveySpecs != null && surveyParameters != null) {
-            Log.d("SurveyDialogFragment", "LegacySurveyDialog-inside createDialog");
-            dialog = new SurveyDialog(getActivity(), executableSurveySpecs, surveyParameters, savedInstanceState==null?true: false);
+            dialog = new SurveyDialog(getActivity(), executableSurveySpecs,
+                    surveyParameters,savedInstanceState==null?true: false);
             setCancelable(false);
-//            if (savedInstanceState == null) {
-//                Alium.activeSurveys.add(dialog);
-//            }else{
-//                boolean doesSurveyExist=false;
-//                Log.d("ALium-survey", "Saved instance there, but list empty"+this.dialog);
-//                if(!Alium.activeSurveys.isEmpty()){
-//                    Log.d("ALium-survey", "contains-dialog"+Alium.activeSurveys.contains(dialog));
-//
-//                    Log.d("ActiverSurveys", ""+Alium.activeSurveys);
-//                    Iterator<SurveyDialog> keys= Alium.activeSurveys.iterator();
-//
-//                    while(keys.hasNext()){
-//                        SurveyDialog currDialog=keys.next();
-//                        if(currDialog.loadableSurveySpecs.key.equals( dialog.loadableSurveySpecs.key)){
-//                            Log.d("activeSurvey", "survey existes");
-//                            doesSurveyExist=true;
-//                        }
-//
-//                    }
-//
-//
-//                }
-//                if(!doesSurveyExist) Alium.activeSurveys.add(dialog);
-//            }
+            if(savedInstanceState==null){
+                try{
+                    callback.onCreate(executableSurveySpecs.getLoadableSurveySpecs().key);
+                }
+                catch (Exception e){
+                    Log.e("callbalCreate", e.toString());
+                }
+            }
+            dialogInstance=dialog.getInstance();
         }
         else {
             throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");
         }
-        if((getActivity()).isFinishing()||((Activity)getActivity()).isDestroyed()){
-//            if(isVisible()) {
-//                dismiss();
-//            } throw new IllegalStateException("SurveyDialog cannot be shown: activity paused.");
 
-        }
 
-        return dialog.getInstance();
+
+        return dialogInstance;
+    }
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d("DialogFragment", "onDestroyView called");
+    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            if(shouldCallOnStopCallback) callback.onStop(executableSurveySpecs.getLoadableSurveySpecs().key);
+            callback=null;
+            dialog=null;
+        }catch (Exception e){
+            Log.e("callbalstop", e.toString());
+        }
+        Log.d("DialogFragment", "onDestroy called");
+    }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d("Dialog", "detached");
+    }
 }
