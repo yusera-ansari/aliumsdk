@@ -11,6 +11,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,8 +40,25 @@ public class MainActivity extends Activity {
     @Override
     protected  void onPause(){
         super.onPause();
+//        surveyLoader.stop();
+//        surveyLoader2.stop();
         Log.d("Pause", "MainActivity Paused");
     }
+    @Override
+    protected void onResume(){
+        super.onResume();
+        Log.d("OnResume", "resumed main activity");
+//         Alium.trigger(this, new SurveyParameters("firstscreen"));
+//          Alium.trigger(MainActivity.this, new SurveyParameters("firstscreen"));
+
+//        new Handler().postDelayed(new Runnable() {
+//          @Override
+//          public void run() {
+//              surveyLoader2= Alium.trigger(MainActivity.this, new SurveyParameters("firstscreen"));
+//
+//          }
+//      }, 5000);
+          }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); //disable night mode
@@ -52,10 +70,11 @@ public class MainActivity extends Activity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+//                surveyLoader.stop();
+//                surveyLoader2.stop();
                 startActivity(intent);
             }
         });
-
-        Alium.trigger(this, new SurveyParameters("firstscreen"));
     }
 }

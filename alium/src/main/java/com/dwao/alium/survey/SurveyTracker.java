@@ -34,8 +34,8 @@ public class SurveyTracker {
     }
     public static void trackWithAlium(Context context,  Map<String, String> parameters ) {
         try{
-            VolleyService volleyService=new VolleyService();
-            volleyService.loadRequestWithVolley(context, getUrl(context, parameters) );
+            VolleyService volleyService=  VolleyService.getInstance();
+            volleyService.loadRequestWithVolley(  getUrl(context, parameters) );
         }catch(Exception e){
             Log.e("track", e.toString());
         }
