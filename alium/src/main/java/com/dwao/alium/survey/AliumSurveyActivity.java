@@ -51,6 +51,9 @@ public class AliumSurveyActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (intent != null && !isDestroyed() && !isFinishing()) {
                 Log.d("broadcast", "broadcast received in activity");
+                if(!Alium.isAppInForeground()){
+                    finish();
+                }
                 renderSurvey(intent);
             }
         }
@@ -82,7 +85,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
         super.onResume();
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         Log.d("onResume", "AliumActivity onResume");
-        Log.d("onResume",activeSurveys.toString());
+        Log.d("onResume",activeSurveys.toString()+" "+stateRestored);
         if(!stateRestored){
           try{
               Log.d("onresume", "state not restored");
@@ -116,6 +119,9 @@ public class AliumSurveyActivity extends AppCompatActivity {
               editor.apply();
           }catch (Exception e){
               Log.e("onResume", e.toString());
+              if(!Alium.isAppInForeground()){
+                  finish();
+              }
           }
         }
     }
@@ -162,6 +168,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
         String json=gson.toJson(activeSurveyMaps);
         editor.putString("activeSurveyLists", json);
         editor.apply();
+        stateRestored=false;
         Log.d("onSaveInstanceState", "On saved Instance state"+ activeSurveyMaps.size()+" "+json);
     }
     @Override
@@ -211,6 +218,8 @@ public class AliumSurveyActivity extends AppCompatActivity {
         super.onDestroy();
         Log.d("onDestroy", "on activity destroy");
         isActivityRunning=false;
+        stateRestored=false;
+
         if(!activeSurveys.isEmpty()){
             Iterator<SurveyDialog> keys=activeSurveys.iterator();
             while(keys.hasNext()){
@@ -226,7 +235,7 @@ public class AliumSurveyActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-//        Log.d("Instance", "on config changed");
+        Log.d("Instance", "on config changed");
     }
 
     private void renderSurvey(Intent intent){
@@ -266,4 +275,5 @@ public class AliumSurveyActivity extends AppCompatActivity {
         activeSurveys.add(surveyDialog);
         surveyDialog.show();
     }
+
 }
