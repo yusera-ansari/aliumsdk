@@ -121,7 +121,7 @@ public class Alium {
     }
 
     public static synchronized void trigger(android.app.Fragment fragment, SurveyParameters parameters){
-        if (configURL == null) {
+        if (configURL == null || configURL.isEmpty()) {
             throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
         }
         for(TriggerRequest request: instance.triggerRequestQueue){
