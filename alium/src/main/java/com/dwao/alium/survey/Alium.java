@@ -46,6 +46,11 @@ public class Alium {
      }
 
     public static void config(Application application,String url){
+         if( url.trim().isEmpty()){
+             Log.e("Alium", "Configuration URL can't be empty. Please set a valid url: "+url );
+//             throw new IllegalStateException("Configuration URL can't be empty. Please set a valid url: "+url );
+             return;
+         }
             if(instance==null){
                 synchronized (Alium.class){
                     if(instance==null){
@@ -54,7 +59,7 @@ public class Alium {
                     }
                 }
             }
-            if(configURL==null){
+            if(configURL==null ){
                synchronized (Alium.class){
                    if(configURL==null){
                        Log.d("CONFIG", "url is null! setting....");
@@ -90,7 +95,9 @@ public class Alium {
 
     public static synchronized void trigger( Activity activity, SurveyParameters parameters){
         if (configURL == null) {
-            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
+            Log.e("Alium", "Configuration URL not set. Call configure() method first.");
+//            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
+            return;
         }
         instance.triggerRequestQueue.offer(new TriggerRequest(activity, parameters));
         for(TriggerRequest request: instance.triggerRequestQueue){
@@ -107,7 +114,9 @@ public class Alium {
 
     public static synchronized void trigger( Fragment fragment, SurveyParameters parameters){
         if (configURL == null) {
-            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
+            Log.e("Alium", "Configuration URL not set. Call configure() method first.");
+//            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
+            return;
         }
         for(TriggerRequest request: instance.triggerRequestQueue){
             Log.d("My request", "request is not empty: "+request.surveyParameters.screenName);
@@ -121,8 +130,10 @@ public class Alium {
     }
 
     public static synchronized void trigger(android.app.Fragment fragment, SurveyParameters parameters){
-        if (configURL == null || configURL.isEmpty()) {
-            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
+        if (configURL == null) {
+            Log.e("Alium", "Configuration URL not set. Call configure() method first.");
+//            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
+            return;
         }
         for(TriggerRequest request: instance.triggerRequestQueue){
             Log.d("My request", "request is not empty: "+request.surveyParameters.screenName);
