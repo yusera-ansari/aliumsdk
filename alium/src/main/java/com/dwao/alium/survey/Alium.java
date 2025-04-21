@@ -46,11 +46,7 @@ public class Alium {
      }
 
     public static void config(Application application,String url){
-         if( url.trim().isEmpty()){
-             Log.e("Alium", "Configuration URL can't be empty. Please set a valid url: "+url );
-//             throw new IllegalStateException("Configuration URL can't be empty. Please set a valid url: "+url );
-             return;
-         }
+
             if(instance==null){
                 synchronized (Alium.class){
                     if(instance==null){
@@ -59,6 +55,11 @@ public class Alium {
                     }
                 }
             }
+        if( url.trim().isEmpty()){
+            Log.e("Alium", "Configuration URL can't be empty. Please set a valid url: "+url );
+//             throw new IllegalStateException("Configuration URL can't be empty. Please set a valid url: "+url );
+            return;
+        }
             if(configURL==null ){
                synchronized (Alium.class){
                    if(configURL==null){

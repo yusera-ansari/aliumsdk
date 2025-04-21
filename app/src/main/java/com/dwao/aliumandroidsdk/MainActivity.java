@@ -48,6 +48,7 @@ public class MainActivity extends Activity {
     protected void onResume(){
         super.onResume();
         Log.d("OnResume", "resumed main activity");
+        Alium.stop("screename");
 //         Alium.trigger(this, new SurveyParameters("firstscreen"));
 //          Alium.trigger(MainActivity.this, new SurveyParameters("firstscreen"));
 
