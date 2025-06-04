@@ -7,13 +7,18 @@ import android.util.Log;
 import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.models.TriggerRequest;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 class SLQHandlerManager {
     private static boolean isTriggerExecuting=false;
+    private final Set<String> pendingStops = Collections.synchronizedSet(new HashSet<>());
 
     private volatile static Map<String, SLQHandler> surveyExecutingMap=new HashMap<>();
     public static synchronized AliumSurveyLoader.SurveyDialogCallback reAttachCallback(String id, String screenName){
@@ -43,25 +48,36 @@ class SLQHandlerManager {
         }
         isTriggerExecuting=true;
         TriggerRequest request= triggerRequestQueue.poll();
-        SLQHandler slqHandler= surveyExecutingMap.get(request.surveyParameters.screenName);
-        if(slqHandler==null){
-            Log.d("TRIGGER", "CALLING FROM ELSE-BLOCK!! "+request.surveyParameters.screenName);
-            Log.d("THREAD", Thread.currentThread().getName());
-            slqHandler=new SLQHandler(request.surveyParameters.screenName);
-            surveyExecutingMap.put(request.surveyParameters.screenName, slqHandler);
+        if(pendingStops.contains(request.surveyParameters.screenName)){
+            Log.d("stop", "returning as a stop request was made earlier...");
+            pendingStops.remove(request.surveyParameters.screenName);
+
+
         }
+         else {
+              SLQHandler slqHandler = surveyExecutingMap.get(request.surveyParameters.screenName);
+              if (slqHandler == null) {
+                  Log.d("TRIGGER", "CALLING FROM ELSE-BLOCK!! " + request.surveyParameters.screenName);
+                  Log.d("THREAD", Thread.currentThread().getName());
+                  slqHandler = new SLQHandler(request.surveyParameters.screenName);
+                  surveyExecutingMap.put(request.surveyParameters.screenName, slqHandler);
+              }
 
 
-
-        slqHandler.offer(request , surveyConfigMap);
+              slqHandler.offer(request, surveyConfigMap);
+          }
 
         isTriggerExecuting=false;
         executeNextTrigger(triggerRequestQueue);
     }
     public void stop(String screenName){
+          Log.d("stop", "handler manager called stop");
         SLQHandler execSurLoaderDM= surveyExecutingMap.get(screenName);
-        if(execSurLoaderDM!=null){
+        if(execSurLoaderDM!=null ){
+            Log.d("stop", "handler manager called stop- is not null");
             execSurLoaderDM.stop();
+        }else{
+            pendingStops.add(screenName);
         }
     }
       synchronized void updateExecLoaderData(String id, String screenName){
