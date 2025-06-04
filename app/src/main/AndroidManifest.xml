@@ -31,7 +31,7 @@
             android:theme="@style/Theme.AppCompat.Light"
             android:exported="false" />
         <activity
-
+            android:theme="@style/Theme.AppCompat.Light"
             android:label="first"
             android:name="com.dwao.aliumandroidsdk.MainActivity"
             android:exported="true">

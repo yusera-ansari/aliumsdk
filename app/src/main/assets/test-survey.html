@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mobile Survey</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+      html, body {
+    margin: 0;
+    padding: 0;
+
+  }
+    body{
+   font-family: 'Segoe UI', sans-serif;
+      background-color: transparent;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      width:100vw;
+      height:100vh;
+
+    }
+
+
+    #survey-container {
+      background: blue;
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      width:100vw;
+
+
+    }
+
+    .question {
+      font-size: 1.1rem;
+      color: #091b77;
+      margin-bottom: 1rem;
+    }
+
+    .options label {
+      display: block;
+      margin-bottom: 0.75rem;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+    }
+
+    input[type="radio"],
+    input[type="checkbox"] {
+      margin-right: 0.5rem;
+      transform: scale(1.2);
+    }
+
+    .next-btn {
+      background-color: #e38c8c;
+      color: #091b77;
+      border: none;
+      padding: 0.85rem;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      margin-top: 1.5rem;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+
+    .next-btn:hover {
+      background-color: #d47373;
+    }
+
+    .thank-you {
+      text-align: center;
+      font-size: 1.3rem;
+      color: #091b77;
+    }
+
+    @media (max-height: 500px) {
+<!--      body {-->
+<!--        align-items: flex-start;-->
+<!--        padding-top: 2rem;-->
+<!--      }-->
+    }
+  </style>
+</head>
+<body  >
+  <div id="survey-container">
+    <div id="question-container"></div>
+    <button class="next-btn" onclick="nextQuestion()">Next</button>
+  </div>
+
+  <script>
+    const surveyURL = 'https://assets.alium.in/cmmn/cqsjn/cqsjn_appsrv_1038_1426.json'; // Replace this
+    let surveyData = null;
+    let currentQuestionId = 0;
+    let answers = {};
+
+    async function fetchSurvey() {
+      try {
+        const response = await fetch(surveyURL);
+        surveyData = await response.json();
+        showQuestion(currentQuestionId);
+      } catch (error) {
+        document.getElementById('question-container').innerHTML = '<p style="color: red;">Failed to load survey.</p>';
+      }
+    }
+
+    function showQuestion(id) {
+      const container = document.getElementById('question-container');
+      container.innerHTML = '';
+      const question = surveyData.surveyQuestions.find(q => q.id === id);
+      if (!question) {
+        container.innerHTML = "<div class='thank-you'>Thank you for completing the survey!</div>";
+        document.querySelector('.next-btn').style.display = 'none';
+        console.log("Submitted Answers:", answers);
+        return;
+      }
+
+      const questionEl = document.createElement('div');
+      questionEl.className = 'question';
+      questionEl.innerText = question.question;
+      container.appendChild(questionEl);
+
+      const optionsContainer = document.createElement('div');
+      optionsContainer.className = 'options';
+
+      if (question.responseType === "1") {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = 'response';
+        optionsContainer.appendChild(input);
+      } else if (question.responseType === "2" || question.responseType === "4") {
+        question.responseOptions.forEach(opt => {
+          const label = document.createElement('label');
+          const input = document.createElement('input');
+          input.type = 'radio';
+          input.name = 'response';
+          input.value = opt;
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(opt));
+          optionsContainer.appendChild(label);
+        });
+      } else if (question.responseType === "3") {
+        question.responseOptions.forEach(opt => {
+          const label = document.createElement('label');
+          const input = document.createElement('input');
+          input.type = 'checkbox';
+          input.name = 'response';
+          input.value = opt;
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(opt));
+          optionsContainer.appendChild(label);
+        });
+      }
+
+      container.appendChild(optionsContainer);
+    }
+
+    function nextQuestion() {
+      const question = surveyData.surveyQuestions.find(q => q.id === currentQuestionId);
+      let userResponse;
+
+      if (question.responseType === "1") {
+        userResponse = document.querySelector('input[name="response"]').value;
+      } else if (question.responseType === "2" || question.responseType === "4") {
+        const selected = document.querySelector('input[name="response"]:checked');
+        userResponse = selected ? selected.value : null;
+      } else if (question.responseType === "3") {
+        userResponse = Array.from(document.querySelectorAll('input[name="response"]:checked'))
+                            .map(input => input.value);
+      }
+
+      answers[currentQuestionId] = userResponse;
+
+      // Determine next question
+      let nextId = question.conditionMapping[0];
+      if (Array.isArray(userResponse)) {
+        nextId = question.conditionMapping[0];
+      } else if (userResponse && question.responseOptions) {
+        const idx = question.responseOptions.indexOf(userResponse);
+        nextId = question.conditionMapping[idx] || "-2";
+      }
+
+      nextId = parseInt(nextId);
+      if (nextId === -1 || nextId === -2) {
+        showQuestion(null);
+      } else {
+        currentQuestionId = nextId;
+        showQuestion(currentQuestionId);
+      }
+    }
+
+    window.onload = fetchSurvey;
+  </script>
+  <script>
+    function sendHeight() {
+      const height = document.body.scrollHeight;
+      if (window.AndroidBridge && AndroidBridge.resize) {
+        AndroidBridge.resize(height);
+      }
+    }
+
+    window.addEventListener("load", sendHeight);
+    window.addEventListener("resize", sendHeight);
+  </script>
+
+</body>
+</html>

@@ -490,7 +490,7 @@ public class AliumSurveyLoader implements Observer {
                     xfm = ((FragmentActivity) activity.get()).getSupportFragmentManager();
                     if (!xfm.isStateSaved()) {
                         xfm.beginTransaction()
-                                .add(SurveyDialogFragment.newInstance(executableSurveySpecs,
+                                .add(SurveyHtmlDialogFragment.newInstance(executableSurveySpecs,
                                                 surveyParameters, false, getLoaderId()),
                                         loadableSurveySpecs.key + "-" + surveyParameters.screenName)
                                 .commit();

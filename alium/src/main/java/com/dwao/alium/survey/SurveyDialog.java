@@ -147,7 +147,7 @@ public class SurveyDialog extends SurveyController {
     private void configureDialogWindow(){
 //        dialog.setContentView(this.layoutView);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.setCancelable(false);
+        dialog.setCancelable(true);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         WindowManager.LayoutParams lp=dialog.getWindow().getAttributes();
         lp.gravity= Gravity.BOTTOM;

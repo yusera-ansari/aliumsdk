@@ -30,12 +30,9 @@ public class Alium {
 
      private static JSONObject surveyConfigJSON;
      static volatile Map<String, SurveyConfig> surveyConfigMap =new HashMap<>();
-     protected static AppLifeCycleListener appLifeCycleListener;
+
      private static volatile Alium instance;
-     private static boolean appState=false;
-     static boolean isAppInForeground(){
-        return appState;
-    }
+
      private static VolleyService volleyService;
      private static String configURL;
      private SLQHandlerManager slqHandlerManager=new SLQHandlerManager();
@@ -55,7 +52,7 @@ public class Alium {
                     }
                 }
             }
-        if( url.trim().isEmpty()){
+        if(url==null || url.trim().isEmpty()){
             Log.e("Alium", "Configuration URL can't be empty. Please set a valid url: "+url );
 //             throw new IllegalStateException("Configuration URL can't be empty. Please set a valid url: "+url );
             return;
@@ -70,6 +67,7 @@ public class Alium {
                    }
                }
             }
+            //reset url
             if(!configURL.equals(url)) {
               synchronized (Alium.class){
                   if(!configURL.equals(url)){
@@ -100,15 +98,13 @@ public class Alium {
 //            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
             return;
         }
+        //send the request in queue
         instance.triggerRequestQueue.offer(new TriggerRequest(activity, parameters));
-        for(TriggerRequest request: instance.triggerRequestQueue){
-            Log.d("Thread", "Thread is :"+ Thread.currentThread().getName());
-            Log.d("MyRequest", "request is not empty: "+request.surveyParameters.screenName);
-        }
 
+        //if config-map/first-json isn't available or isn't being fetched we fetch it
         if(surveyConfigMap.isEmpty() && !isConfigFetching) {
             instance.fetchConfigJson(  );
-         }else{
+         }else{ //if config json is present and isn't being fetched , we execute survey request
             if(configURL==null||isConfigFetching ){return;}  instance.slqHandlerManager.executeNextTrigger(instance.triggerRequestQueue);
         }
     }
