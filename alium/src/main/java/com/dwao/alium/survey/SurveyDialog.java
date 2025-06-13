@@ -387,6 +387,7 @@ public class SurveyDialog extends SurveyController {
                     ratingQuestionRenderer.setRatingOptions(survey.getQuestions().get(currentIndx)
                             .getResponseOptions())
                             .setTheme(survey.getSurveyInfo().getThemeColors())
+                            .setQuestionSetting(survey.getQuestions().get(currentIndx).getQuestionSetting())
                                     .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
 
                     setCtaEnabled(nextQuestionBtn, true);

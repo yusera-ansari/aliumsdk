@@ -7,7 +7,7 @@ public class RatingIconDrawableFactory {
     public static RatingIconDrawable getDrawable(RatingType type, Context context){
         switch (type){
 
-            case HEART:
+            case HEARTS:
                 return new HeartRating(context);
             case EMOJI:
                 return new EmojiRating(context);

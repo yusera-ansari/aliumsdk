@@ -132,6 +132,9 @@ public class AliumJSONParser {
                       if(questionSettingObj.has("req")){
                           questionSetting.setRequired(questionSettingObj.getBoolean("req"));
                       }
+                      if(questionSettingObj.has("rtp")){
+                          questionSetting.setRatingType(questionSettingObj.getString("rtp"));
+                      }
                   }
                     question.setQuestionSetting(questionSetting);
 

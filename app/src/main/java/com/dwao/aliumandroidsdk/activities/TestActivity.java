@@ -24,7 +24,7 @@ public class TestActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
+        Alium.trigger(this,  new SurveyParameters("screen2"));
 //        ThreadGroup threadGroup
 //                = Thread.currentThread().getThreadGroup();
 //

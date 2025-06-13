@@ -17,6 +17,7 @@ import com.dwao.alium.adapters.RatingAdapter;
 import com.dwao.alium.listeners.RatingClickListener;
 import com.dwao.alium.listeners.RatingOptionListener;
 import com.dwao.alium.models.QuestionResponse;
+import com.dwao.alium.models.QuestionSetting;
 import com.dwao.alium.models.ThemeColors;
 import com.dwao.alium.survey.CustomRatingView;
 
@@ -27,7 +28,14 @@ public class RatingQuestionRenderer implements QuestionRenderer{
 RatingAdapter ratingAdapter;
 List<String> ratingOptions;
     ThemeColors themeColors;
-public RatingQuestionRenderer setRatingOptions(List<String> options){
+    QuestionSetting questionSetting;
+
+    public RatingQuestionRenderer setQuestionSetting(QuestionSetting questionSetting) {
+        this.questionSetting = questionSetting;
+        return  this;
+    }
+
+    public RatingQuestionRenderer setRatingOptions(List<String> options){
     this.ratingOptions=options;
     return  this;
 }
@@ -52,8 +60,17 @@ public RatingQuestionRenderer setRatingOptions(List<String> options){
                 currentQuestionResponse.setIndexOfSelectedAnswer(position);
             }
         };
-            customRatingView.setRatingType(RatingType.EMOJI)
-                            .setStarCount(ratingOptions.size())
+
+        RatingType ratingType=RatingType.STARS;
+        try{
+            if(questionSetting!=null){
+                ratingType=RatingType.valueOf(questionSetting.getRatingType());
+            }
+        }catch (Exception e){
+                Log.e("RatingType", "RatingType Doesn't exist"+questionSetting.getRatingType());
+        }
+            customRatingView.setRatingType(ratingType)
+                            .setIconCount(ratingOptions.size())
                     .setThemeColors(themeColors)
                     .setListener(listener)
                     .render( );
