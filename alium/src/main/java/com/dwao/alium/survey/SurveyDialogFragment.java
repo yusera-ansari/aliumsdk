@@ -64,9 +64,10 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         Log.d("onsave", "on save instnace state");
         shouldCallOnStopCallback=false;
         outState.putSerializable("surveyParameters",surveyParameters);
-        Gson gson=new Gson();
-        outState.putSerializable("surveyJson",gson.toJson(executableSurveySpecs.survey) );
-        outState.putSerializable("loadableSurveySpecs", executableSurveySpecs.getLoadableSurveySpecs()
+
+        outState.putSerializable("surveyJson",executableSurveySpecs.getSurvey());
+        outState.putSerializable("loadableSurveySpecs",
+                executableSurveySpecs.getLoadableSurveySpecs()
         );
         outState.putBoolean("shouldUpdatePreferences", shouldUpdatePreferences);
         outState.putString("loaderId", loaderId);
@@ -84,7 +85,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
             surveyParameters=(SurveyParameters)getArguments().getSerializable("surveyParameters");
             Gson gson=new Gson();
             executableSurveySpecs=new ExecutableSurveySpecs(
-                    gson.fromJson(getArguments().getString("surveyJson"), Survey.class)
+                    (Survey)getArguments().getSerializable("surveyJson")
                     , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
             loaderId=getArguments().getString("loaderId");
             if(loaderId!=null){
@@ -115,6 +116,11 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+       if(getDialog()!=null){
+           getDialog().setCancelable(true);
+           getDialog().setCanceledOnTouchOutside(true);
+       }
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -122,6 +128,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         Dialog dialogInstance=null;
+
         if (executableSurveySpecs != null && surveyParameters != null) {
             dialog = new SurveyDialog(requireContext(), executableSurveySpecs, surveyParameters,savedInstanceState==null?true: false);
             setCancelable(false);
@@ -138,6 +145,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         else {
             throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");
         }
+        setCancelable(true);
 
         return dialogInstance;
     }

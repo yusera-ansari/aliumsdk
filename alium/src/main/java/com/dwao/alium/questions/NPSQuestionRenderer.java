@@ -13,6 +13,7 @@ import com.dwao.alium.adapters.NpsGridViewAdapter;
 import com.dwao.alium.listeners.NpsOptionClickListener;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
+import com.dwao.alium.models.ThemeColors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,9 +22,9 @@ public class NPSQuestionRenderer implements QuestionRenderer {
 
     private NpsGridViewAdapter npsGridViewAdapter;
     JSONArray responseOptJSON;
-    Survey.SurveyUI surveyUi;
-    public NPSQuestionRenderer setSurveyUi(Survey.SurveyUI surveyUi){
-        this.surveyUi=surveyUi;
+  ThemeColors themeColors;
+    public NPSQuestionRenderer setTheme(ThemeColors themeColors){
+        this.themeColors=themeColors;
         return this;
     }
     public NPSQuestionRenderer setOptions(JSONArray options){
@@ -36,6 +37,7 @@ public class NPSQuestionRenderer implements QuestionRenderer {
                                QuestionResponse currentQuestionResponse, View nextQuestionBtn) {
         View npsQues= LayoutInflater.from(context).inflate(R.layout.nps_ques, null);
         GridView npsRecView=npsQues.findViewById(R.id.nps_recy_view);
+
         NpsOptionClickListener listener=new NpsOptionClickListener() {
             @Override
             public void onClick(int position) {
@@ -49,7 +51,7 @@ public class NPSQuestionRenderer implements QuestionRenderer {
                 });
             }
         };
-        npsGridViewAdapter=new NpsGridViewAdapter(context, listener, currentQuestionResponse, surveyUi);
+        npsGridViewAdapter=new NpsGridViewAdapter(context, listener, currentQuestionResponse, themeColors);
         npsRecView.setAdapter( npsGridViewAdapter);
         layout.addView(npsQues);
 

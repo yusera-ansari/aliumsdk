@@ -16,6 +16,7 @@ import com.dwao.alium.adapters.RadioBtnAdapter;
 import com.dwao.alium.listeners.RadioClickListener;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
+import com.dwao.alium.models.ThemeColors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,9 +28,9 @@ public class RadioQuestionRenderer implements QuestionRenderer {
 
     List responseOpt ;
     private RadioBtnAdapter adapter;
-    Survey.SurveyUI surveyUi;
-    public RadioQuestionRenderer setSurveyUi(Survey.SurveyUI surveyUi){
-        this.surveyUi=surveyUi;
+   ThemeColors themeColors;
+    public RadioQuestionRenderer setTheme( ThemeColors themeColors){
+        this.themeColors=themeColors;
         return this;
     }
     public RadioQuestionRenderer setOptions(List options){
@@ -43,8 +44,7 @@ public class RadioQuestionRenderer implements QuestionRenderer {
 
 
         View radioQues= LayoutInflater.from(context).inflate(R.layout.radio_ques, null);
-//                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
-//                        .getString("question")));
+//
 
         RecyclerView radioBtnRecyView=radioQues.findViewById(R.id.radio_btn_rec_view);
         radioBtnRecyView.setLayoutManager(new LinearLayoutManager(context));
@@ -64,7 +64,7 @@ public class RadioQuestionRenderer implements QuestionRenderer {
             }
         };
         this.adapter=new RadioBtnAdapter(responseOpt,radioClickListener,
-                currentQuestionResponse, surveyUi );
+                currentQuestionResponse, themeColors );
         radioBtnRecyView.setAdapter(adapter);
 
         layout.addView(radioQues);

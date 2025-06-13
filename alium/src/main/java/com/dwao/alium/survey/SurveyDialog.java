@@ -35,8 +35,10 @@ import com.dwao.alium.models.Survey;
 import com.dwao.alium.questions.CheckBoxQuestionRenderer;
 import com.dwao.alium.questions.LongTextQuestionRenderer;
 import com.dwao.alium.questions.NPSQuestionRenderer;
+import com.dwao.alium.questions.OpinionScaleQuesRenderer;
 import com.dwao.alium.questions.QuestionRenderer;
 import com.dwao.alium.questions.RadioQuestionRenderer;
+import com.dwao.alium.questions.RatingQuestionRenderer;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import org.json.JSONException;
@@ -67,7 +69,7 @@ public class SurveyDialog extends SurveyController {
     public Dialog getInstance(){
         initializeDialogUiElements(); //initializes elements and updates UI
         configureDialogWindow();
-        if(survey.getQuestions().size()>0 && currentIndx>=0) {
+        if(!survey.getQuestions().isEmpty() && currentIndx>=0) {
             showCurrentQuestion();
         }else{
             dialog.dismiss();
@@ -117,11 +119,12 @@ public class SurveyDialog extends SurveyController {
         bottomProgressBar.setMax(100*100);
         nextQuestionBtn=dialog.findViewById(R.id.btn_next);
         closeDialogBtn = dialog.findViewById(R.id.close_dialog_btn);
+        setCtaEnabled(nextQuestionBtn, true);
 
 //        poweredByText=dialog.findViewById(R.id.powered_by_text);
 //        poweredByValue=dialog.findViewById(R.id.powered_by_value);
-        improveExpTxt=dialog.findViewById
-                (R.id.help_improve_experience_textview);
+//        improveExpTxt=dialog.findViewById
+//                (R.id.help_improve_experience_textview);
         applySurveyUiColorScheme();
         addListenersToNextAndCloseBtn();
     }
@@ -132,13 +135,13 @@ public class SurveyDialog extends SurveyController {
         gradientDrawable.setColor(Color.WHITE);
 
         try {
-            if(survey.getSurveyUI()!=null)gradientDrawable.setColor(
-                    Color.parseColor(survey.getSurveyUI().getBackgroundColor()));
+            if(survey.getSurveyInfo().getThemeColors()!=null) {
+                gradientDrawable.setColor(
+                        Color.parseColor(survey.getSurveyInfo().getThemeColors().getColor1()));
 
-            if(survey.getSurveyUI()!=null && !survey.getSurveyUI().getBorderColor().isEmpty()) {
-                gradientDrawable.setStroke((int) (2 * Resources.getSystem()
-                                .getDisplayMetrics().density),
-                        Color.parseColor(survey.getSurveyUI().getBorderColor()));
+                    gradientDrawable.setStroke((int) (2 * Resources.getSystem()
+                                    .getDisplayMetrics().density),
+                            Color.parseColor(survey.getSurveyInfo().getThemeColors().getColor2()));
             }
         }catch (Exception e){
             Log.e("surveyUI", e.toString());
@@ -147,12 +150,14 @@ public class SurveyDialog extends SurveyController {
     private void configureDialogWindow(){
 //        dialog.setContentView(this.layoutView);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.setCancelable(false);
+        dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(true);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         WindowManager.LayoutParams lp=dialog.getWindow().getAttributes();
         lp.gravity= Gravity.BOTTOM;
         lp.horizontalMargin=0f;
         lp.verticalMargin=0.0f;
+        lp.dimAmount=0.2f;
         dialog.getWindow().setAttributes(lp);
     }
     private void addListenersToNextAndCloseBtn(){
@@ -161,7 +166,8 @@ public class SurveyDialog extends SurveyController {
             @Override
             public void onClick(View view) {
                 Log.d("Alium-indx", ""+currentIndx);
-                setCtaEnabled(nextQuestionBtn,false);
+//                setCtaEnabled(nextQuestionBtn, false);
+//
                 handleNextQuestion();
 
             }
@@ -181,12 +187,11 @@ public class SurveyDialog extends SurveyController {
     private void setNextAndCloseBtnUI(){
         GradientDrawable nxtQuesDrawable=(GradientDrawable) nextQuestionBtn.getBackground();
         try{
-            if(survey.getSurveyUI()!=null) {
-                nxtQuesDrawable.setColor(Color.parseColor(survey.getSurveyUI().getNextCta().getBackgroundColor()
+            if(survey.getSurveyInfo().getThemeColors()!=null) {
+                nxtQuesDrawable.setColor(Color.parseColor(survey.getSurveyInfo().getThemeColors().getColor3()
                 ));
-                nextQuestionBtn.setTextColor(Color.parseColor(survey.getSurveyUI().getNextCta().getTextColor()));
-                closeDialogBtn.setColorFilter(Color.parseColor(survey.getSurveyUI().getNextCta()
-                                .getBackgroundColor())
+                nextQuestionBtn.setTextColor(Color.parseColor(survey.getSurveyInfo().getThemeColors().getColor4()));
+                closeDialogBtn.setColorFilter(Color.parseColor(survey.getSurveyInfo().getThemeColors().getColor23())
                         ,
                         PorterDuff.Mode.MULTIPLY);
             }
@@ -199,25 +204,30 @@ public class SurveyDialog extends SurveyController {
     @Override
      protected void handleNextQuestion() {
         try{
-         super.handleNextQuestion();
-            resetElementsForNextQuestion();
-            executableSurveySpecs.getLoadableSurveySpecs().setCurrentIndex(currentIndx);
+         super.handleNextQuestion(); //updates index
+         Log.d("next called", ""+currentIndx+" "+survey.getQuestions().size());
+
             //check if to show next question or else show thank-you layout
             if( currentIndx< survey.getQuestions().size()){
+                resetElementsForNextQuestion();
+                executableSurveySpecs.getLoadableSurveySpecs().setCurrentIndex(currentIndx);
                 showCurrentQuestion();
                 return;
             }
-            showThankYouAndDismiss();
+
+            //what else to do ?? if not show thankyou
+
+//            showThankYouAndDismiss();
 
         }catch(Exception e){
-            Log.d("nextQuest",e.toString());
+            Log.d("nextQuest",e.toString()+" "+currentIndx+" "+survey.getQuestions().size());
         }
 
     }
 
     private void clearDialogForThankYouLayout(){
         currentQuestion.setVisibility(View.GONE);
-        improveExpTxt.setVisibility(View.GONE);
+//        improveExpTxt.setVisibility(View.GONE);
         nextQuestionBtn.setVisibility(View.GONE);
     }
     private void showThankYou() {
@@ -225,8 +235,8 @@ public class SurveyDialog extends SurveyController {
         AppCompatTextView thankYouText=thankyou.findViewById(R.id.thankyou_text);
         AppCompatTextView thankYouMsg=thankyou.findViewById(R.id.thankyou_msg);
         AppCompatImageView completedAnimation=thankyou.findViewById(R.id.completed_anim);
-        if(survey.getSurveyUI()!=null){
-               int color = Color.parseColor(survey.getSurveyUI().getQuestion());
+        if(survey.getSurveyInfo().getThemeColors()!=null){
+               int color = Color.parseColor(survey.getSurveyInfo().getThemeColors().getColor2());
                 thankYouMsg.setTextColor(color);
                 thankYouText.setTextColor(color);
                 DrawableCompat.setTint(
@@ -265,8 +275,14 @@ public class SurveyDialog extends SurveyController {
 
 
     private void updateProgressIndicator(){
-//        Log.d("index", ""+currentIndx+" "+previousIndx);
-        int progress=(10000/(survey.getQuestions().size()+1))*(currentIndx-previousIndx);
+        Log.d("index", ""+currentIndx+" "+previousIndx);
+        //we subtract previous index to handle condition mapping scenario
+        int maxProgress = bottomProgressBar.getMax(); // e.g., 100
+        int totalQuestions = survey.getQuestions().size();
+        int step = maxProgress / totalQuestions-1;
+        int progress = step * (currentIndx - previousIndx);
+//        int progress=(10000/(survey.getQuestions().size()))*(currentIndx-previousIndx);
+        Log.d("progress", "progress"+progress);
         ObjectAnimator animator=ObjectAnimator.ofInt(bottomProgressBar,"progress"
         ,bottomProgressBar.getProgress(),(progress+bottomProgressBar.getProgress()));
         animator.setDuration(1000);
@@ -276,19 +292,24 @@ public class SurveyDialog extends SurveyController {
     }
     private void resetElementsForNextQuestion(){
         this.layout.removeAllViews();
-        setCtaEnabled(nextQuestionBtn, false);
-        updateProgressIndicator();
+        if(!survey.getQuestions().get(currentIndx).getResponseType().equals("-1")) {
+                  setCtaEnabled(nextQuestionBtn, true);
+              }else{
+                  setCtaEnabled(nextQuestionBtn, !survey.getQuestions()
+                          .get(currentIndx).getQuestionSetting().getRequired());
+              }
+//        updateProgressIndicator();
     }
     private void applySurveyUiColorScheme(){
         try{
             updateDialogUi();
             setNextAndCloseBtnUI();
 
-            if(survey.getSurveyUI()!=null) {
-                int color=Color.parseColor(survey.getSurveyUI().getQuestion()
-                      );
+            if(survey.getSurveyInfo().getThemeColors()!=null) {
+                int color=Color.parseColor(survey.getSurveyInfo().getThemeColors().getColor2());
                 currentQuestion.setTextColor(color);
-                improveExpTxt.setTextColor(color);
+
+//                improveExpTxt.setTextColor(color);
                 bottomProgressBar.getProgressDrawable().setColorFilter(
                         color, android.graphics.PorterDuff.Mode.SRC_IN
                 );
@@ -319,30 +340,79 @@ public class SurveyDialog extends SurveyController {
     }
     @Override
     protected void generateQuestion(String responseType) throws JSONException {
+        Log.d("ResponseType", "response type i s "+responseType);
+
         switch (responseType) {
-            case "1":
+            case "0":
+                Log.d("ResponseType", "response type i s "+1);
+                break;
+
+            case "1": //long question
+                Log.d("ResponseType", "response type i s "+1);
+
                 QuestionRenderer longtextRenderer = new LongTextQuestionRenderer();
                 longtextRenderer.renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
-            case "2":
+            case "2": //radio
+                Log.d("ResponseType", "response type i s "+2);
+
                 RadioQuestionRenderer radioQuestionRenderer = new RadioQuestionRenderer();
                 radioQuestionRenderer
                         .setOptions(survey.getQuestions().get(currentIndx)
                                 .getResponseOptions())
-                        .setSurveyUi(survey.getSurveyUI())
+                        .setTheme(survey.getSurveyInfo().getThemeColors())
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
-            case "3":
+            case "3": //checkbox
+                Log.d("ResponseType", "response type i s "+3);
+
                 CheckBoxQuestionRenderer checkBoxQuestionRenderer = new CheckBoxQuestionRenderer();
-                checkBoxQuestionRenderer.setSurveyUi(survey.getSurveyUI())
+                checkBoxQuestionRenderer
+                         .setTheme(survey.getSurveyInfo().getThemeColors())
                         .setOptions(survey.getQuestions().get(currentIndx)
                                 .getResponseOptions())
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
-            case "4":
+            case "4"://nps
+                Log.d("ResponseType", "response type i s "+4);
+
                 NPSQuestionRenderer npsQuestionRenderer = new NPSQuestionRenderer();
-                npsQuestionRenderer.setSurveyUi(survey.getSurveyUI())
+                npsQuestionRenderer
+                        .setTheme(survey.getSurveyInfo().getThemeColors())
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
+                break;
+
+                case "5"://rating
+                    RatingQuestionRenderer ratingQuestionRenderer=new RatingQuestionRenderer();
+                    ratingQuestionRenderer.setRatingOptions(survey.getQuestions().get(currentIndx)
+                            .getResponseOptions())
+                            .setTheme(survey.getSurveyInfo().getThemeColors())
+                                    .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
+
+                    setCtaEnabled(nextQuestionBtn, true);
+                    break;
+            case "6": //opinion
+                Log.d("ResponseType", "response type i s  opinion scale"+6);
+                OpinionScaleQuesRenderer opinionScaleQuesRenderer=new OpinionScaleQuesRenderer();
+                opinionScaleQuesRenderer.setTheme(survey.getSurveyInfo().getThemeColors())
+                        .setOptions(survey.getQuestions().get(currentIndx).getResponseOptions())
+                        .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
+                break;
+            case "-1": //Thank you
+                Log.d("ResponseType", "response type i s "+7);
+                setCtaEnabled(nextQuestionBtn, true);
+                nextQuestionBtn.setText("close");
+                nextQuestionBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        cleanUp();
+                    }
+                });
+                break;
+            default:
+                //in case no question type matches
+                handleNextQuestion();
                 break;
         }
     }

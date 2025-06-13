@@ -10,6 +10,28 @@ public class Question implements Serializable {
     String responseType;
     List<String> responseOptions;
 
+    QuestionSetting questionSetting;
+
+    @Override
+    public String toString() {
+        return "Question{" +
+                "id=" + id +
+                ", question='" + question + '\'' +
+                ", responseType='" + responseType + '\'' +
+                ", responseOptions=" + responseOptions +
+                ", questionSetting=" + questionSetting +
+                ", conditionMapping=" + conditionMapping +
+                '}';
+    }
+
+    public QuestionSetting getQuestionSetting() {
+        return questionSetting;
+    }
+
+    public void setQuestionSetting(QuestionSetting questionSetting) {
+        this.questionSetting = questionSetting;
+    }
+
     public int getId() {
         return id;
     }
@@ -50,16 +72,6 @@ public class Question implements Serializable {
         this.conditionMapping = conditionMapping;
     }
 
-    @Override
-    public String toString() {
-        return "Question{" +
-                "id=" + id +
-                ", question='" + question + '\'' +
-                ", responseType='" + responseType + '\'' +
-                ", responseOptions=" + responseOptions +
-                ", conditionMapping=" + conditionMapping +
-                '}';
-    }
-
     List<Integer> conditionMapping;
 }
+

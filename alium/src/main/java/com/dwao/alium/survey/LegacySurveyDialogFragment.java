@@ -9,6 +9,9 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -113,9 +116,19 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
         Log.d("ViewStateRestore", "Viewstate restored"+savedInstanceState);
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+
+        getDialog().setCancelable(true);
+        getDialog().setCanceledOnTouchOutside(true);
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+
         Dialog dialogInstance=null;
         if (executableSurveySpecs != null && surveyParameters != null) {
             dialog = new SurveyDialog(getActivity(), executableSurveySpecs,
@@ -135,7 +148,7 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
             throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");
         }
 
-
+        setCancelable(true);
 
         return dialogInstance;
     }

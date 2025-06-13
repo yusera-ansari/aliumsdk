@@ -21,8 +21,11 @@ public  class FrequencyManagerFactory{
                     key, srvShowFreq,
                     customFreqSurveyData);
         }
-        else  if(srvShowFreq.matches("overandover")||srvShowFreq.matches("onlyonce")||
-                srvShowFreq.matches("untilresponse")){
+        //os: Once per Submit -untilresponse
+        //o: Once - onlyonce
+        //rp: Repeatedly -overandover
+        else  if(srvShowFreq.matches("rp")||srvShowFreq.matches("o")||
+                srvShowFreq.matches("os")){
             return new BasicFrequencyManager(aliumPreferences, key, srvShowFreq);
         }
         else{

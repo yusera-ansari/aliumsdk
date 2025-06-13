@@ -27,9 +27,9 @@ public class SLQHandler {
         }
 
 
-    synchronized void  offer(TriggerRequest request, Map<String, SurveyConfig> surveyConfigMap){
+    synchronized void  offer(TriggerRequest request){
             Log.d("called", "offer is executing...");
-            AliumSurveyLoader loader= AliumSurveyLoader.createInstance(request.object, request.surveyParameters, surveyConfigMap,
+            AliumSurveyLoader loader= AliumSurveyLoader.createInstance(request.object, request.surveyParameters,
 
                                     new AliumSurveyLoader.Callback() {
                                         @Override

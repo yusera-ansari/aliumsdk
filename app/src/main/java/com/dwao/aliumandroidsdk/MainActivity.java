@@ -49,8 +49,8 @@ public class MainActivity extends Activity {
         super.onResume();
         Log.d("OnResume", "resumed main activity");
 
-         Alium.trigger(this, new SurveyParameters("secondscreen"));
-         Alium.stop("secondscreen");
+         Alium.trigger(this, new SurveyParameters("screen4"));
+//         Alium.stop("secondscreen");
 
 //          Alium.trigger(MainActivity.this, new SurveyParameters("firstscreen"));
 

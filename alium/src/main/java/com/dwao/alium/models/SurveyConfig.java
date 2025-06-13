@@ -15,7 +15,7 @@ public class SurveyConfig implements Serializable {
     public void setActive(int active) {
         this.active = active;
     }
-
+    @SerializedName("oid")
     String orgId="";
     String spath="";
 

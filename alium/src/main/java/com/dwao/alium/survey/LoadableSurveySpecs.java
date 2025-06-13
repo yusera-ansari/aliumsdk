@@ -19,11 +19,11 @@ public class LoadableSurveySpecs  implements Serializable {
     }
     CustomFreqSurveyData customSurveyData;
 
-    public LoadableSurveySpecs(String key, String surveyFreq, String uri, String thankYouMsg, CustomFreqSurveyData customSurveyData) {
+    public LoadableSurveySpecs(String key, String surveyFreq, String uri,  CustomFreqSurveyData customSurveyData) {
         this.key = key;
         this.surveyFreq = surveyFreq;
         this.uri = uri;
-        this.thankYouMsg=thankYouMsg;
+
         this.customSurveyData=customSurveyData;
     }
 

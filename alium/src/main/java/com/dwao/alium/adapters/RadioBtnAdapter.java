@@ -16,6 +16,7 @@ import com.dwao.alium.R;
 import com.dwao.alium.listeners.RadioClickListener;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
+import com.dwao.alium.models.ThemeColors;
 
 import org.json.JSONObject;
 
@@ -26,14 +27,14 @@ public class RadioBtnAdapter extends RecyclerView.Adapter<RadioBtnAdapter.ViewHo
     List<String> radioBtnList;
     RadioClickListener radioClickListener;
     QuestionResponse currentQuestionResponse;
-    Survey.SurveyUI surveyUi;
+ ThemeColors themeColors;
      public RadioBtnAdapter(List<String> radioBtnList, RadioClickListener radioClickListener,
-                            QuestionResponse currentQuestionResponse, Survey.SurveyUI surveyUi){
+                            QuestionResponse currentQuestionResponse, ThemeColors themeColors){
          this.currentQuestionResponse=currentQuestionResponse;
         this.radioBtnList=radioBtnList;
         this.radioClickListener=radioClickListener;
         this.selectedPosition=-1;
-        this.surveyUi=surveyUi;
+        this.themeColors=themeColors;
     }
     public void updateCheckedItem(int selectedPosition){
         this.selectedPosition=selectedPosition;
@@ -51,11 +52,15 @@ public class RadioBtnAdapter extends RecyclerView.Adapter<RadioBtnAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.radioButton.setText(radioBtnList.get(position));
-        if(surveyUi!=null){
+        //		--color8 -  #ffffff Single Choice Background Color
+//		--color9 -  #00C764 Single Choice Icon Color
+//		--color10 - #333 Single Choice Text Color
+        if(themeColors!=null){
             try{
-                    holder.radioButton.setTextColor(Color.parseColor(surveyUi
-                            .getOptions()
+                    holder.radioButton.setTextColor(Color.parseColor(themeColors
+                            .getColor10()
                             ));
+                    holder.radioButton.setBackgroundColor(Color.parseColor(themeColors.getColor8()));
             }catch (Exception e){
                 Log.e("surveyUICheckBox", e.toString());
             }}
@@ -64,8 +69,8 @@ public class RadioBtnAdapter extends RecyclerView.Adapter<RadioBtnAdapter.ViewHo
                 new int[]{-android.R.attr.state_enabled},
                 new int[]{android.R.attr.state_enabled}
         }, new int[]{
-                Color.GRAY,
-                Color.BLUE
+               Color.parseColor(themeColors.getColor9()),
+                Color.parseColor(themeColors.getColor9())
         }));
         Log.d("pos"+position, "pos: "+radioBtnList.get(position));
         holder.radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
