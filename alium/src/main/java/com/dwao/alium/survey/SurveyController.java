@@ -66,12 +66,14 @@ abstract class SurveyController {
         handleConditionMapping(survey.getQuestions().get(currentIndx));
 
     };
-
+    //os: Once per Submit -untilresponse
+    //o: Once - onlyonce
+    //rp: Repeatedly -overandover
     @CallSuper
     protected void show(){
         if(shouldUpdatePreferences){
             Log.i("shouldUpdatePreferences", ""+shouldUpdatePreferences);
-            if (!loadableSurveySpecs.surveyFreq.equals("untilresponse"))
+            if (!loadableSurveySpecs.surveyFreq.equals("os")) //untilresponse
                 surveyFrequencyManager.recordSurveyTriggerOnPreferences(
                 );
             trackWithAlium(context, generateTrackingParameters());
@@ -80,7 +82,7 @@ abstract class SurveyController {
 
     @CallSuper
     protected  void submitSurvey(){
-        if(loadableSurveySpecs.surveyFreq.equals("untilresponse"))surveyFrequencyManager.recordSurveyTriggerOnPreferences(
+        if(loadableSurveySpecs.surveyFreq.equals("os"))surveyFrequencyManager.recordSurveyTriggerOnPreferences(
         );
     };
 
@@ -90,6 +92,7 @@ abstract class SurveyController {
             if(question!=null && !question.getConditionMapping().isEmpty()){
                 List<Integer> conditionMappingArray=question.getConditionMapping();
                 Log.e("condition-index", conditionMappingArray.toString()+"" +currentQuestionResponse.getIndexOfSelectedAnswer() );
+
                 int nextQuestIndx= conditionMappingArray.get(
                         currentQuestionResponse.getIndexOfSelectedAnswer()
                 );
@@ -101,10 +104,11 @@ abstract class SurveyController {
                 }else {
                     currentIndx=nextQuestIndx;//set currentIndx as nextQuestIndx
                 }
-                Log.e("condition", "" +currentQuestionResponse.getIndexOfSelectedAnswer() );
+                Log.e("condition", "" +currentQuestionResponse.getIndexOfSelectedAnswer()+" nxtQuesIndx: "+nextQuestIndx );
             }
         }catch (Exception e){
             Log.e("Condition Map", e.toString());
+            currentIndx++;
         }
     }
     private void submitResponse() {
@@ -122,6 +126,7 @@ abstract class SurveyController {
                     .getId());
             currentQuestionResponse.setResponseType(survey.getQuestions().get(currentIndx)
                     .getResponseType());
+            currentQuestionResponse.setQuestionResponse("");
 
             currentQuestionResponse.setIndexOfSelectedAnswer(0);
         }catch (Exception e){

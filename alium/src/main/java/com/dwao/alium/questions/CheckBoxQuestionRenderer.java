@@ -16,6 +16,7 @@ import com.dwao.alium.adapters.CheckBoxRecyViewAdapter;
 import com.dwao.alium.listeners.CheckBoxClickListener;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
+import com.dwao.alium.models.ThemeColors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -26,9 +27,9 @@ import java.util.List;
 public class CheckBoxQuestionRenderer implements QuestionRenderer {
     private CheckBoxRecyViewAdapter checkBoxRecyViewAdapter;
     List responseOpt ;
-    Survey.SurveyUI surveyUi;
-    public CheckBoxQuestionRenderer setSurveyUi(Survey.SurveyUI surveyUi){
-        this.surveyUi=surveyUi;
+  ThemeColors themeColors;
+    public CheckBoxQuestionRenderer setTheme(ThemeColors themeColors){
+        this.themeColors = themeColors;
         return this;
     }
     public CheckBoxQuestionRenderer setOptions(List options){
@@ -57,7 +58,7 @@ public class CheckBoxQuestionRenderer implements QuestionRenderer {
             }
         };
         checkBoxRecyViewAdapter=new CheckBoxRecyViewAdapter(responseOpt,
-                checkBoxClickListener, currentQuestionResponse, surveyUi);
+                checkBoxClickListener, currentQuestionResponse, themeColors);
         recyclerView.setAdapter(checkBoxRecyViewAdapter);
         layout.addView(checkBoxQues);
 

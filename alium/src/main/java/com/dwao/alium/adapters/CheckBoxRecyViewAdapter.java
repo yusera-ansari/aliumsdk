@@ -16,6 +16,7 @@ import com.dwao.alium.R;
 import com.dwao.alium.listeners.CheckBoxClickListener;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
+import com.dwao.alium.models.ThemeColors;
 
 import org.json.JSONObject;
 
@@ -28,15 +29,15 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
     CheckBoxClickListener listener;
     List<Integer> selectedItems;
     QuestionResponse currentQuestionResponse;
-    Survey.SurveyUI surveyUi;
+   ThemeColors themeColors;
     public CheckBoxRecyViewAdapter(List<String> checkBoxList,
                                    CheckBoxClickListener listener,
-                                   QuestionResponse currentQuestionResponse, Survey.SurveyUI surveyUi){
+                                   QuestionResponse currentQuestionResponse, ThemeColors themeColors){
         this.checkBoxList=checkBoxList;
         this.listener=listener;
         selectedItems=new ArrayList<>();
         this.currentQuestionResponse=currentQuestionResponse;
-        this.surveyUi=surveyUi;
+      this.themeColors=themeColors;
     }
     private void updateResponseString(){
         String resp="";
@@ -66,26 +67,32 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.checkbox_btn, parent, false);
         return  new ViewHolder(view);
     }
-
+    //		--color5 - #ffffff  Multiple Choice Background Color
+//		--color6 - #00C764  Multiple Choice Icon Color
+//		--color7 - #333 Multiple Choice Text Color
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.checkBox.setText(checkBoxList.get(position));
-        if(surveyUi!=null){
+        if(themeColors!=null){
            try{
-               if(!surveyUi.getOptions().isEmpty()){
-                holder.checkBox.setTextColor(Color.parseColor(surveyUi
-                        .getOptions()
+
+                holder.checkBox.setTextColor(Color.parseColor(themeColors.getColor7()
+
                         ));
-               }
+               holder.checkBox.setBackgroundColor(Color.parseColor(themeColors.getColor5()
+
+               ));
+               holder.checkBox.setButtonTintList(new ColorStateList(new int[][]{
+                       new int[]{-android.R.attr.state_checked},
+                       new int[]{android.R.attr.state_checked}
+               }, new int[]{ Color.parseColor(themeColors.getColor6()),
+                       Color.parseColor(themeColors.getColor6())}));
            }catch (Exception e){
                Log.e("surveyUICheckBox", e.toString());
            }
         }
         holder.checkBox.setChecked(selectedItems.contains(position));
-        holder.checkBox.setButtonTintList(new ColorStateList(new int[][]{
-                new int[]{-android.R.attr.state_checked},
-                new int[]{android.R.attr.state_checked}
-        }, new int[]{Color.GRAY, Color.BLUE}));
+//    holder.checkBox.setButtonDrawable(R.drawable.ic_check_circle);
         Log.d("pos"+position, "pos: "+checkBoxList.get(position));
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

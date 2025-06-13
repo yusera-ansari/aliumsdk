@@ -1,6 +1,6 @@
 package com.dwao.alium.survey;
 
-import static com.dwao.alium.survey.Alium.surveyConfigMap;
+
 
 import android.util.Log;
 
@@ -64,7 +64,7 @@ class SLQHandlerManager {
               }
 
 
-              slqHandler.offer(request, surveyConfigMap);
+              slqHandler.offer(request);
           }
 
         isTriggerExecuting=false;

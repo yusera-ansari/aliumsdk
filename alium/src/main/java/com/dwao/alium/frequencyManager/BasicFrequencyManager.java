@@ -18,7 +18,7 @@ import java.text.ParseException;
 
     @Override
     public void handleFrequency( ) {
-        if(this.srvShowFreq.equals("overandover")){
+        if(this.srvShowFreq.equals("rp")){
             Log.i("srvshowfrq", "show survey frequency: overandover");
             return;
         }

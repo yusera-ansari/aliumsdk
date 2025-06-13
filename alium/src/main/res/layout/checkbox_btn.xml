@@ -3,5 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/checkbox_btn"
+   android:layout_marginVertical="4dp"
+    android:paddingVertical="5dp"
+android:textSize="18dp"
     android:theme="@style/Theme.AppCompat.Light.NoActionBar"
     />

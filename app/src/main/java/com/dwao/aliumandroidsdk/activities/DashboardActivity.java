@@ -54,7 +54,7 @@ public class DashboardActivity extends AppCompatActivity {
     }
     protected  void onPause(){
         super.onPause();
-        Alium.stop("secondscreen");
+//        Alium.stop("secondscreen");
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
