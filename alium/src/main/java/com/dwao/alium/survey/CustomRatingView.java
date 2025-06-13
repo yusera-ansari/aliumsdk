@@ -16,7 +16,7 @@ import com.dwao.alium.questions.RatingIconDrawableFactory;
 import com.dwao.alium.questions.RatingType;
 
 public class CustomRatingView extends LinearLayout {
-    private int starCount = 5;
+    private int iconCount = 5;
     private float currentRating = 0f;
     private ImageView[] stars;
     private Drawable fullIcon, emptyIcon;
@@ -26,8 +26,8 @@ public class CustomRatingView extends LinearLayout {
     private RatingType ratingType;
     private RatingClickListener listener;
 
-    public CustomRatingView setStarCount(int count){
-        this.starCount=count;
+    public CustomRatingView setIconCount(int count){
+        this.iconCount=count;
         return this;
     }
     public CustomRatingView(Context context, AttributeSet attrs) {
@@ -54,7 +54,7 @@ public class CustomRatingView extends LinearLayout {
 
     private void init(   ) {
         setOrientation(HORIZONTAL);
-        setRatingType(RatingType.STAR);
+        setRatingType(RatingType.STARS);
         render( );
 
 
@@ -67,9 +67,9 @@ public class CustomRatingView extends LinearLayout {
         fullIcon = drawable.getFilledIcon();
         emptyIcon = drawable.getEmptyIcon();
 
-        stars = new ImageView[starCount];
+        stars = new ImageView[iconCount];
 
-        for (int i = 0; i < starCount; i++) {
+        for (int i = 0; i < iconCount; i++) {
             final int index = i;
             ImageView star = new ImageView(context);
             star.setImageDrawable(emptyIcon);
@@ -95,7 +95,7 @@ public class CustomRatingView extends LinearLayout {
     public void setRating(float rating) {
 
         currentRating = rating;
-        for (int i = 0; i < starCount; i++) {
+        for (int i = 0; i < iconCount; i++) {
             if (i < rating) {
                 stars[i].setImageDrawable(fullIcon);
                 if(themeColors!=null){
