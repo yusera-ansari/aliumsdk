@@ -2,6 +2,7 @@ package com.dwao.alium.survey;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.fragment.app.Fragment;
@@ -13,6 +14,7 @@ import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.models.TriggerRequest;
 import com.dwao.alium.network.VolleyService;
 import com.dwao.alium.utils.jsonhandlers.AliumJSONParser;
+import com.dwao.alium.utils.preferences.AliumPreferences;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -43,6 +45,7 @@ public class Alium {
      private static VolleyService volleyService;
      private static String configURL;
      private SLQHandlerManager slqHandlerManager=new SLQHandlerManager();
+     private static AliumPreferences preferences;
      private volatile   Queue<TriggerRequest> triggerRequestQueue=new LinkedList<>();
      private static volatile boolean isConfigFetching=false;
      private  Alium(){
@@ -56,12 +59,12 @@ public class Alium {
                     if(instance==null){
                         volleyService=VolleyService.getInstance(application);
                         instance=new Alium();
+                        preferences= AliumPreferences.setInstance(application);
                     }
                 }
             }
         if( url.trim().isEmpty()){
             Log.e("Alium", "Configuration URL can't be empty. Please set a valid url: "+url );
-//             throw new IllegalStateException("Configuration URL can't be empty. Please set a valid url: "+url );
             return;
         }
             if(configURL==null ){
@@ -69,7 +72,6 @@ public class Alium {
                    if(configURL==null){
                        Log.d("CONFIG", "url is null! setting....");
                        configURL=url;
-
                        instance.fetchConfigJson( );
                    }
                }
@@ -78,7 +80,6 @@ public class Alium {
               synchronized (Alium.class){
                   if(!configURL.equals(url)){
                       configURL = url;
-
                       instance.fetchConfigJson( );
                   }
               }
@@ -93,9 +94,22 @@ public class Alium {
     }
 
       void fetchConfigJson( ){
-        isConfigFetching=true;
-        volleyService.callVolley(  configURL,
-                new Alium.ConfigURLResponseListener());
+
+          isConfigFetching=true;
+          String config = preferences.getConfig();
+          try{
+              if (config != null) {
+                  surveyConfig = AliumJSONParser.getSurConfFromJSON(new JSONObject(config));
+                  isConfigFetching=false;
+              }else{
+                  throw new NullPointerException("config in sharepref is null");
+              }
+          }catch (Exception e){
+              Log.d("getConfig", e.toString());
+              volleyService.callVolley(  configURL,
+                      new Alium.ConfigURLResponseListener());
+          }
+
     }
 
     private static void initiateTrigger(Object object,SurveyParameters parameters ){
@@ -135,6 +149,7 @@ public class Alium {
 
          try{
              surveyConfig= AliumJSONParser.getSurConfFromJSON(jsonObject);
+             preferences.storeConfig(jsonObject.toString());
              isConfigFetching=false;
              if(configURL==null||isConfigFetching ){return;}  instance.slqHandlerManager.executeNextTrigger(instance.triggerRequestQueue);
 
