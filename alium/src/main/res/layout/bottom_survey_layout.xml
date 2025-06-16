@@ -75,27 +75,26 @@
             />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:layout_width="match_parent"
+            android:id="@+id/btn_next"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/dialog_layout_content"
-            android:id="@+id/btn_next"
+            android:layout_marginTop="8dp"
             android:background="@drawable/next_btn_bg"
-            android:gravity="center"
-            android:foregroundGravity="center_horizontal"
-            android:text="Next"
             android:enabled="false"
-            android:textSize="16sp"
+            android:foregroundGravity="center_horizontal"
+            android:gravity="center"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:minHeight="0dp"
             android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:paddingHorizontal="30dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:paddingHorizontal="10dp"
-            android:layout_centerHorizontal="true"
+            android:text="Next"
 
-            android:layout_marginTop="8dp"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textSize="16sp" />
 
 <!--        <LinearLayout-->
 <!--            android:id="@+id/linearLayout"-->
