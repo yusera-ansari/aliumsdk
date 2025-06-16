@@ -295,15 +295,21 @@ public class SurveyDialog extends SurveyController {
         this.layout.removeAllViews();
         if(survey.getQuestions().get(currentIndx).getResponseType().equals("-1")
                 ||survey.getQuestions().get(currentIndx).getResponseType().equals("0")) {
+            Log.d("responseType", "response type is"+survey.getQuestions().get(currentIndx).getResponseType());
                   setCtaEnabled(nextQuestionBtn, true);
             RelativeLayout.LayoutParams lp=(RelativeLayout.LayoutParams) nextQuestionBtn.getLayoutParams();
-                lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            lp.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
                 nextQuestionBtn.setLayoutParams(lp);
               }else{
-                  setCtaEnabled(nextQuestionBtn, !survey.getQuestions()
-                          .get(currentIndx).getQuestionSetting().getRequired());
+            Log.d("responseType", "response type is"+survey.getQuestions().get(currentIndx).getResponseType());
 
+            setCtaEnabled(nextQuestionBtn, !survey.getQuestions()
+                          .get(currentIndx).getQuestionSetting().getRequired());
+            nextQuestionBtn.setText("next");
             RelativeLayout.LayoutParams lp=(RelativeLayout.LayoutParams) nextQuestionBtn.getLayoutParams();
+            lp.removeRule(RelativeLayout.CENTER_HORIZONTAL);
             lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             nextQuestionBtn.setLayoutParams(lp);
               }
@@ -355,6 +361,7 @@ public class SurveyDialog extends SurveyController {
         switch (responseType) {
             case "0":
                 Log.d("ResponseType", "response type i s "+1);
+                if(survey.getQuestions().get(currentIndx).getId()==0)nextQuestionBtn.setText("start");
                 break;
 
             case "1": //long question
@@ -436,20 +443,24 @@ public class SurveyDialog extends SurveyController {
     }
 
     @Override
-    protected Map<String ,String> generateTrackingParameters(){
-        Map<String, String> params=new HashMap<>(surveyParameters.customerVariables);
-        params.put("srvtpid", "6");
-        params.put("srvLng", "1");
-        params.put("vstid", uuid);
-        params.put("srvldid",uuid+"ppup"+ new Date().getTime()+"srv" );
-        params.put("srvpt", surveyParameters.screenName);
-        params.put("ran",""+new Date().getTime() );
-        params.put("custSystemId", "NA");
+    protected Map<String, Object>  generateTrackingParameters(){
+        Map  params=new HashMap<>(surveyParameters.customerVariables);
+//        params.put("srvtpid", "6");
+            params.put("surveyLoadId", uuid);
+//        params.put("vstid", uuid);
+//        params.put("srvldid",uuid+"ppup"+ new Date().getTime()+"srv" );
+//        params.put("srvpt", surveyParameters.screenName);
+//        params.put("ran",""+new Date().getTime() );
+//        params.put("custSystemId", "NA");
+        params.put("userId", "");
         params.put("custId", aliumPreferences.getCustomerId());
-        params.put("custEmail", "NA");
-        params.put("custMobile", "NA");
+//        params.put("custEmail", "NA");
+//        params.put("custMobile", "NA");
+        params.put("eventType", "question response");
+        params.put("language", "1");
+        params.put("surveyType", 7);
         try{
-            params.put("srvid", survey.getSurveyInfo().getSurveyId());
+            params.put("surveyId", survey.getSurveyInfo().getSurveyId());
             params.put("orgId",survey.getSurveyInfo().getOrgId());
         }catch (Exception e){
             Log.e("Generate Params Map", "Couldn't get srvid/orgId");

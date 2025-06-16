@@ -3,6 +3,9 @@ package com.dwao.alium.network;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -14,6 +17,9 @@ import com.dwao.alium.listeners.VolleyResponseListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class VolleyService {
     private RequestQueue queue;
@@ -63,6 +69,50 @@ public class VolleyService {
         }) ;
         config_queue.add(stringRequest);
 
+    }
+    public void postTrackRequest(String url, Map<String, Object> params){
+
+        Log.e("Post", ""+url+"  "+new JSONObject(params));
+        RequestQueue queue = Volley.newRequestQueue(context);
+        StringRequest request=new StringRequest(Request.Method.POST,url , new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                try{
+                    Log.d("post-track", response.toString());
+                }
+                catch (Exception e){
+                    Log.d("post-track","successfule" );
+                }}
+        },
+                    new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+Log.e("postTrack", error.toString());
+            }
+        }
+
+        ){
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+            @Override
+            public byte[] getBody() {
+                try {
+                    return new JSONObject(params).toString().getBytes("utf-8");
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+            //            @Nullable
+//            @Override
+//            protected Map<String, String> getParams() throws AuthFailureError {
+//
+//                return super.getParams();
+//            }
+        };
+        queue.add(request);
     }
    public  void callVolley(  String url, VolleyResponseListener volleyResponseListener){
        // Instantiate the RequestQueue.

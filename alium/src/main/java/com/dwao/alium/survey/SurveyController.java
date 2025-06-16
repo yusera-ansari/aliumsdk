@@ -46,7 +46,7 @@ abstract class SurveyController {
         this.shouldUpdatePreferences=shouldUpdatePreferences;
         this.uuid= UUID.randomUUID().toString();
         this.loadableSurveySpecs=loadableSurveySpecs;
-        this.aliumPreferences= AliumPreferences.getInstance(context);
+        this.aliumPreferences= AliumPreferences.getInstance();
         this.surveyFrequencyManager=  FrequencyManagerFactory
                 .getFrequencyManager(aliumPreferences, loadableSurveySpecs.key,
                 loadableSurveySpecs.surveyFreq,
@@ -54,7 +54,7 @@ abstract class SurveyController {
     }
 
     abstract protected void generateQuestion(String responseType) throws JSONException;
-    abstract protected Map<String, String > generateTrackingParameters();
+    abstract protected Map<String, Object > generateTrackingParameters();
     @CallSuper
     protected void  showCurrentQuestion( ) {
         updateCurrentQuestionResponse();
@@ -112,10 +112,10 @@ abstract class SurveyController {
         }
     }
     private void submitResponse() {
-        Map<String, String > responseMap=new HashMap<>(generateTrackingParameters());
-        responseMap.put("qusid",""+(currentQuestionResponse.getQuestionId()+1));
-        responseMap.put("qusrs",currentQuestionResponse.getQuestionResponse());
-        responseMap.put("restp",currentQuestionResponse.getResponseType());
+        Map<String, Object > responseMap=new HashMap<>(generateTrackingParameters());
+        responseMap.put("questionId",(currentQuestionResponse.getQuestionId()+1));
+        responseMap.put("response",currentQuestionResponse.getQuestionResponse());
+        responseMap.put("respType",currentQuestionResponse.getResponseType());
         trackWithAlium(context,responseMap );
     }
 

@@ -229,7 +229,7 @@ public class AliumSurveyLoader implements Observer {
         this.surveyParameters=surveyParameters;
 
         this.activity= new WeakReference<>( activity);
-        aliumPreferences= AliumPreferences.getInstance(activity);
+        aliumPreferences= AliumPreferences.getInstance();
         this.executorService= Executors.newSingleThreadExecutor();
         this.mainHandler=new Handler(Looper.getMainLooper());
         if(aliumPreferences.getCustomerId().isEmpty()){
@@ -240,7 +240,7 @@ public class AliumSurveyLoader implements Observer {
         this.surveyParameters=surveyParameters;
 
         this.xfragment=new WeakReference<>(xfragment);
-        aliumPreferences= AliumPreferences.getInstance(xfragment.getContext());
+        aliumPreferences= AliumPreferences.getInstance( );
         if(aliumPreferences.getCustomerId().isEmpty()){
             aliumPreferences.setCustomerId(generateCustomerId());
         }
@@ -249,7 +249,7 @@ public class AliumSurveyLoader implements Observer {
         this.surveyParameters=surveyParameters;
 
         this.fragment=new WeakReference<>(fragment);
-        aliumPreferences= AliumPreferences.getInstance(fragment.getActivity());
+        aliumPreferences= AliumPreferences.getInstance( );
         if(aliumPreferences.getCustomerId().isEmpty()){
             aliumPreferences.setCustomerId(generateCustomerId());
         }
