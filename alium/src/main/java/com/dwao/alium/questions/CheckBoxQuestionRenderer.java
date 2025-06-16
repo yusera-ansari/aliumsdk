@@ -28,6 +28,13 @@ public class CheckBoxQuestionRenderer implements QuestionRenderer {
     private CheckBoxRecyViewAdapter checkBoxRecyViewAdapter;
     List responseOpt ;
   ThemeColors themeColors;
+    private boolean isRequired = false;
+
+
+    public CheckBoxQuestionRenderer setRequired(boolean required) {
+        isRequired = required;
+        return this;
+    }
     public CheckBoxQuestionRenderer setTheme(ThemeColors themeColors){
         this.themeColors = themeColors;
         return this;
@@ -51,8 +58,10 @@ public class CheckBoxQuestionRenderer implements QuestionRenderer {
                     @Override
                     public void run() {
                         checkBoxRecyViewAdapter.updateCheckedItem(position, selected);
-                        setCtaEnabled(nextQuestionBtn,
-                                !currentQuestionResponse.getQuestionResponse().isEmpty());
+                      if(isRequired){
+                          setCtaEnabled(nextQuestionBtn,
+                                  !currentQuestionResponse.getQuestionResponse().isEmpty());
+                      }
                     }
                 });
             }

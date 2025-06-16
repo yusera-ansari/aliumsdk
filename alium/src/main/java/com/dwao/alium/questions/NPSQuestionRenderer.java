@@ -18,17 +18,27 @@ import com.dwao.alium.models.ThemeColors;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class NPSQuestionRenderer implements QuestionRenderer {
 
     private NpsGridViewAdapter npsGridViewAdapter;
-    JSONArray responseOptJSON;
-  ThemeColors themeColors;
+    List<String> responseOpt;
+    ThemeColors themeColors;
+    private boolean isRequired = false;
+
+
+    public NPSQuestionRenderer setRequired(boolean required) {
+        isRequired = required;
+        return this;
+    }
+
     public NPSQuestionRenderer setTheme(ThemeColors themeColors){
         this.themeColors=themeColors;
         return this;
     }
-    public NPSQuestionRenderer setOptions(JSONArray options){
-        responseOptJSON=options;
+    public NPSQuestionRenderer setOptions(List<String> options){
+        responseOpt=options;
         return this;
 
     }
@@ -45,13 +55,15 @@ public class NPSQuestionRenderer implements QuestionRenderer {
                     @Override
                     public void run() {
                         npsGridViewAdapter.updatedSelectedOption(position);
-                        setCtaEnabled(nextQuestionBtn, !currentQuestionResponse
-                                .getQuestionResponse().isEmpty());
+                        if(isRequired){
+                            setCtaEnabled(nextQuestionBtn, !currentQuestionResponse
+                                    .getQuestionResponse().isEmpty());
+                        }
                     }
                 });
             }
         };
-        npsGridViewAdapter=new NpsGridViewAdapter(context, listener, currentQuestionResponse, themeColors);
+        npsGridViewAdapter=new NpsGridViewAdapter(context,responseOpt ,listener, currentQuestionResponse, themeColors);
         npsRecView.setAdapter( npsGridViewAdapter);
         layout.addView(npsQues);
 

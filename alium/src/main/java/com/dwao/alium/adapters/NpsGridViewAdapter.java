@@ -21,6 +21,8 @@ import com.dwao.alium.models.ThemeColors;
 
 import org.json.JSONObject;
 
+import java.util.List;
+
 
 public class NpsGridViewAdapter extends BaseAdapter{
     Context ctx;
@@ -28,12 +30,14 @@ public class NpsGridViewAdapter extends BaseAdapter{
     NpsOptionClickListener npsOptionClickListener;
    ThemeColors themeColors;
     QuestionResponse currentQuestionResponse;
-    public NpsGridViewAdapter(Context ctx, NpsOptionClickListener npsOptionClickListener,
+    List<String> respOptions;
+    public NpsGridViewAdapter(Context ctx,List<String> respOptions ,NpsOptionClickListener npsOptionClickListener,
                               QuestionResponse currentQuestionResponse,ThemeColors themeColors){
     this.ctx=ctx;
     this.npsOptionClickListener=npsOptionClickListener;
     this.currentQuestionResponse=currentQuestionResponse;
     this.themeColors = themeColors;
+    this.respOptions = respOptions;
 }
 
     public void updatedSelectedOption(int position){
@@ -63,7 +67,7 @@ public class NpsGridViewAdapter extends BaseAdapter{
     }
     @Override
     public int getCount() {
-        return 11;
+        return respOptions!=null?respOptions.size() : 11;
     }
 
     @Override
@@ -80,7 +84,11 @@ public class NpsGridViewAdapter extends BaseAdapter{
     public View getView(int position, View view, ViewGroup viewGroup) {
         view=LayoutInflater.from(ctx).inflate(R.layout.nps_option, null);
         AppCompatButton  npsOption=view.findViewById(R.id.nps_option);
-        npsOption.setText(String.valueOf(position));
+        if(respOptions!=null){
+            npsOption.setText(respOptions.get(position));
+        }else{
+            npsOption.setText(String.valueOf(position));
+        }
 
         GradientDrawable d=(GradientDrawable) npsOption.getBackground();
         d.mutate();

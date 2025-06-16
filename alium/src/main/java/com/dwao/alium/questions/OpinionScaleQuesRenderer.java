@@ -21,6 +21,13 @@ import java.util.List;
 public class OpinionScaleQuesRenderer implements QuestionRenderer{
     List<String> respOptions;
     ThemeColors themeColors;
+    private boolean isRequired = false;
+
+
+    public OpinionScaleQuesRenderer setRequired(boolean required) {
+        isRequired = required;
+        return this;
+    }
     OpinionScaleGridAdapter adapter;
     public OpinionScaleQuesRenderer setTheme(ThemeColors themeColors){
         this.themeColors=themeColors;
@@ -41,8 +48,10 @@ public class OpinionScaleQuesRenderer implements QuestionRenderer{
             @Override
             public void onClick(int position) {
                 adapter.updatedSelectedOption(position);
-                setCtaEnabled(nextQuestionBtn, !currentQuestionResponse
-                        .getQuestionResponse().isEmpty());
+                if(isRequired){
+                    setCtaEnabled(nextQuestionBtn, !currentQuestionResponse
+                            .getQuestionResponse().isEmpty());
+                }
             }
         };
           adapter=new OpinionScaleGridAdapter(context, respOptions,currentQuestionResponse,listener,themeColors);
