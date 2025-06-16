@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -71,11 +72,10 @@ public class CustomRatingView extends LinearLayout {
 
         for (int i = 0; i < iconCount; i++) {
             final int index = i;
+
             ImageView star = new ImageView(context);
             star.setImageDrawable(emptyIcon);
-            LayoutParams params = new LayoutParams(120, 120); // Adjust size here
-            params.setMargins(6, 8, 6, 8); // Spacing between icons
-            star.setLayoutParams(params);
+
             star.setClickable(true);
 
             star.setOnClickListener(v -> setRating(index + 1));
@@ -87,6 +87,22 @@ public class CustomRatingView extends LinearLayout {
 //		--color22 - #333 Rating utton selected text color
                 star.setColorFilter(Color.parseColor(themeColors.getColor19()));
             }
+            getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    int parentwidth = getWidth();
+                    float density= context.getResources().getDisplayMetrics().density;
+                    int minimumSize = Math.round(48*density);
+                    int width = (parentwidth/5) - 12 *4 ;
+                        if(width<minimumSize){
+                            width=minimumSize;
+                        }
+                    LayoutParams params = new LayoutParams(width, width); // Adjust size here
+                    params.setMargins(6, 8, 6, 8); // Spacing between icons
+                    star.setLayoutParams(params);
+                }
+            });
             addView(star);
             stars[i] = star;
         }
