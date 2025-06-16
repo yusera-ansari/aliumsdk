@@ -29,6 +29,13 @@ RatingAdapter ratingAdapter;
 List<String> ratingOptions;
     ThemeColors themeColors;
     QuestionSetting questionSetting;
+    private boolean isRequired = false;
+
+
+    public RatingQuestionRenderer setRequired(boolean required) {
+        isRequired = required;
+        return this;
+    }
 
     public RatingQuestionRenderer setQuestionSetting(QuestionSetting questionSetting) {
         this.questionSetting = questionSetting;
@@ -39,6 +46,8 @@ List<String> ratingOptions;
     this.ratingOptions=options;
     return  this;
 }
+
+
     public RatingQuestionRenderer setTheme(ThemeColors themeColors){
           this.themeColors=themeColors;
         return  this;
@@ -58,6 +67,11 @@ List<String> ratingOptions;
             public void onClick(int position) {
                 currentQuestionResponse.setQuestionResponse(ratingOptions.get(position));
                 currentQuestionResponse.setIndexOfSelectedAnswer(position);
+
+                if(isRequired){
+                    setCtaEnabled(nextQuestionBtn, !currentQuestionResponse
+                            .getQuestionResponse().isEmpty());
+                }
             }
         };
 

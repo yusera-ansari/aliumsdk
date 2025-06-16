@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import com.dwao.alium.models.Survey;
-import com.google.gson.Gson;
+
 
 import java.util.Iterator;
 
@@ -48,8 +48,8 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
         LegacySurveyDialogFragment legacySurveyDialogFragment=new LegacySurveyDialogFragment();
         Bundle bundle=new Bundle();
         bundle.putSerializable("surveyParameters",surveyParameters);
-        Gson gson=new Gson();
-        bundle.putSerializable("surveyJson",gson.toJson(executableSurveySpecs.survey) );
+
+        bundle.putSerializable("surveyJson" ,executableSurveySpecs.getSurvey() );
         bundle.putSerializable("loadableSurveySpecs", executableSurveySpecs.getLoadableSurveySpecs()
         );
         bundle.putBoolean("shouldUpdatePreferences", shouldUpdatePreferences);
@@ -64,8 +64,8 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
         Log.d("onsave", "on save instnace state");
         shouldCallOnStopCallback=false;
         outState.putSerializable("surveyParameters",surveyParameters);
-        Gson gson=new Gson();
-        outState.putSerializable("surveyJson",gson.toJson(executableSurveySpecs.survey) );
+
+        outState.putSerializable("surveyJson",executableSurveySpecs.getSurvey());
         outState.putSerializable("loadableSurveySpecs", executableSurveySpecs.getLoadableSurveySpecs()
         );
         Log.d("onSaveInstanceState", "saved state"+executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex());
@@ -83,14 +83,13 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
 
         if(savedInstanceState!=null){
             Log.d("SurveyDialogFragment", "LegacySurveyDialog-inside oncreyae");
-            shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
-            surveyParameters=(SurveyParameters)getArguments().getSerializable("surveyParameters");
-            Gson gson=new Gson();
-            executableSurveySpecs=new ExecutableSurveySpecs(
-                    gson.fromJson(getArguments().getString("surveyJson"), Survey.class)
-                    , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
+            shouldUpdatePreferences=savedInstanceState.getBoolean("shouldUpdatePreferences");
+            surveyParameters=(SurveyParameters)savedInstanceState.getSerializable("surveyParameters");
+
+            executableSurveySpecs=new ExecutableSurveySpecs( (Survey)savedInstanceState.getSerializable("surveyJson")
+                    , (LoadableSurveySpecs)savedInstanceState.getSerializable("loadableSurveySpecs"));
             Log.d("SurveyDialogFragment", "saved state"+executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex());
-            loaderId=getArguments().getString("loaderId");
+            loaderId=savedInstanceState.getString("loaderId");
             if(loaderId!=null){
                 callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
@@ -98,10 +97,9 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
             Log.d("SurveyDialogFragment", "LegacySurveyDialog-inside oncreyae");
             shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
             surveyParameters=(SurveyParameters)getArguments().getSerializable("surveyParameters");
-            Gson gson=new Gson();
-            executableSurveySpecs=new ExecutableSurveySpecs(
-                    gson.fromJson(getArguments().getString("surveyJson"), Survey.class)
-                    , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
+
+            executableSurveySpecs=new ExecutableSurveySpecs( (Survey)getArguments().getSerializable("surveyJson")
+                    ,(LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
             loaderId=getArguments().getString("loaderId");
             if(loaderId!=null){
                 callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);

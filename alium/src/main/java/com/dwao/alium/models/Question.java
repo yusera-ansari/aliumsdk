@@ -1,6 +1,7 @@
 package com.dwao.alium.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -8,7 +9,7 @@ public class Question implements Serializable {
     int id;
     String question;
     String responseType;
-    List<String> responseOptions;
+    List<String> responseOptions= new ArrayList<>();
 
     QuestionSetting questionSetting;
 

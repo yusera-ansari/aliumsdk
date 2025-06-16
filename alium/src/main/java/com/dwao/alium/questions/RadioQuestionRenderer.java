@@ -29,6 +29,14 @@ public class RadioQuestionRenderer implements QuestionRenderer {
     List responseOpt ;
     private RadioBtnAdapter adapter;
    ThemeColors themeColors;
+
+    private boolean isRequired = false;
+
+
+    public RadioQuestionRenderer setRequired(boolean required) {
+        isRequired = required;
+        return this;
+    }
     public RadioQuestionRenderer setTheme( ThemeColors themeColors){
         this.themeColors=themeColors;
         return this;
@@ -57,8 +65,10 @@ public class RadioQuestionRenderer implements QuestionRenderer {
                     public void run() {
 
                         adapter.updateCheckedItem(position);
-                        setCtaEnabled(nextQuestionBtn,
-                                !currentQuestionResponse.getQuestionResponse().isEmpty());
+                        if(isRequired){
+                            setCtaEnabled(nextQuestionBtn,
+                                    !currentQuestionResponse.getQuestionResponse().isEmpty());
+                        }
                     }
                 });
             }

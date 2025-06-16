@@ -19,7 +19,7 @@ import androidx.lifecycle.LifecycleObserver;
 
 import com.dwao.alium.R;
 import com.dwao.alium.models.Survey;
-import com.google.gson.Gson;
+
 
 import java.util.Iterator;
 
@@ -47,8 +47,8 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         SurveyDialogFragment surveyDialogFragment=new SurveyDialogFragment();
         Bundle bundle=new Bundle();
         bundle.putSerializable("surveyParameters",surveyParameters);
-        Gson gson=new Gson();
-        bundle.putSerializable("surveyJson",gson.toJson(executableSurveySpecs.survey) );
+
+        bundle.putSerializable("surveyJson", executableSurveySpecs.getSurvey() );
         bundle.putSerializable("loadableSurveySpecs", executableSurveySpecs.getLoadableSurveySpecs()
         );
         bundle.putBoolean("shouldUpdatePreferences", shouldUpdatePreferences);
@@ -81,13 +81,13 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         Log.d("SurveyDialogFragment", "outside oncreyae "+getArguments());
         if(savedInstanceState!=null){
             Log.d("SurveyDialogFragment", "instance saved-inside oncreyae");
-            shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
-            surveyParameters=(SurveyParameters)getArguments().getSerializable("surveyParameters");
-            Gson gson=new Gson();
+            shouldUpdatePreferences=savedInstanceState.getBoolean("shouldUpdatePreferences");
+            surveyParameters=(SurveyParameters)savedInstanceState.getSerializable("surveyParameters");
+
             executableSurveySpecs=new ExecutableSurveySpecs(
-                    (Survey)getArguments().getSerializable("surveyJson")
-                    , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
-            loaderId=getArguments().getString("loaderId");
+                    (Survey)savedInstanceState.getSerializable("surveyJson")
+                    , (LoadableSurveySpecs)savedInstanceState.getSerializable("loadableSurveySpecs"));
+            loaderId=savedInstanceState.getString("loaderId");
             if(loaderId!=null){
                 callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
@@ -95,9 +95,9 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         }else if(getArguments()!=null){
        shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
       surveyParameters=(SurveyParameters)getArguments().getSerializable("surveyParameters");
-      Gson gson=new Gson();
+
       executableSurveySpecs=new ExecutableSurveySpecs(
-              gson.fromJson(getArguments().getString("surveyJson"), Survey.class)
+              (Survey)getArguments().getSerializable("surveyJson")
               , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
             loaderId=getArguments().getString("loaderId");
             if(loaderId!=null){

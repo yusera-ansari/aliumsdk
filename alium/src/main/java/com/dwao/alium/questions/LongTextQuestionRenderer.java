@@ -25,7 +25,13 @@ public class LongTextQuestionRenderer implements QuestionRenderer {
         this.surveyUi=surveyUi;
         return this;
     }
+    private boolean isRequired = false;
 
+
+    public LongTextQuestionRenderer setRequired(boolean required) {
+        isRequired = required;
+        return this;
+    }
     @Override
     public void renderQuestion(Context context, ViewGroup layout, QuestionResponse currentQuestionResponse
     ,View nextQuestionBtn) {
@@ -65,7 +71,9 @@ public class LongTextQuestionRenderer implements QuestionRenderer {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 currentQuestionResponse.setQuestionResponse(input.getText().toString().trim()
                         .replace(" ", "%20"));
-                setCtaEnabled(nextQuestionBtn, !currentQuestionResponse.getQuestionResponse().isEmpty());
+                if(isRequired){
+                    setCtaEnabled(nextQuestionBtn, !currentQuestionResponse.getQuestionResponse().isEmpty());
+                }
 //                Log.d("Alium-input", currentQuestionResponse.getQuestionResponse());
             }
 

@@ -360,8 +360,9 @@ public class SurveyDialog extends SurveyController {
             case "1": //long question
                 Log.d("ResponseType", "response type i s "+1);
 
-                QuestionRenderer longtextRenderer = new LongTextQuestionRenderer();
-                longtextRenderer.renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
+                LongTextQuestionRenderer longtextRenderer = new LongTextQuestionRenderer();
+                longtextRenderer.setRequired(survey.getQuestions().get(currentIndx).getQuestionSetting().getRequired())
+                    .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
             case "2": //radio
                 Log.d("ResponseType", "response type i s "+2);
@@ -371,6 +372,7 @@ public class SurveyDialog extends SurveyController {
                         .setOptions(survey.getQuestions().get(currentIndx)
                                 .getResponseOptions())
                         .setTheme(survey.getSurveyInfo().getThemeColors())
+                        .setRequired(survey.getQuestions().get(currentIndx).getQuestionSetting().getRequired())
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
             case "3": //checkbox
@@ -381,6 +383,7 @@ public class SurveyDialog extends SurveyController {
                          .setTheme(survey.getSurveyInfo().getThemeColors())
                         .setOptions(survey.getQuestions().get(currentIndx)
                                 .getResponseOptions())
+                        .setRequired(survey.getQuestions().get(currentIndx).getQuestionSetting().getRequired())
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
             case "4"://nps
@@ -389,6 +392,8 @@ public class SurveyDialog extends SurveyController {
                 NPSQuestionRenderer npsQuestionRenderer = new NPSQuestionRenderer();
                 npsQuestionRenderer
                         .setTheme(survey.getSurveyInfo().getThemeColors())
+                        .setOptions(survey.getQuestions().get(currentIndx).getResponseOptions())
+                        .setRequired(survey.getQuestions().get(currentIndx).getQuestionSetting().getRequired())
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
 
@@ -397,15 +402,17 @@ public class SurveyDialog extends SurveyController {
                     ratingQuestionRenderer.setRatingOptions(survey.getQuestions().get(currentIndx)
                             .getResponseOptions())
                             .setTheme(survey.getSurveyInfo().getThemeColors())
+                            .setRequired(survey.getQuestions().get(currentIndx).getQuestionSetting().getRequired())
                             .setQuestionSetting(survey.getQuestions().get(currentIndx).getQuestionSetting())
                                     .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
 
-                    setCtaEnabled(nextQuestionBtn, true);
+
                     break;
             case "6": //opinion
                 Log.d("ResponseType", "response type i s  opinion scale"+6);
                 OpinionScaleQuesRenderer opinionScaleQuesRenderer=new OpinionScaleQuesRenderer();
                 opinionScaleQuesRenderer.setTheme(survey.getSurveyInfo().getThemeColors())
+                        .setRequired(survey.getQuestions().get(currentIndx).getQuestionSetting().getRequired())
                         .setOptions(survey.getQuestions().get(currentIndx).getResponseOptions())
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
