@@ -8,12 +8,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="10dp"
-    android:layout_marginVertical="10dp"
-    android:paddingTop="18dp"
+    android:layout_marginVertical="20dp"
+    android:paddingTop="25dp"
     android:paddingBottom="0dp"
     android:id="@+id/dialog_layout"
     android:background="@drawable/dialog_bg"
     android:clipToPadding="true"
+
     android:clipChildren="true"
     android:orientation="vertical">
     <RelativeLayout
@@ -29,7 +30,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/question_container"
             android:layout_width="match_parent"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="15dp"
             android:layout_height="wrap_content">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -92,6 +93,7 @@
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:text="Next"
+            android:textAllCaps="false"
 
             android:textColor="@color/white"
             android:textSize="16sp" />
@@ -142,7 +144,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:trackThickness="6dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="30dp"
         android:id="@+id/horizontal_bottom_progressbar"
         app:trackCornerRadius="10dp"
         app:showAnimationBehavior="outward"

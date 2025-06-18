@@ -2,6 +2,8 @@ package com.dwao.alium.adapters;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,12 +77,13 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
         holder.checkBox.setText(checkBoxList.get(position));
         if(themeColors!=null){
            try{
-
                 holder.checkBox.setTextColor(Color.parseColor(themeColors.getColor7()
 
                         ));
-               holder.checkBox.setBackgroundColor(Color.parseColor(themeColors.getColor5()
+               GradientDrawable background= (GradientDrawable) holder.checkBox.getBackground();
+             background.mutate();
 
+               background.setColor(Color.parseColor(themeColors.getColor5()
                ));
                holder.checkBox.setButtonTintList(new ColorStateList(new int[][]{
                        new int[]{-android.R.attr.state_checked},

@@ -307,7 +307,7 @@ public class SurveyDialog extends SurveyController {
 
             setCtaEnabled(nextQuestionBtn, !survey.getQuestions()
                           .get(currentIndx).getQuestionSetting().getRequired());
-            nextQuestionBtn.setText("next");
+            nextQuestionBtn.setText("Next");
             RelativeLayout.LayoutParams lp=(RelativeLayout.LayoutParams) nextQuestionBtn.getLayoutParams();
             lp.removeRule(RelativeLayout.CENTER_HORIZONTAL);
             lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
@@ -361,7 +361,7 @@ public class SurveyDialog extends SurveyController {
         switch (responseType) {
             case "0":
                 Log.d("ResponseType", "response type i s "+1);
-                if(survey.getQuestions().get(currentIndx).getId()==0)nextQuestionBtn.setText("start");
+                if(survey.getQuestions().get(currentIndx).getId()==0)nextQuestionBtn.setText("Start");
                 break;
 
             case "1": //long question
@@ -426,7 +426,7 @@ public class SurveyDialog extends SurveyController {
             case "-1": //Thank you
                 Log.d("ResponseType", "response type i s "+7);
                 setCtaEnabled(nextQuestionBtn, true);
-                nextQuestionBtn.setText("close");
+                nextQuestionBtn.setText("Close");
                 nextQuestionBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

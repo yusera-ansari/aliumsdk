@@ -2,6 +2,7 @@ package com.dwao.alium.adapters;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,7 +61,9 @@ public class RadioBtnAdapter extends RecyclerView.Adapter<RadioBtnAdapter.ViewHo
                     holder.radioButton.setTextColor(Color.parseColor(themeColors
                             .getColor10()
                             ));
-                    holder.radioButton.setBackgroundColor(Color.parseColor(themeColors.getColor8()));
+                GradientDrawable background =(GradientDrawable) holder.radioButton.getBackground();
+                background.mutate();
+                   background.setColor(Color.parseColor(themeColors.getColor8()));
             }catch (Exception e){
                 Log.e("surveyUICheckBox", e.toString());
             }}
