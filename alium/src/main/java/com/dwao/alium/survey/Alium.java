@@ -96,7 +96,8 @@ public class Alium {
       void fetchConfigJson( ){
 
           isConfigFetching=true;
-          String config = preferences.getConfig();
+//          String config = preferences.getConfig();
+          String config = null;
           try{
               if (config != null) {
                   surveyConfig = AliumJSONParser.getSurConfFromJSON(new JSONObject(config));
