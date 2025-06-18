@@ -75,10 +75,10 @@ List<String> ratingOptions;
             }
         };
 
-        RatingType ratingType=RatingType.STARS;
+        RatingType ratingType=RatingType.stars;
         try{
             if(questionSetting!=null){
-                ratingType=RatingType.valueOf(questionSetting.getRatingType());
+                ratingType=RatingType.valueOf(questionSetting.getRatingType().toLowerCase());
             }
         }catch (Exception e){
                 Log.e("RatingType", "RatingType Doesn't exist"+questionSetting.getRatingType());

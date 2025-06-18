@@ -55,7 +55,7 @@ public class CustomRatingView extends LinearLayout {
 
     private void init(   ) {
         setOrientation(HORIZONTAL);
-        setRatingType(RatingType.STARS);
+        setRatingType(RatingType.stars);
         render( );
 
 
