@@ -58,6 +58,7 @@ public class SurveyDialog extends SurveyController {
     LinearProgressIndicator bottomProgressBar;
     RelativeLayout layout;
 
+
    void cleanUp(){
        this.executableSurveySpecs=null;
        survey=null;
@@ -73,8 +74,7 @@ public class SurveyDialog extends SurveyController {
         if(!survey.getQuestions().isEmpty() && currentIndx>=0) {
             showCurrentQuestion();
         }else{
-            dialog.dismiss();
-            cleanUp();
+           submitSurvey();
             return null;
         }
         super.show();
@@ -84,7 +84,9 @@ public class SurveyDialog extends SurveyController {
     public SurveyDialog(Context ctx, ExecutableSurveySpecs executableSurveySpecs,
                  SurveyParameters surveyParameters, boolean shouldUpdatePreferences)
     {
+
         super(ctx,executableSurveySpecs.getLoadableSurveySpecs(), shouldUpdatePreferences);
+        Log.d("should--", "shouldupdate::: "+shouldUpdatePreferences);
         this.executableSurveySpecs=executableSurveySpecs;
         survey=executableSurveySpecs.survey;
         this.surveyParameters=surveyParameters;
@@ -99,8 +101,7 @@ public class SurveyDialog extends SurveyController {
         if(survey.getQuestions().size()>0 && currentIndx>=0) {
             showCurrentQuestion();
         }else{
-            dialog.dismiss();
-            cleanUp();
+            submitSurvey();
             return;
         }
         dialog.show();
@@ -170,7 +171,6 @@ public class SurveyDialog extends SurveyController {
 //                setCtaEnabled(nextQuestionBtn, false);
 //
                 handleNextQuestion();
-
             }
         });
         closeDialogBtn.setOnClickListener(new View.OnClickListener() {
@@ -178,8 +178,8 @@ public class SurveyDialog extends SurveyController {
             public void onClick(View view) {
 //                Alium.removeFromActiveSurveyList(SurveyDialog.this);
 
-                dialog.dismiss();
-                cleanUp();
+                submitSurvey();
+
 //                ((AliumSurveyActivity)context).removeFromActiveSurveyList(SurveyDialog.this);
 
             }
@@ -207,7 +207,7 @@ public class SurveyDialog extends SurveyController {
         try{
          super.handleNextQuestion(); //updates index
          Log.d("next called", ""+currentIndx+" "+survey.getQuestions().size());
-
+         super.submitSurvey();
             //check if to show next question or else show thank-you layout
             if( currentIndx< survey.getQuestions().size()){
 
@@ -337,6 +337,9 @@ public class SurveyDialog extends SurveyController {
     @Override
     protected void showCurrentQuestion( ) {
         super.showCurrentQuestion();
+        if(currentIndx==0 && currentQuestionResponse.getResponseType().equals("0")){
+            responseSubmitIndex = 2;
+        }
         updateProgressIndicator();
         resetElementsForNextQuestion();
         Log.i("question", "going to next question " + currentIndx);
@@ -430,8 +433,7 @@ public class SurveyDialog extends SurveyController {
                 nextQuestionBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        dialog.dismiss();
-                        cleanUp();
+                      submitSurvey();
                     }
                 });
                 break;
@@ -471,26 +473,29 @@ public class SurveyDialog extends SurveyController {
     @Override
     protected void submitSurvey() {
         super.submitSurvey();
-        Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-//                Alium.removeFromActiveSurveyList(SurveyDialog.this);
-                dialog.dismiss();
-                cleanUp();
+        dialog.dismiss();
+        cleanUp();
+//        Handler handler = new Handler();
+//        Runnable runnable = new Runnable() {
+//            @Override
+//            public void run() {
+////                Alium.removeFromActiveSurveyList(SurveyDialog.this);
+//
+//                dialog.dismiss();
+//                cleanUp();
+//
+////                ((AliumSurveyActivity)context).removeFromActiveSurveyList(SurveyDialog.this);
+//
+//            }
+//        };
 
-//                ((AliumSurveyActivity)context).removeFromActiveSurveyList(SurveyDialog.this);
-
-            }
-        };
-
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                handler.removeCallbacks(runnable);
-            }
-        });
-        handler.postDelayed(runnable, 2000);
+//        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//            @Override
+//            public void onDismiss(DialogInterface dialog) {
+//                handler.removeCallbacks(runnable);
+//            }
+//        });
+//        handler.postDelayed(runnable, 500);
 
     }
 }

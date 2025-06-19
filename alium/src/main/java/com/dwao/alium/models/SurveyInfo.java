@@ -18,7 +18,8 @@ public class SurveyInfo implements Serializable {
 //                  "thanksMessage": "",
 //                  "vf": "overandover"
     String orgId, orgName, customerId, surveyId, language, position, background, uniqueidentifier, theme, branding,
-            type, viewFrequency;
+            type;
+//    viewFrequency;
     public ThemeColors themeColors;
 
     @Override
@@ -35,7 +36,10 @@ public class SurveyInfo implements Serializable {
                 ", theme='" + theme + '\'' +
                 ", branding='" + branding + '\'' +
                 ", type='" + type + '\'' +
-                ", viewFrequency='" + viewFrequency + '\'' +
+                ", viewFrequency='"
+//                +
+//                viewFrequency
+                + '\'' +
                 ", themeColors=" + themeColors +
                 '}';
     }
@@ -48,13 +52,13 @@ public class SurveyInfo implements Serializable {
         this.themeColors = themeColors;
     }
 
-    public String getViewFrequency() {
-        return viewFrequency;
-    }
-
-    public void setViewFrequency(String viewFrequency) {
-        this.viewFrequency = viewFrequency;
-    }
+//    public String getViewFrequency() {
+//        return viewFrequency;
+//    }
+//
+//    public void setViewFrequency(String viewFrequency) {
+//        this.viewFrequency = viewFrequency;
+//    }
 
     public String getType() {
         return type;
