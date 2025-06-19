@@ -149,7 +149,7 @@ public class AliumJSONParser {
             surveyInfo.setOrgId(surveyInfoObj.getString("oid"));
             surveyInfo.setSurveyId(surveyInfoObj.getString("sid"));
              surveyInfo.setType(surveyInfoObj.getString("stp"));
-             surveyInfo.setViewFrequency(surveyInfoObj.getString("vf"));
+//             surveyInfo.setViewFrequency(surveyInfoObj.getString("vf"));
 
              JSONObject themeColorObj= surveyInfoObj.getJSONObject("thc");
             ThemeColors  themeColors=new ThemeColors();

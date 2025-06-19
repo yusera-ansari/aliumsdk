@@ -28,7 +28,7 @@ abstract class SurveyController {
     Survey survey;
     protected ExecutableSurveySpecs executableSurveySpecs;
 
-
+    int responseSubmitIndex=1;
     protected SurveyParameters surveyParameters;
     protected QuestionResponse currentQuestionResponse=new QuestionResponse();
 
@@ -73,17 +73,27 @@ abstract class SurveyController {
     protected void show(){
         if(shouldUpdatePreferences){
             Log.i("shouldUpdatePreferences", ""+shouldUpdatePreferences);
-            if (!loadableSurveySpecs.surveyFreq.equals("os")) //untilresponse
-                surveyFrequencyManager.recordSurveyTriggerOnPreferences(
-                );
+            if (!loadableSurveySpecs.surveyFreq.equals("os")) {//untilresponse
+                if(currentIndx>=responseSubmitIndex){
+                    surveyFrequencyManager.recordSurveyTriggerOnPreferences(
+                    );
+                }
+
+            }
             trackWithAlium(context, generateTrackingParameters());
         }
     }
 
     @CallSuper
     protected  void submitSurvey(){
-        if(loadableSurveySpecs.surveyFreq.equals("os"))surveyFrequencyManager.recordSurveyTriggerOnPreferences(
-        );
+        if(loadableSurveySpecs.surveyFreq.equals("os")
+        && !currentQuestionResponse.getResponseType().equals("0")
+        ){
+            if(currentIndx>=responseSubmitIndex){
+                surveyFrequencyManager.recordSurveyTriggerOnPreferences(
+                );
+            }
+        }
     };
 
 
@@ -113,7 +123,7 @@ abstract class SurveyController {
     }
     private void submitResponse() {
         Map<String, Object > responseMap=new HashMap<>(generateTrackingParameters());
-        responseMap.put("questionId",(currentQuestionResponse.getQuestionId()+1));
+        responseMap.put("questionId",(currentQuestionResponse.getQuestionId()));
         responseMap.put("response",currentQuestionResponse.getQuestionResponse());
         responseMap.put("respType",currentQuestionResponse.getResponseType());
         trackWithAlium(context,responseMap );

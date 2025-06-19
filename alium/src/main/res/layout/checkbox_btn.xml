@@ -5,7 +5,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/checkbox_btn"
     android:layout_marginVertical="2dp"
-
+    android:paddingLeft="10dp"
+    android:button="@drawable/padded_checkbox_icon"
     android:paddingVertical="10dp"
     android:textSize="18sp"
     android:background="@drawable/rounded_background"
