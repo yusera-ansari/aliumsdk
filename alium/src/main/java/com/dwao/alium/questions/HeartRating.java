@@ -19,6 +19,11 @@ class HeartRating implements   RatingIconDrawable{
     }
 
     @Override
+    public Drawable[] getFilledIconList() {
+        return new Drawable[0];
+    }
+
+    @Override
     public Drawable getEmptyIcon() {
         return   ContextCompat.getDrawable(context, R.drawable.ph_heart);
     }

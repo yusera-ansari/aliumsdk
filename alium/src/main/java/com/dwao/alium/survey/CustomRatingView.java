@@ -19,8 +19,9 @@ import com.dwao.alium.questions.RatingType;
 public class CustomRatingView extends LinearLayout {
     private int iconCount = 5;
     private float currentRating = 0f;
-    private ImageView[] stars;
+    private ImageView[] icon;
     private Drawable fullIcon, emptyIcon;
+    private Drawable[] filledIconList;
     Context context;
     ThemeColors themeColors;
 
@@ -65,27 +66,31 @@ public class CustomRatingView extends LinearLayout {
         removeAllViews();
         setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
         RatingIconDrawable drawable=  RatingIconDrawableFactory.getDrawable(this.ratingType, context);
-        fullIcon = drawable.getFilledIcon();
-        emptyIcon = drawable.getEmptyIcon();
 
-        stars = new ImageView[iconCount];
+        if(ratingType.equals(RatingType.emoji)){
+            filledIconList = drawable.getFilledIconList();
+        }
+            fullIcon = drawable.getFilledIcon();
+            emptyIcon = drawable.getEmptyIcon();
+
+        icon = new ImageView[iconCount];
 
         for (int i = 0; i < iconCount; i++) {
             final int index = i;
 
-            ImageView star = new ImageView(context);
-            star.setImageDrawable(emptyIcon);
+            ImageView img = new ImageView(context);
+            img.setImageDrawable(emptyIcon);
 
-            star.setClickable(true);
+            img.setClickable(true);
 
-            star.setOnClickListener(v -> setRating(index + 1));
-            star.setColorFilter(Color.WHITE);
+            img.setOnClickListener(v -> setRating(index + 1));
+            img.setColorFilter(Color.WHITE);
             if(themeColors!=null){
                 //		--color19 - #fff Rating Button Background Color
 //		--color20 - #333 Rating Button Text Color
 //		--color21 - #ffc100 Rating Button selected bg
 //		--color22 - #333 Rating utton selected text color
-                star.setColorFilter(Color.parseColor(themeColors.getColor19()));
+                img.setColorFilter(Color.parseColor(themeColors.getColor19()));
             }
             getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -100,11 +105,11 @@ public class CustomRatingView extends LinearLayout {
                         }
                     LayoutParams params = new LayoutParams(width, width); // Adjust size here
                     params.setMargins(6, 8, 6, 8); // Spacing between icons
-                    star.setLayoutParams(params);
+                    img.setLayoutParams(params);
                 }
             });
-            addView(star);
-            stars[i] = star;
+            addView(img);
+            icon[i] = img;
         }
     }
 
@@ -112,15 +117,19 @@ public class CustomRatingView extends LinearLayout {
 
         currentRating = rating;
         for (int i = 0; i < iconCount; i++) {
+
+
             if (i < rating) {
-                stars[i].setImageDrawable(fullIcon);
+                icon[i].setImageDrawable(ratingType.equals(RatingType.emoji)?
+             filledIconList[i]
+            : fullIcon);
                 if(themeColors!=null){
                     //		--color21 - #ffc100 Rating Button selected bg
-                    stars[i].setColorFilter(Color.parseColor(themeColors.getColor21()));
+                    icon[i].setColorFilter(Color.parseColor(themeColors.getColor21()));
                 }
             } else {
-                stars[i].setImageDrawable(emptyIcon);
-                stars[i].setColorFilter(Color.parseColor(themeColors.getColor19()));
+                icon[i].setImageDrawable(emptyIcon);
+                icon[i].setColorFilter(Color.parseColor(themeColors.getColor19()));
             }
         }
         if(listener!=null){
