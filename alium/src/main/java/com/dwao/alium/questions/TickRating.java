@@ -19,6 +19,11 @@ class TickRating implements   RatingIconDrawable{
     }
 
     @Override
+    public Drawable[] getFilledIconList() {
+        return new Drawable[0];
+    }
+
+    @Override
     public Drawable getEmptyIcon() {
         return   ContextCompat.getDrawable(context, R.drawable.hugeicons_tick_double);
     }
