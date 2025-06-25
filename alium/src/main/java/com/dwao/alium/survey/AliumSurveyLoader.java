@@ -31,7 +31,7 @@ import com.dwao.alium.models.UrlMatch;
 import com.dwao.alium.network.VolleyService;
 import com.dwao.alium.utils.jsonhandlers.AliumJSONParser;
 import com.dwao.alium.utils.preferences.AliumPreferences;
-import com.google.gson.Gson;
+
 
 import org.json.JSONObject;
 
@@ -319,6 +319,7 @@ public class AliumSurveyLoader implements Observer {
                         }
                     //survey is not already running...
                    loadSurveyIfShouldBeLoaded(svs.get(i));
+                        return; // limits survey to one on each screen
                 }
             } catch (Exception e) {
                 Log.i("error", "inside catch block");

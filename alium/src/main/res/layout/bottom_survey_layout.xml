@@ -9,14 +9,25 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="10dp"
     android:layout_marginVertical="20dp"
-    android:paddingTop="25dp"
-    android:paddingBottom="0dp"
+
     android:id="@+id/dialog_layout"
     android:background="@drawable/dialog_bg"
     android:clipToPadding="true"
-
+    android:paddingTop="4dp"
     android:clipChildren="true"
     android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/close_dialog_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="0dp"
+        android:paddingEnd="4dp"
+        android:src="@drawable/ic_close"
+        android:visibility="visible" />
+
+
     <RelativeLayout
         android:paddingHorizontal="14dp"
         android:layout_width="match_parent"
@@ -24,37 +35,34 @@
         android:orientation="vertical"
         android:layout_marginBottom="0dp"
 
+        android:paddingBottom="14dp"
 
         >
+
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/question_container"
             android:layout_width="match_parent"
-            android:layout_marginBottom="15dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+
+            android:layout_marginBottom="14dp">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:textAlignment="center"
                 android:id="@+id/survey_question_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:paddingRight="2dp"
+                android:textAlignment="center"
                 android:textColor="@color/black"
-                android:textSize="18sp"
+                android:textSize="16sp"
 
-                app:layout_constraintEnd_toStartOf="@+id/close_dialog_btn"
+
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/close_dialog_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_close"
-                android:visibility="visible"
-                android:layout_marginStart="4dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 <!--        <androidx.appcompat.widget.AppCompatTextView-->
@@ -66,7 +74,7 @@
 <!--            android:text="This will help us improve your experience." />-->
 
         <RelativeLayout
-            android:layout_marginVertical="8dp"
+
             android:id="@+id/dialog_layout_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -80,7 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/dialog_layout_content"
-            android:layout_marginTop="8dp"
+
             android:background="@drawable/next_btn_bg"
             android:enabled="false"
             android:foregroundGravity="center_horizontal"
@@ -140,13 +148,13 @@
 <!--        android:textAlignment="center"-->
 <!--        android:layout_gravity="bottom"-->
 <!--        />-->
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:trackThickness="6dp"
-        android:layout_marginTop="30dp"
-        android:id="@+id/horizontal_bottom_progressbar"
-        app:trackCornerRadius="10dp"
-        app:showAnimationBehavior="outward"
-        />
+<!--    <com.google.android.material.progressindicator.LinearProgressIndicator-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:trackThickness="6dp"-->
+<!--        android:layout_marginTop="30dp"-->
+<!--        android:id="@+id/horizontal_bottom_progressbar"-->
+<!--        app:trackCornerRadius="10dp"-->
+<!--        app:showAnimationBehavior="outward"-->
+<!--        />-->
 </LinearLayout>
