@@ -16,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ import android.widget.RelativeLayout;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
@@ -55,10 +57,10 @@ public class SurveyDialog extends SurveyController {
     AppCompatButton nextQuestionBtn;
     AppCompatImageView closeDialogBtn;
     AppCompatTextView currentQuestion,improveExpTxt, poweredByText,poweredByValue;
-    LinearProgressIndicator bottomProgressBar;
+//    LinearProgressIndicator bottomProgressBar;
     RelativeLayout layout;
 
-
+    ConstraintLayout questionContainer;
    void cleanUp(){
        this.executableSurveySpecs=null;
        survey=null;
@@ -115,10 +117,10 @@ public class SurveyDialog extends SurveyController {
         dialog=new Dialog(context, androidx.appcompat.R.style.Theme_AppCompat_Dialog);
         dialog.setContentView(R.layout.bottom_survey_layout);
         layout= dialog.findViewById(R.id.dialog_layout_content);
-        ViewGroup questionContainer= dialog.findViewById(R.id.question_container);
+          questionContainer= dialog.findViewById(R.id.question_container);
         currentQuestion=dialog.findViewById(R.id.survey_question_text);
-        bottomProgressBar=dialog.findViewById(R.id.horizontal_bottom_progressbar);
-        bottomProgressBar.setMax(100*100);
+//        bottomProgressBar=dialog.findViewById(R.id.horizontal_bottom_progressbar);
+//        bottomProgressBar.setMax(100*100);
         nextQuestionBtn=dialog.findViewById(R.id.btn_next);
         closeDialogBtn = dialog.findViewById(R.id.close_dialog_btn);
         setCtaEnabled(nextQuestionBtn, true);
@@ -275,22 +277,22 @@ public class SurveyDialog extends SurveyController {
     }
 
 
-    private void updateProgressIndicator(){
-        Log.d("index", ""+currentIndx+" "+previousIndx);
-        //we subtract previous index to handle condition mapping scenario
-        int maxProgress = bottomProgressBar.getMax(); // e.g., 100
-        int totalQuestions = survey.getQuestions().size();
-        int step = maxProgress / totalQuestions-1;
-        int progress = step * (currentIndx - previousIndx);
-//        int progress=(10000/(survey.getQuestions().size()))*(currentIndx-previousIndx);
-        Log.d("progress", "progress"+progress);
-        ObjectAnimator animator=ObjectAnimator.ofInt(bottomProgressBar,"progress"
-        ,bottomProgressBar.getProgress(),(progress+bottomProgressBar.getProgress()));
-        animator.setDuration(200);
-        animator.setInterpolator(new LinearInterpolator());
-        animator.start();
-//        bottomProgressBar.setProgress(bottomProgressBar.getProgress()+progress);
-    }
+//    private void updateProgressIndicator(){
+//        Log.d("index", ""+currentIndx+" "+previousIndx);
+//        //we subtract previous index to handle condition mapping scenario
+//        int maxProgress = bottomProgressBar.getMax(); // e.g., 100
+//        int totalQuestions = survey.getQuestions().size();
+//        int step = maxProgress / totalQuestions-1;
+//        int progress = step * (currentIndx - previousIndx);
+////        int progress=(10000/(survey.getQuestions().size()))*(currentIndx-previousIndx);
+//        Log.d("progress", "progress"+progress);
+//        ObjectAnimator animator=ObjectAnimator.ofInt(bottomProgressBar,"progress"
+//        ,bottomProgressBar.getProgress(),(progress+bottomProgressBar.getProgress()));
+//        animator.setDuration(200);
+//        animator.setInterpolator(new LinearInterpolator());
+//        animator.start();
+////        bottomProgressBar.setProgress(bottomProgressBar.getProgress()+progress);
+//    }
     private void resetElementsForNextQuestion(){
         this.layout.removeAllViews();
         if(survey.getQuestions().get(currentIndx).getResponseType().equals("-1")
@@ -325,9 +327,9 @@ public class SurveyDialog extends SurveyController {
                 currentQuestion.setTextColor(color);
 
 //                improveExpTxt.setTextColor(color);
-                bottomProgressBar.getProgressDrawable().setColorFilter(
-                        color, android.graphics.PorterDuff.Mode.SRC_IN
-                );
+//                bottomProgressBar.getProgressDrawable().setColorFilter(
+//                        color, android.graphics.PorterDuff.Mode.SRC_IN
+//                );
 
             }
         }catch (Exception e){
@@ -337,10 +339,19 @@ public class SurveyDialog extends SurveyController {
     @Override
     protected void showCurrentQuestion( ) {
         super.showCurrentQuestion();
+        RelativeLayout.LayoutParams lp =(RelativeLayout.LayoutParams) layout.getLayoutParams();
+
+        int marginInPx = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 14, context.getResources().getDisplayMetrics()
+        );
+        lp.bottomMargin = marginInPx;
         if(currentIndx==0 && currentQuestionResponse.getResponseType().equals("0")){
             responseSubmitIndex = 2;
+           lp.bottomMargin=0;
         }
-        updateProgressIndicator();
+
+//        layout.setLayoutParams(lp);
+//        updateProgressIndicator();
         resetElementsForNextQuestion();
         Log.i("question", "going to next question " + currentIndx);
 

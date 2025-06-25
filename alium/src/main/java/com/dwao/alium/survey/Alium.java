@@ -15,8 +15,7 @@ import com.dwao.alium.models.TriggerRequest;
 import com.dwao.alium.network.VolleyService;
 import com.dwao.alium.utils.jsonhandlers.AliumJSONParser;
 import com.dwao.alium.utils.preferences.AliumPreferences;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+
 
 import org.json.JSONObject;
 

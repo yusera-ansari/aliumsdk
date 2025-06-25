@@ -99,7 +99,7 @@ public class CustomRatingView extends LinearLayout {
                     int parentwidth = getWidth();
                     float density= context.getResources().getDisplayMetrics().density;
                     int minimumSize = Math.round(48*density);
-                    int width = (parentwidth/5) - 12 *4 ;
+                    int width = (int)((parentwidth * 0.65 )/ 5  ) ;
                         if(width<minimumSize){
                             width=minimumSize;
                         }
