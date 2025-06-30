@@ -33,6 +33,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends Activity {
     JSONObject json=null;
@@ -48,8 +49,21 @@ public class MainActivity extends Activity {
     protected void onResume(){
         super.onResume();
         Log.d("OnResume", "resumed main activity");
-
-         Alium.trigger(this, new SurveyParameters("screen4"));
+            Map<String, String> params = new HashMap();
+            params.put("dim1", "mumbai");//city
+        params.put("dim2", "32");//age
+        params.put("dim3", "male");//gender
+        params.put("dim4", "IN");//country
+        params.put("dim5", "45678987654");//last login
+        params.put("dim6", "savings");//account type
+        params.put("dim7", "45678987");//customer id
+        params.put("dim8", "otp"); //authentication type
+        params.put("dim9", "opted_in");//consent for feedback
+        params.put("dim10", "BRCH0921MUM");//branch id
+        params.put("custEmail", "test@gmail.co");//branch id
+        params.put("custMobile", "9090909090");//branch id
+        params.put("custSystemId", "0jdu07");//systemId id
+         Alium.trigger(this, new SurveyParameters("screen4", params));
 //         Alium.stop("secondscreen");
 
 //          Alium.trigger(MainActivity.this, new SurveyParameters("firstscreen"));

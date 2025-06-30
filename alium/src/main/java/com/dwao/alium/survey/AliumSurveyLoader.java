@@ -28,6 +28,7 @@ import com.dwao.alium.models.Survey;
 import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.models.TypeOfSur;
 import com.dwao.alium.models.UrlMatch;
+import com.dwao.alium.network.CustomNetworkService;
 import com.dwao.alium.network.VolleyService;
 import com.dwao.alium.utils.jsonhandlers.AliumJSONParser;
 import com.dwao.alium.utils.preferences.AliumPreferences;
@@ -401,7 +402,7 @@ public class AliumSurveyLoader implements Observer {
         Log.d("loadSurvey", "loadSurvey THREAD: "+ Thread.currentThread().getName());
         String surURL=loadableSurveySpecs.uri.toString();
         if(threadShouldExecute) {
-            volleyService.callVolley(  surURL,
+            CustomNetworkService.getNetworkData(  surURL,
                     new LoadSurveyFromAPI(loadableSurveySpecs));
         }
     }

@@ -12,6 +12,7 @@ import com.dwao.alium.listeners.VolleyResponseListener;
 import com.dwao.alium.models.SurConf;
 import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.models.TriggerRequest;
+import com.dwao.alium.network.CustomNetworkService;
 import com.dwao.alium.network.VolleyService;
 import com.dwao.alium.utils.jsonhandlers.AliumJSONParser;
 import com.dwao.alium.utils.preferences.AliumPreferences;
@@ -106,7 +107,8 @@ public class Alium {
               }
           }catch (Exception e){
               Log.d("getConfig", e.toString());
-              volleyService.callVolley(  configURL,
+
+              CustomNetworkService.getNetworkData(  configURL,
                       new Alium.ConfigURLResponseListener());
           }
 

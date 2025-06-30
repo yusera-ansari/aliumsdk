@@ -1,6 +1,7 @@
 package com.dwao.alium.survey;
 
 
+import static android.view.View.INVISIBLE;
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
 import android.animation.ObjectAnimator;
@@ -15,6 +16,7 @@ import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -133,6 +135,7 @@ public class SurveyDialog extends SurveyController {
         addListenersToNextAndCloseBtn();
     }
     private void updateDialogUi(){
+
         GradientDrawable gradientDrawable=(GradientDrawable)  dialog
                 .findViewById(R.id.dialog_layout).getBackground();
         gradientDrawable.setCornerRadius((int)(5* Resources.getSystem().getDisplayMetrics().density));
@@ -152,13 +155,25 @@ public class SurveyDialog extends SurveyController {
         }
     }
     private void configureDialogWindow(){
+        Resources resources = context.getResources();
+        DisplayMetrics displayMetrics = resources.getDisplayMetrics();
+        int screenWidth = displayMetrics.widthPixels;
+
+
 //        dialog.setContentView(this.layoutView);
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        int maxWidthInPx =(int)TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                400f,
+                context.getResources().getDisplayMetrics()
+        );
+
+        dialog.getWindow().setLayout(Math.min(screenWidth, maxWidthInPx), ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(true);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         WindowManager.LayoutParams lp=dialog.getWindow().getAttributes();
-        lp.gravity= Gravity.BOTTOM;
+        lp.gravity= Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL;
         lp.horizontalMargin=0f;
         lp.verticalMargin=0.0f;
         lp.dimAmount=0.1f;
