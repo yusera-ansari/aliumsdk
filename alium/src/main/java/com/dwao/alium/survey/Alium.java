@@ -54,11 +54,9 @@ public class Alium {
      }
 
     public static void config(Application application,String url){
-
             if(instance==null){
                 synchronized (Alium.class){
                     if(instance==null){
-
                         instance=new Alium();
                         preferences= AliumPreferences.setInstance(application);
                     }
@@ -95,7 +93,6 @@ public class Alium {
     }
 
       void fetchConfigJson( ){
-
           isConfigFetching=true;
 //          String config = preferences.getConfig();
           String config = null;
@@ -108,7 +105,6 @@ public class Alium {
               }
           }catch (Exception e){
               Log.d("getConfig", e.toString());
-
               CustomNetworkService.getNetworkData(  configURL,
                       new Alium.ConfigURLResponseListener());
           }

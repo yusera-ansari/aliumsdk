@@ -64,14 +64,15 @@ public class MainActivity extends Activity {
         params.put("custMobile", "9090909090");//branch id
         params.put("custSystemId", "0jdu07");//systemId id
          Alium.trigger(this, new SurveyParameters("screen4", params));
-//         Alium.stop("secondscreen");
+//         Alium.stop("screen4");
 
 //          Alium.trigger(MainActivity.this, new SurveyParameters("firstscreen"));
 
 //        new Handler().postDelayed(new Runnable() {
 //          @Override
 //          public void run() {
-//              surveyLoader2= Alium.trigger(MainActivity.this, new SurveyParameters("firstscreen"));
+//              Alium.stop("screen4");
+////              surveyLoader2= Alium.trigger(MainActivity.this, new SurveyParameters("firstscreen"));
 //
 //          }
 //      }, 5000);
@@ -87,9 +88,6 @@ public class MainActivity extends Activity {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-//                surveyLoader.stop();
-//                surveyLoader2.stop();
                 startActivity(intent);
             }
         });

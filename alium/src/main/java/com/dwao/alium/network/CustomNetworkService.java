@@ -42,12 +42,13 @@ public class CustomNetworkService {
                   responseListener.onResponseReceived(new JSONObject(response));
 
               }catch (JSONException e){
-                  Log.e("getNetworkData","couldn't parse json..");
+                  Log.e("getNetworkData","couldn't parse json.."+e);
               }
            }
 
            @Override
            public void onError(Exception e) {
+            Log.e("Alium", "Netwrok request failed..."+ e.toString());
 
            }
        });
