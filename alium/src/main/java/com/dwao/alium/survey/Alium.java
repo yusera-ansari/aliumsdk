@@ -8,12 +8,13 @@ import android.util.Log;
 import androidx.fragment.app.Fragment;
 //import androidx.lifecycle.ProcessLifecycleOwner;
 
-import com.dwao.alium.listeners.VolleyResponseListener;
+import com.dwao.alium.listeners.ResponseListener;
+
 import com.dwao.alium.models.SurConf;
 import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.models.TriggerRequest;
 import com.dwao.alium.network.CustomNetworkService;
-import com.dwao.alium.network.VolleyService;
+
 import com.dwao.alium.utils.jsonhandlers.AliumJSONParser;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 
@@ -42,7 +43,7 @@ public class Alium {
      static boolean isAppInForeground(){
         return appState;
     }
-     private static VolleyService volleyService;
+
      private static String configURL;
      private SLQHandlerManager slqHandlerManager=new SLQHandlerManager();
      private static AliumPreferences preferences;
@@ -57,7 +58,7 @@ public class Alium {
             if(instance==null){
                 synchronized (Alium.class){
                     if(instance==null){
-                        volleyService=VolleyService.getInstance(application);
+
                         instance=new Alium();
                         preferences= AliumPreferences.setInstance(application);
                     }
@@ -145,7 +146,7 @@ public class Alium {
         initiateTrigger(fragment, parameters);
     }
 
-    private static class ConfigURLResponseListener implements VolleyResponseListener{
+    private static class ConfigURLResponseListener implements ResponseListener{
         @Override
         public void onResponseReceived(JSONObject jsonObject) {
 
