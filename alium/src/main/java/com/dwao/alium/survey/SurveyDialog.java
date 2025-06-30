@@ -475,6 +475,8 @@ public class SurveyDialog extends SurveyController {
         Map  params=new HashMap<>(surveyParameters.customerVariables);
 //        params.put("srvtpid", "6");
             params.put("surveyLoadId", uuid);
+
+            params.put("survey_path", surveyParameters.screenName);
 //        params.put("vstid", uuid);
 //        params.put("srvldid",uuid+"ppup"+ new Date().getTime()+"srv" );
 //        params.put("srvpt", surveyParameters.screenName);

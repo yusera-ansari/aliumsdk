@@ -1,17 +1,14 @@
 package com.dwao.alium.survey;
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
+
 import android.util.Log;
 
 import androidx.fragment.app.Fragment;
-//import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.dwao.alium.listeners.ResponseListener;
 
 import com.dwao.alium.models.SurConf;
-import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.models.TriggerRequest;
 import com.dwao.alium.network.CustomNetworkService;
 
@@ -21,12 +18,7 @@ import com.dwao.alium.utils.preferences.AliumPreferences;
 
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Queue;
 
 //main class
