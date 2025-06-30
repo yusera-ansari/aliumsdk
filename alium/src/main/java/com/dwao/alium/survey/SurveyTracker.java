@@ -8,6 +8,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.dwao.alium.network.CustomNetworkService;
 import com.dwao.alium.network.VolleyService;
 
 import java.util.Iterator;
@@ -36,7 +37,7 @@ public class SurveyTracker {
     public static void trackWithAlium(Context context,  Map<String, Object> parameters ) {
         try{
             VolleyService volleyService=  VolleyService.getInstance();
-            volleyService.postTrackRequest("https://demo.dwao.in/tracker", parameters);
+            CustomNetworkService.postTrackRequest("https://demo.dwao.in/tracker", parameters);
 //            volleyService.loadRequestWithVolley(  getUrl(context, parameters) );
 
         }catch(Exception e){
