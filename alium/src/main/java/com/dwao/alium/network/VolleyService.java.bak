@@ -13,7 +13,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.dwao.alium.listeners.VolleyResponseListener;
+import com.dwao.alium.listeners.ResponseListener;
+import com.dwao.alium.listeners.ResponseListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -114,7 +115,7 @@ Log.e("postTrack", error.toString());
         };
         queue.add(request);
     }
-   public  void callVolley(  String url, VolleyResponseListener volleyResponseListener){
+   public  void callVolley(  String url, ResponseListener responseListener){
        // Instantiate the RequestQueue.
          queue = Volley.newRequestQueue(context);
     Log.d("fetch-main", url);
@@ -126,7 +127,7 @@ Log.e("postTrack", error.toString());
                        Log.d("response-survey", response.toString());
 //                       try {
 //                           JSONObject jsonObject=new JSONObject(response);
-                           volleyResponseListener.onResponseReceived(response);
+                            responseListener.onResponseReceived(response);
 
 //                       } catch (JSONException e) {
 //                        Log.i("surveyResponseExc", e.toString());

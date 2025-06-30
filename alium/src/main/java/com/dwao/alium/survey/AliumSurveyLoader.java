@@ -18,7 +18,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import com.dwao.alium.frequencyManager.FrequencyManagerFactory;
 import com.dwao.alium.listeners.Observer;
-import com.dwao.alium.listeners.VolleyResponseListener;
+import com.dwao.alium.listeners.ResponseListener;
 import com.dwao.alium.models.App;
 import com.dwao.alium.models.CustomSurveyDetails;
 import com.dwao.alium.models.Srv;
@@ -29,7 +29,7 @@ import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.models.TypeOfSur;
 import com.dwao.alium.models.UrlMatch;
 import com.dwao.alium.network.CustomNetworkService;
-import com.dwao.alium.network.VolleyService;
+
 import com.dwao.alium.utils.jsonhandlers.AliumJSONParser;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 
@@ -65,7 +65,7 @@ public class AliumSurveyLoader implements Observer {
     private android.app.FragmentManager fm;
     private WeakReference<android.app.Fragment >fragment;
 
-    private static VolleyService volleyService=VolleyService.getInstance();
+
     private SurveyParameters surveyParameters;
     private final UUID ID=UUID.randomUUID();
     ExecutorService executorService;
@@ -410,9 +410,7 @@ public class AliumSurveyLoader implements Observer {
     @Override
     public synchronized void stop() { //stop means remove eevry fragment and destry loader object too
         threadShouldExecute=false;
-        if(volleyService.getSurveyQueue()!=null){
-            volleyService.getSurveyQueue().cancelAll(VolleyService.SURVEY_REQUEST_TAG);
-        }
+
         executorService.shutdownNow();
         if(fm!=null ){
             if(executingSurveys.size()>0){
@@ -434,7 +432,7 @@ public class AliumSurveyLoader implements Observer {
     }
 
 
-    class LoadSurveyFromAPI implements VolleyResponseListener{
+    class LoadSurveyFromAPI implements ResponseListener {
         LoadableSurveySpecs loadableSurveySpecs;
         private LoadSurveyFromAPI(){}
         public LoadSurveyFromAPI(LoadableSurveySpecs loadableSurveySpecs) {
@@ -453,7 +451,14 @@ public class AliumSurveyLoader implements Observer {
               if(threadShouldExecute) {
                   Log.d("run()", "threadShouldExecute called on: "+surveyParameters.screenName);
                   Log.d("run()", "threadShouldExecute THREAD: "+ Thread.currentThread().getName());
-                  loadSurveyFromDialogFragment(json, loadableSurveySpecs);
+             mainHandler.post(new Runnable() {
+                 @Override
+                 public void run() {
+                     Log.d("load()", "loadable: "+Thread.currentThread().getName());
+                     loadSurveyFromDialogFragment(json, loadableSurveySpecs);
+                 }
+             });
+
               }
 //          }
 //      });

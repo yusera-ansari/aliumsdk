@@ -1,16 +1,11 @@
 package com.dwao.alium.network;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.dwao.alium.listeners.NetworkCallback;
-import com.dwao.alium.listeners.VolleyResponseListener;
+import com.dwao.alium.listeners.ResponseListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,14 +32,15 @@ public class CustomNetworkService {
            }
        });
     }
-    public static void getNetworkData(  String url, VolleyResponseListener volleyResponseListener){
+    public static void getNetworkData(  String url, ResponseListener responseListener){
         Log.d("networkReq", "making network request to.."+url);
        CustomNetworkClient.get(url, new NetworkCallback() {
            @Override
            public void onSuccess(String response) {
               try{
-                  Log.d("response", "retrived json "+ response);
-                  volleyResponseListener.onResponseReceived(new JSONObject(response));
+                  Log.d("response", "retrived json "+ Thread.currentThread().getName() + response);
+                  responseListener.onResponseReceived(new JSONObject(response));
+
               }catch (JSONException e){
                   Log.e("getNetworkData","couldn't parse json..");
               }
