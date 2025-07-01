@@ -69,6 +69,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         outState.putSerializable("loadableSurveySpecs",
                 executableSurveySpecs.getLoadableSurveySpecs()
         );
+        Log.e("onSaveInstanceState",  " "+executableSurveySpecs.getLoadableSurveySpecs().currentIndex);
         outState.putBoolean("shouldUpdatePreferences", shouldUpdatePreferences);
         outState.putString("loaderId", loaderId);
     }
@@ -87,6 +88,8 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
             executableSurveySpecs=new ExecutableSurveySpecs(
                     (Survey)savedInstanceState.getSerializable("surveyJson")
                     , (LoadableSurveySpecs)savedInstanceState.getSerializable("loadableSurveySpecs"));
+            Log.e("savedInstanceState",  " "+executableSurveySpecs.getLoadableSurveySpecs().currentIndex);
+
             loaderId=savedInstanceState.getString("loaderId");
             if(loaderId!=null){
                 callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);

@@ -43,10 +43,13 @@ class SLQHandlerManager {
 //          if(isTriggerExecuting||configURL==null||isConfigFetching||triggerRequestQueue.isEmpty()){
 //              return;
 //          }
+          Log.d("exec nex","execute next trigger");
         if(isTriggerExecuting||triggerRequestQueue.isEmpty()){
+            Log.d("exec nex","execute next trigger "+isTriggerExecuting +" "+triggerRequestQueue.isEmpty());
             return;
         }
         isTriggerExecuting=true;
+          Log.d("exec nex","execute next trigger");
         TriggerRequest request= triggerRequestQueue.poll();
         if(pendingStops.contains(request.surveyParameters.screenName)){
 
@@ -64,7 +67,7 @@ class SLQHandlerManager {
 
               slqHandler.offer(request);
           }
-
+          Log.d("exec nex","execute next trigger completed");
         isTriggerExecuting=false;
         executeNextTrigger(triggerRequestQueue);
     }

@@ -94,6 +94,7 @@ public class SurveyDialog extends SurveyController {
         this.executableSurveySpecs=executableSurveySpecs;
         survey=executableSurveySpecs.survey;
         this.surveyParameters=surveyParameters;
+        Log.e("cuurentIndex","currentIndex: "+executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex() );
         currentIndx= executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex();
 
 

@@ -474,8 +474,11 @@ class AliumSurveyLoader implements Observer {
                 , loadableSurveySpecs);
 
         if(!checkIfSurveyAlreadyRunning(loadableSurveySpecs.key)){
-            if (activity != null) {
+            Log.e("instance", "Of fragment activity activity??");
+
+                Log.e("instance", "Of fragment activity not null...");
                 if (xfragment != null) {
+                    Log.e("instance", " xfragment!=null Of fragment activity");
                     xfm = xfragment.get().getChildFragmentManager();
                     if (!xfm.isStateSaved()) {
                         xfm.beginTransaction()
@@ -485,6 +488,7 @@ class AliumSurveyLoader implements Observer {
                                 .commit();
                     }
                 } else if (fragment != null) {
+                    Log.e("instance", "fragment != null Of fragment activity");
                     fm = fragment.get().getChildFragmentManager();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         if (!fm.isStateSaved()) {
@@ -502,19 +506,25 @@ class AliumSurveyLoader implements Observer {
                                 .commitAllowingStateLoss();
                     }
                 }
+            if (activity != null) {
                 if (activity.get() instanceof FragmentActivity) {
+                    Log.e("instance", "Of fragment activity");
                     xfm = ((FragmentActivity) activity.get()).getSupportFragmentManager();
                     if (!xfm.isStateSaved()) {
+                        Log.e("instance", "Of fragment activity begin transaction");
                         xfm.beginTransaction()
                                 .add(SurveyDialogFragment.newInstance(executableSurveySpecs,
                                                 surveyParameters, false, getLoaderId()),
                                         loadableSurveySpecs.key + "-" + surveyParameters.screenName)
                                 .commit();
                     }
+                    Log.e("instance", "Of fragment activity outside !xfm");
 
                 } else {
+                    Log.e("instance", "else Of fragment activity");
                     fm = activity.get().getFragmentManager();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        Log.e("instance", "Of else -1 fragment activity");
                         if (!fm.isStateSaved()) {
                             fm.beginTransaction()
                                     .add(LegacySurveyDialogFragment.newInstance(executableSurveySpecs,
@@ -522,6 +532,7 @@ class AliumSurveyLoader implements Observer {
                                     .commit();
                         }
                     } else {
+                        Log.e("instance", "else else Of fragment activity");
                         fm.beginTransaction()
                                 .add(LegacySurveyDialogFragment.newInstance(executableSurveySpecs,
                                         surveyParameters, false, getLoaderId()), loadableSurveySpecs.key + "-" + surveyParameters.screenName)
@@ -530,7 +541,8 @@ class AliumSurveyLoader implements Observer {
 
                 }
             }
-        }Log.d("loadDial()", "loadSurveyFromDialogFragment called on: "+surveyParameters.screenName);
+        }
+        Log.d("loadDial()", "loadSurveyFromDialogFragment called on: "+surveyParameters.screenName);
         Log.d("loadDial", "loadSurveyFromDialogFragmentTHREAD: "+ Thread.currentThread().getName());
         isSurveyFragmentLoading=false;
         executeNextSurvey();
