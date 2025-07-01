@@ -106,29 +106,39 @@ public class Alium {
     }
 
     private static void initiateTrigger(Object object,SurveyParameters parameters ){
-        if (configURL == null) {
-            Log.e("Alium", "Configuration URL not set. Call configure() method first.");
+        try{
+            Log.e("trigger", " check url initiate trigger");
+            if (configURL == null) {
+                Log.e("Alium", "Configuration URL not set. Call configure() method first.");
 //            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
-            return;
-        }
-        instance.triggerRequestQueue.offer(new TriggerRequest(object, parameters));
-        for(TriggerRequest request: instance.triggerRequestQueue){
+                return;
+            }
+            Log.e("trigger", "url not null...");
+            Log.d("initiates", "Thread is :"+ Thread.currentThread().getName());
+            instance.triggerRequestQueue.offer(new TriggerRequest(object, parameters));
             Log.d("Thread", "Thread is :"+ Thread.currentThread().getName());
-            Log.d("MyRequest", "request is not empty: "+request.surveyParameters.screenName);
-        }
+            for(TriggerRequest request: instance.triggerRequestQueue){
+                Log.d("Thread", "Thread is :"+ Thread.currentThread().getName());
+                Log.d("MyRequest", "request is not empty: "+request.surveyParameters.screenName);
+            }
 
-        if(surveyConfig==null && !isConfigFetching) {
-            instance.fetchConfigJson(  );
-        }else{
-            if(configURL==null||isConfigFetching ){return;}  instance.slqHandlerManager.executeNextTrigger(instance.triggerRequestQueue);
+            if(surveyConfig==null && !isConfigFetching) {
+                instance.fetchConfigJson(  );
+            }else{
+                if(configURL==null||isConfigFetching ){return;}  instance.slqHandlerManager.executeNextTrigger(instance.triggerRequestQueue);
+            }
+        }catch (Exception e){
+            Log.e("initiate", "request trigger: "+e);
         }
     }
     public static synchronized void trigger( Activity activity, SurveyParameters parameters){
+        Log.e("trigger", "initiate trigger activity");
        initiateTrigger(activity, parameters);
     }
 
     public static synchronized void trigger( Fragment fragment, SurveyParameters parameters){
-        initiateTrigger(fragment, parameters);
+        Log.e("trigger", "initiate trigger");
+         initiateTrigger(fragment, parameters);
 
     }
 
@@ -147,8 +157,11 @@ public class Alium {
                     surveyConfig= AliumJSONParser.getSurConfFromJSON(jsonObject);
                     preferences.storeConfig(jsonObject.toString());
                     isConfigFetching=false;
-                    if(configURL==null||isConfigFetching ){return;}  instance.slqHandlerManager.executeNextTrigger(instance.triggerRequestQueue);
-
+                    Log.d("ALium", "is config fetching...done");
+                    if(configURL==null||isConfigFetching ){return;}
+                    Log.d("ALium", "function didn't retrun");
+                    instance.slqHandlerManager.executeNextTrigger(instance.triggerRequestQueue);
+                    Log.d("ALium", "try completed");
                 }catch (Exception e){
                     Log.e("Alium","Alium"+ e);
                 }

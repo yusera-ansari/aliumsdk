@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.dwao.alium.survey.Alium;
 import com.dwao.alium.survey.SurveyParameters;
 import com.dwao.aliumandroidsdk.Config;
+import com.dwao.aliumandroidsdk.FirstFragment;
 import com.dwao.aliumandroidsdk.R;
 
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public class DashboardActivity extends AppCompatActivity {
         params.put("dim1", "alium_app"); //appName
         params.put("dim2", "mobile"); //surveyOn
         params.put("dim3", "android"); //os
-        Alium.trigger(this, new SurveyParameters("screen3"));
+//        Alium.trigger(this, new SurveyParameters("screen3"));
 //        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
 //        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
 //        Alium.trigger(this,  new SurveyParameters("secondscreen", params));
@@ -61,6 +62,11 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new FirstFragment())
+                .commit();
+
         next=findViewById(R.id.sec_next);
         Intent intent=new Intent(this, TestActivity.class);
         next.setOnClickListener(new View.OnClickListener() {

@@ -69,7 +69,7 @@ public class SLQHandler {
         }
 
     private synchronized void executeNextLoader(){
-
+        Log.d("exec nex","execute next trigger executeNextLoader");
 //            if(currentLoader!=null){
 //                Log.d("CURRENT", "Current LOADER is not NULL");
 //                loadedQueue.offer(currentLoader); //it should be added to loaded-queue
