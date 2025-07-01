@@ -2,6 +2,8 @@ package com.dwao.alium.survey;
 import android.app.Activity;
 import android.app.Application;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.fragment.app.Fragment;
@@ -137,16 +139,22 @@ public class Alium {
     private static class ConfigURLResponseListener implements ResponseListener{
         @Override
         public void onResponseReceived(JSONObject jsonObject) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("Alium", "on response received" + Thread.currentThread().getName());
+                try{
+                    surveyConfig= AliumJSONParser.getSurConfFromJSON(jsonObject);
+                    preferences.storeConfig(jsonObject.toString());
+                    isConfigFetching=false;
+                    if(configURL==null||isConfigFetching ){return;}  instance.slqHandlerManager.executeNextTrigger(instance.triggerRequestQueue);
 
-         try{
-             surveyConfig= AliumJSONParser.getSurConfFromJSON(jsonObject);
-             preferences.storeConfig(jsonObject.toString());
-             isConfigFetching=false;
-             if(configURL==null||isConfigFetching ){return;}  instance.slqHandlerManager.executeNextTrigger(instance.triggerRequestQueue);
+                }catch (Exception e){
+                    Log.e("Alium","Alium"+ e);
+                }
+            }
+        });
 
-         }catch (Exception e){
-             Log.e("ConfigURLResponseList",e.toString());
-         }
            }
      }
 
