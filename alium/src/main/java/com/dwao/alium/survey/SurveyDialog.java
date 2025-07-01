@@ -44,7 +44,7 @@ import com.dwao.alium.questions.OpinionScaleQuesRenderer;
 import com.dwao.alium.questions.QuestionRenderer;
 import com.dwao.alium.questions.RadioQuestionRenderer;
 import com.dwao.alium.questions.RatingQuestionRenderer;
-import com.google.android.material.progressindicator.LinearProgressIndicator;
+
 
 import org.json.JSONException;
 
@@ -473,19 +473,13 @@ public class SurveyDialog extends SurveyController {
     @Override
     protected Map<String, Object>  generateTrackingParameters(){
         Map  params=new HashMap<>(surveyParameters.customerVariables);
-//        params.put("srvtpid", "6");
             params.put("surveyLoadId", uuid);
 
             params.put("surveyPath", surveyParameters.screenName);
-//        params.put("vstid", uuid);
-//        params.put("srvldid",uuid+"ppup"+ new Date().getTime()+"srv" );
-//        params.put("srvpt", surveyParameters.screenName);
-//        params.put("ran",""+new Date().getTime() );
-//        params.put("custSystemId", "NA");
+
         params.put("userId", "");
         params.put("custId", aliumPreferences.getCustomerId());
-//        params.put("custEmail", "NA");
-//        params.put("custMobile", "NA");
+
         params.put("eventType", "question response");
         params.put("language", "1");
         params.put("surveyType", 7);
@@ -495,7 +489,6 @@ public class SurveyDialog extends SurveyController {
         }catch (Exception e){
             Log.e("Generate Params Map", "Couldn't get srvid/orgId");
         }
-//        Log.d("MAP of MAP", params.toString());
         return params;
     }
     @Override
@@ -503,27 +496,5 @@ public class SurveyDialog extends SurveyController {
         super.submitSurvey();
         dialog.dismiss();
         cleanUp();
-//        Handler handler = new Handler();
-//        Runnable runnable = new Runnable() {
-//            @Override
-//            public void run() {
-////                Alium.removeFromActiveSurveyList(SurveyDialog.this);
-//
-//                dialog.dismiss();
-//                cleanUp();
-//
-////                ((AliumSurveyActivity)context).removeFromActiveSurveyList(SurveyDialog.this);
-//
-//            }
-//        };
-
-//        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-//            @Override
-//            public void onDismiss(DialogInterface dialog) {
-//                handler.removeCallbacks(runnable);
-//            }
-//        });
-//        handler.postDelayed(runnable, 500);
-
     }
 }

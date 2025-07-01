@@ -49,7 +49,7 @@ class SLQHandlerManager {
         isTriggerExecuting=true;
         TriggerRequest request= triggerRequestQueue.poll();
         if(pendingStops.contains(request.surveyParameters.screenName)){
-            Log.d("stop", "returning as a stop request was made earlier...");
+
             pendingStops.remove(request.surveyParameters.screenName);
 
 
@@ -57,8 +57,6 @@ class SLQHandlerManager {
          else {
               SLQHandler slqHandler = surveyExecutingMap.get(request.surveyParameters.screenName);
               if (slqHandler == null) {
-                  Log.d("TRIGGER", "CALLING FROM ELSE-BLOCK!! " + request.surveyParameters.screenName);
-                  Log.d("THREAD", Thread.currentThread().getName());
                   slqHandler = new SLQHandler(request.surveyParameters.screenName);
                   surveyExecutingMap.put(request.surveyParameters.screenName, slqHandler);
               }
@@ -71,35 +69,34 @@ class SLQHandlerManager {
         executeNextTrigger(triggerRequestQueue);
     }
     public void stop(String screenName){
-          Log.d("stop", "handler manager called stop");
         SLQHandler execSurLoaderDM= surveyExecutingMap.get(screenName);
         if(execSurLoaderDM!=null ){
-            Log.d("stop", "handler manager called stop- is not null");
+
             execSurLoaderDM.stop();
         }else{
             pendingStops.add(screenName);
         }
     }
-      synchronized void updateExecLoaderData(String id, String screenName){
-        SLQHandler execSurLoaderDM= surveyExecutingMap.get(screenName);
-        if(execSurLoaderDM!=null){ //should try with iterator
-            Queue<AliumSurveyLoader> loadedQueue=execSurLoaderDM.loadedQueue;
-            if(!loadedQueue.isEmpty()){
-                Log.d("LoadedQueue", "Loaded queue is mot empty we will update it!");
-                Iterator<AliumSurveyLoader> iterator=loadedQueue.iterator();
-                while( iterator.hasNext()) {
-                    AliumSurveyLoader loader = iterator.next();
-                    Log.d("Loaded-", "loaded Loader: "+loader);
-                    if(loader.getLoaderId().equals(id)){
-                        Log.d("Loaded-", "removing it loaded Loader: "+loader);
-                        loader.callback.onQuitLoader(loader);
-                        iterator.remove();
-
-                    }
-                }
-                Log.d("LOadd"," loaded queue: "+loadedQueue+" "+execSurLoaderDM.aliumSurveyLoaderQueue);
-            }
-        }
-    }
+//      synchronized void updateExecLoaderData(String id, String screenName){
+//        SLQHandler execSurLoaderDM= surveyExecutingMap.get(screenName);
+//        if(execSurLoaderDM!=null){ //should try with iterator
+//            Queue<AliumSurveyLoader> loadedQueue=execSurLoaderDM.loadedQueue;
+//            if(!loadedQueue.isEmpty()){
+//                Log.d("LoadedQueue", "Loaded queue is mot empty we will update it!");
+//                Iterator<AliumSurveyLoader> iterator=loadedQueue.iterator();
+//                while( iterator.hasNext()) {
+//                    AliumSurveyLoader loader = iterator.next();
+//                    Log.d("Loaded-", "loaded Loader: "+loader);
+//                    if(loader.getLoaderId().equals(id)){
+//                        Log.d("Loaded-", "removing it loaded Loader: "+loader);
+//                        loader.callback.onQuitLoader(loader);
+//                        iterator.remove();
+//
+//                    }
+//                }
+//                Log.d("LOadd"," loaded queue: "+loadedQueue+" "+execSurLoaderDM.aliumSurveyLoaderQueue);
+//            }
+//        }
+//    }
 
 }

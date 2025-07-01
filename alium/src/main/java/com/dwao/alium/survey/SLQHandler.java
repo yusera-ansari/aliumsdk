@@ -34,44 +34,42 @@ public class SLQHandler {
                                     new AliumSurveyLoader.Callback() {
                                         @Override
                                         public synchronized void onAliumLoaderExcecuted() {
+                                            //a loader has finished its tasks
                                             isAliumLoaderExecuting=false;
                                             executeNextLoader();
                                         }
 
                                         @Override
                                         public synchronized void onQuitLoader(AliumSurveyLoader loader) {
-//                                            if(currentLoader !=null && currentLoader.getLoaderId().equals(loader.getLoaderId())){
-                                                if(!loadedQueue.isEmpty()){
-                                                    Log.d("LoadedQueue", "Loaded queue is mot empty we will update it!");
+                                            //loader quit : run cleanup
+                                            if(!loadedQueue.isEmpty()){
                                                     Iterator<AliumSurveyLoader> iterator=loadedQueue.iterator();
                                                     while( iterator.hasNext()) {
                                                         AliumSurveyLoader loadertmp = iterator.next();
-                                                        Log.d("Loaded-", "loaded Loader: "+loadertmp);
                                                         if(loadertmp.getLoaderId().equals(loader.getLoaderId())){
-                                                            Log.d("Loaded-", "removing it loaded Loader: "+loader);
 //                                                            loader.callback.onQuitLoader(loader);
                                                             iterator.remove();
-
                                                         }
                                                     }
                                                 }
                                                 isAliumLoaderExecuting=false;
                                                 currentLoader=null;
 
-//                                            }
                                         }
                                     });
+                            //create instance will retrun a loader to be added to the queue
+                            //only move forward if its not null
                             if(loader!=null ) {
                                 //limiting the loader to one:-  && aliumSurveyLoaderQueue.size()==0 && loadedQueue.size()==0
                                 aliumSurveyLoaderQueue.add(loader);
 
                             }
+                            //always execute next
                             executeNextLoader();
         }
 
     private synchronized void executeNextLoader(){
-            Log.d("ExecNLoader", "loader list for: "+screenName+ " conatins: loadedQueue"+loadedQueue
-            +" loading:  "+aliumSurveyLoaderQueue);
+
 //            if(currentLoader!=null){
 //                Log.d("CURRENT", "Current LOADER is not NULL");
 //                loadedQueue.offer(currentLoader); //it should be added to loaded-queue
@@ -80,11 +78,8 @@ public class SLQHandler {
 
             if(aliumSurveyLoaderQueue.isEmpty()||isAliumLoaderExecuting){
                 if(aliumSurveyLoaderQueue.isEmpty()){
-                    Log.d("ISEMPTY", "ALIUM SURVEY lOSADER Queue is empty");
                     isAliumLoaderExecuting=false; //reset the value
-                    Log.d("Loader", "loading queue empty: loaded queue: "+loadedQueue);
                 }
-                Log.d("isAliumLoaderExecuting", "ALIUM SURVEY lOSADER Queue isAliumLoaderExecuting " +isAliumLoaderExecuting);
                 return;
             }
 

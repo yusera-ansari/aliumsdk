@@ -50,14 +50,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import androidx.lifecycle.ProcessLifecycleOwner;
-public class AliumSurveyLoader implements Observer {
+class AliumSurveyLoader implements Observer {
     private Queue<LoadableSurveySpecs> loadableSurveySpecsQueue=new LinkedList<>();
-    private boolean activityInstanceCreated=false;
     private boolean isSurveyFragmentLoading=false;
     private AliumPreferences aliumPreferences;
 
-//    private  Context context;
-    public SurConf surveyConfig=Alium.surveyConfig;
+
+
     private volatile boolean threadShouldExecute=true;
     private WeakReference<Activity> activity;
     private WeakReference<Fragment> xfragment;
@@ -68,8 +67,8 @@ public class AliumSurveyLoader implements Observer {
 
     private SurveyParameters surveyParameters;
     private final UUID ID=UUID.randomUUID();
-    ExecutorService executorService;
-    Handler mainHandler;
+    private ExecutorService executorService;
+    private Handler mainHandler;
     Callback callback;
     private Set<String> executingSurveys=new HashSet<>();
 
@@ -121,7 +120,8 @@ public class AliumSurveyLoader implements Observer {
     public static AliumSurveyLoader createInstance(Object obj,SurveyParameters surveyParameters,
                                                     Callback callback){
         AliumSurveyLoader instance;
-        if(obj instanceof Fragment){
+        //convert back to frag/activity
+        if(obj instanceof Fragment){ //androidx
           instance=   new AliumSurveyLoader((Fragment) obj, surveyParameters);
         }else if(obj instanceof android.app.Fragment){
             instance= new AliumSurveyLoader((android.app.Fragment)obj, surveyParameters);
@@ -133,9 +133,7 @@ public class AliumSurveyLoader implements Observer {
 
         List<SurInfo> svs=Alium.surveyConfig.getSvs();
        for(int i=0; i<svs.size(); i++){
-
             try {
-
                 String screenName = svs.get(i).getTps().getApp().getUm().getU();
                 if (surveyParameters.screenName.equals(screenName)){
                     //check if its already running
@@ -174,26 +172,22 @@ public class AliumSurveyLoader implements Observer {
                 }
 
             } catch (Exception e) {
-                Log.i("error", "inside catch block");
+
                 e.printStackTrace();
                 instance= null;
 
             }
         }
-        Log.d("createLoader", "LOADER being returned is: "+instance);
 
-     return instance;
+     return instance; //return final instance to the queue
     }
 
     private boolean checkIfSurveyAlreadyRunning(String key){
-        Log.d("checkIfAlready", "checkIfSurveyAlreadyRunning called on: "+key);
-        Log.d("checkIfAlready", "checkIfSurveyAlreadyRunning THREAD: "+ Thread.currentThread().getName());
-        if(xfragment!=null){
+         if(xfragment!=null){
             xfm=xfragment.get().getChildFragmentManager();
             Fragment fragment= xfm.findFragmentByTag(key+"-"+surveyParameters.screenName);
             if(fragment!=null){
                surveyDialogCallback.onStop(key);
-
                 return true;
             }
         }

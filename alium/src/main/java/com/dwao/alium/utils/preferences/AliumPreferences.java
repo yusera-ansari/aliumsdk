@@ -23,7 +23,7 @@ public class AliumPreferences {
     private SharedPreferences.Editor editor;
     private SharedPreferences aliumSharedPreferences;
 
-    private Context context;
+//    private Context context;
     public SharedPreferences getAliumSharedPreferences() {
         return aliumSharedPreferences;
     }
