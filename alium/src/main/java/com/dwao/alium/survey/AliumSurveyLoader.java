@@ -233,7 +233,8 @@ class AliumSurveyLoader implements Observer {
     }
     public AliumSurveyLoader(Fragment xfragment,SurveyParameters surveyParameters){
         this.surveyParameters=surveyParameters;
-
+        this.executorService= Executors.newSingleThreadExecutor();
+        this.mainHandler=new Handler(Looper.getMainLooper());
         this.xfragment=new WeakReference<>(xfragment);
         aliumPreferences= AliumPreferences.getInstance( );
         if(aliumPreferences.getCustomerId().isEmpty()){
@@ -242,7 +243,8 @@ class AliumSurveyLoader implements Observer {
     }
     public AliumSurveyLoader(android.app.Fragment fragment,SurveyParameters surveyParameters){
         this.surveyParameters=surveyParameters;
-
+        this.executorService= Executors.newSingleThreadExecutor();
+        this.mainHandler=new Handler(Looper.getMainLooper());
         this.fragment=new WeakReference<>(fragment);
         aliumPreferences= AliumPreferences.getInstance( );
         if(aliumPreferences.getCustomerId().isEmpty()){
