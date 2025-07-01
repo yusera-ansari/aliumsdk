@@ -53,8 +53,7 @@ publishing {
     }
 }
 dependencies {
-    implementation libs.activity
-    implementation libs.lifecycle.process
+
 
 
 //    implementation libs.appcompat
