@@ -49,7 +49,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import androidx.lifecycle.ProcessLifecycleOwner;
+
 class AliumSurveyLoader implements Observer {
     private Queue<LoadableSurveySpecs> loadableSurveySpecsQueue=new LinkedList<>();
     private boolean isSurveyFragmentLoading=false;
