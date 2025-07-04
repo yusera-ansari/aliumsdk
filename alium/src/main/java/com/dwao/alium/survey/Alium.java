@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.dwao.alium.listeners.ResponseListener;
 
@@ -135,16 +136,21 @@ public class Alium {
         Log.e("trigger", "initiate trigger activity");
        initiateTrigger(activity, parameters);
     }
+//    public static synchronized void trigger(FragmentActivity activity, SurveyParameters parameters){
+//        Log.e("trigger", "initiate trigger activity");
+//        initiateTrigger(activity, parameters);
+//    }
 
-    public static synchronized void trigger( Fragment fragment, SurveyParameters parameters){
-        Log.e("trigger", "initiate trigger");
-         initiateTrigger(fragment, parameters);
 
-    }
-
-    public static synchronized void trigger(android.app.Fragment fragment, SurveyParameters parameters){
-        initiateTrigger(fragment, parameters);
-    }
+//    public static synchronized void trigger( Fragment fragment, SurveyParameters parameters){
+//        Log.e("trigger", "initiate trigger");
+//         initiateTrigger(fragment, parameters);
+//
+//    }
+//
+//    public static synchronized void trigger(android.app.Fragment fragment, SurveyParameters parameters){
+//        initiateTrigger(fragment, parameters);
+//    }
 
     private static class ConfigURLResponseListener implements ResponseListener{
         @Override

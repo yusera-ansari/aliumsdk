@@ -60,7 +60,8 @@ public class FirstFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        Alium.trigger(this, new SurveyParameters("screen3"));
+        Log.e("FIRST", "first frsgment created");
+        Alium.trigger(getActivity(), new SurveyParameters("screen4"));
 
     }
 
