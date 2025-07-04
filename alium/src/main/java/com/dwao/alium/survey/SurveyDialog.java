@@ -124,16 +124,11 @@ public class SurveyDialog extends SurveyController {
         layout= dialog.findViewById(R.id.dialog_layout_content);
 
         currentQuestion=dialog.findViewById(R.id.survey_question_text);
-//        bottomProgressBar=dialog.findViewById(R.id.horizontal_bottom_progressbar);
-//        bottomProgressBar.setMax(100*100);
+
         nextQuestionBtn=dialog.findViewById(R.id.btn_next);
         closeDialogBtn = dialog.findViewById(R.id.close_dialog_btn);
         setCtaEnabled(nextQuestionBtn, true);
 
-//        poweredByText=dialog.findViewById(R.id.powered_by_text);
-//        poweredByValue=dialog.findViewById(R.id.powered_by_value);
-//        improveExpTxt=dialog.findViewById
-//                (R.id.help_improve_experience_textview);
         applySurveyUiColorScheme();
         addListenersToNextAndCloseBtn();
     }
@@ -148,10 +143,6 @@ public class SurveyDialog extends SurveyController {
             if(survey.getSurveyInfo().getThemeColors()!=null) {
                 gradientDrawable.setColor(
                         Color.parseColor(survey.getSurveyInfo().getThemeColors().getColor1()));
-
-//                    gradientDrawable.setStroke((int) (2 * Resources.getSystem()
-//                                    .getDisplayMetrics().density),
-//                            Color.parseColor(survey.getSurveyInfo().getThemeColors().getColor2()));
             }
         }catch (Exception e){
             Log.e("surveyUI", e.toString());
@@ -161,10 +152,6 @@ public class SurveyDialog extends SurveyController {
         Resources resources = context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         int screenWidth = displayMetrics.widthPixels;
-
-
-//        dialog.setContentView(this.layoutView);
-
         int maxWidthInPx =(int)TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 400f,
@@ -188,19 +175,17 @@ public class SurveyDialog extends SurveyController {
             @Override
             public void onClick(View view) {
                 Log.d("Alium-indx", ""+currentIndx);
-//                setCtaEnabled(nextQuestionBtn, false);
-//
+
+
                 handleNextQuestion();
             }
         });
         closeDialogBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Alium.removeFromActiveSurveyList(SurveyDialog.this);
 
                 submitSurvey();
 
-//                ((AliumSurveyActivity)context).removeFromActiveSurveyList(SurveyDialog.this);
 
             }
         });
@@ -238,7 +223,6 @@ public class SurveyDialog extends SurveyController {
 
             //what else to do ?? if not show thankyou
 
-//            showThankYouAndDismiss();
 
         }catch(Exception e){
             Log.d("nextQuest",e.toString()+" "+currentIndx+" "+survey.getQuestions().size());
@@ -248,7 +232,6 @@ public class SurveyDialog extends SurveyController {
 
     private void clearDialogForThankYouLayout(){
         currentQuestion.setVisibility(View.GONE);
-//        improveExpTxt.setVisibility(View.GONE);
         nextQuestionBtn.setVisibility(View.GONE);
     }
     private void showThankYou() {
@@ -264,7 +247,6 @@ public class SurveyDialog extends SurveyController {
                         DrawableCompat.wrap(completedAnimation.getDrawable()),
                         color
                 );
-//                        completedAnimation.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
         }
         thankYouMsg.setText(loadableSurveySpecs.thankYouMsg);
         AppCompatImageView imageView=thankyou.findViewById(R.id.completed_anim_container)
@@ -288,29 +270,10 @@ public class SurveyDialog extends SurveyController {
 
         }
     }
-    private void showThankYouAndDismiss() throws JSONException {
-        clearDialogForThankYouLayout();
-        showThankYou();
-        submitSurvey();
-    }
 
 
-//    private void updateProgressIndicator(){
-//        Log.d("index", ""+currentIndx+" "+previousIndx);
-//        //we subtract previous index to handle condition mapping scenario
-//        int maxProgress = bottomProgressBar.getMax(); // e.g., 100
-//        int totalQuestions = survey.getQuestions().size();
-//        int step = maxProgress / totalQuestions-1;
-//        int progress = step * (currentIndx - previousIndx);
-////        int progress=(10000/(survey.getQuestions().size()))*(currentIndx-previousIndx);
-//        Log.d("progress", "progress"+progress);
-//        ObjectAnimator animator=ObjectAnimator.ofInt(bottomProgressBar,"progress"
-//        ,bottomProgressBar.getProgress(),(progress+bottomProgressBar.getProgress()));
-//        animator.setDuration(200);
-//        animator.setInterpolator(new LinearInterpolator());
-//        animator.start();
-////        bottomProgressBar.setProgress(bottomProgressBar.getProgress()+progress);
-//    }
+
+
     private void resetElementsForNextQuestion(){
         this.layout.removeAllViews();
         if(survey.getQuestions().get(currentIndx).getResponseType().equals("-1")
@@ -332,7 +295,7 @@ lp.gravity = Gravity.CENTER_HORIZONTAL;
             lp.gravity = Gravity.END;
             nextQuestionBtn.setLayoutParams(lp);
               }
-//        updateProgressIndicator();
+
     }
     private void applySurveyUiColorScheme(){
         try{
@@ -343,10 +306,7 @@ lp.gravity = Gravity.CENTER_HORIZONTAL;
                 int color=Color.parseColor(survey.getSurveyInfo().getThemeColors().getColor2());
                 currentQuestion.setTextColor(color);
 
-//                improveExpTxt.setTextColor(color);
-//                bottomProgressBar.getProgressDrawable().setColorFilter(
-//                        color, android.graphics.PorterDuff.Mode.SRC_IN
-//                );
+
 
             }
         }catch (Exception e){
@@ -373,8 +333,8 @@ lp.gravity = Gravity.CENTER_HORIZONTAL;
            lp.bottomMargin=0;
         }
 
-//        layout.setLayoutParams(lp);
-//        updateProgressIndicator();
+        layout.setLayoutParams(lp);
+
         resetElementsForNextQuestion();
         Log.i("question", "going to next question " + currentIndx);
 

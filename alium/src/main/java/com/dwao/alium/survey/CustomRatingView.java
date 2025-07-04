@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -97,13 +98,15 @@ public class CustomRatingView extends LinearLayout {
                 public void onGlobalLayout() {
                     getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     int parentwidth = getWidth();
-                    float density= context.getResources().getDisplayMetrics().density;
-                    int minimumSize = Math.round(48*density);
-                    int width = (int)((parentwidth * 0.65 )/ 5  ) ;
-                        if(width<minimumSize){
-                            width=minimumSize;
+
+                    int minimumSize =((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                            28,context.getResources().getDisplayMetrics() ));
+                    int size = (int)((parentwidth * 0.65 )/ 5 ) ;
+
+                        if(size<minimumSize){
+                            size=minimumSize;
                         }
-                    LayoutParams params = new LayoutParams(width, width); // Adjust size here
+                    LayoutParams params = new LayoutParams(size, size); // Adjust size here
                     params.setMargins(6, 8, 6, 8); // Spacing between icons
                     img.setLayoutParams(params);
                 }
