@@ -64,7 +64,7 @@ public class DashboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dashboard);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, new FirstFragment())
+                .add(R.id.fragment_container, new FirstFragment())
                 .commit();
 
         next=findViewById(R.id.sec_next);

@@ -46,26 +46,29 @@ class SLQHandlerManager {
           Log.d("exec nex","execute next trigger");
         if(isTriggerExecuting||triggerRequestQueue.isEmpty()){
             Log.d("exec nex","execute next trigger "+isTriggerExecuting +" "+triggerRequestQueue.isEmpty());
+            if(triggerRequestQueue.isEmpty()){
+                isTriggerExecuting=false;
+            }
             return;
         }
         isTriggerExecuting=true;
-          Log.d("exec nex","execute next trigger");
+        Log.d("exec nex","execute next trigger");
         TriggerRequest request= triggerRequestQueue.poll();
-        if(pendingStops.contains(request.surveyParameters.screenName)){
-
-            pendingStops.remove(request.surveyParameters.screenName);
 
 
-        }
-         else {
-              SLQHandler slqHandler = surveyExecutingMap.get(request.surveyParameters.screenName);
-              if (slqHandler == null) {
-                  slqHandler = new SLQHandler(request.surveyParameters.screenName);
-                  surveyExecutingMap.put(request.surveyParameters.screenName, slqHandler);
-              }
+        if (request != null){
+            if (pendingStops.contains(request.surveyParameters.screenName)) {
+                      pendingStops.remove(request.surveyParameters.screenName);
+                  }
 
+                      SLQHandler slqHandler = surveyExecutingMap.get(request.surveyParameters.screenName);
+                      if (slqHandler == null) {
+                          slqHandler = new SLQHandler(request.surveyParameters.screenName);
+                          surveyExecutingMap.put(request.surveyParameters.screenName, slqHandler);
+                      }
 
-              slqHandler.offer(request);
+                      slqHandler.offer(request);
+
           }
           Log.d("exec nex","execute next trigger completed");
         isTriggerExecuting=false;
