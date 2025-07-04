@@ -4,7 +4,7 @@
     android:theme="@style/Theme.AppCompat.Light.NoActionBar"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginBottom="20dp"
+    android:layout_marginBottom="10dp"
     android:layout_width="match_parent"
     android:scrollbars="none"
     android:layout_height="wrap_content"
@@ -15,14 +15,14 @@
 
     android:layout_height="wrap_content"
 
-    android:layout_marginHorizontal="5dp"
+    android:layout_marginHorizontal="4dp"
     android:paddingHorizontal="10dp"
     android:id="@+id/dialog_layout"
     android:background="@drawable/dialog_bg"
     android:clipToPadding="true"
     android:paddingTop="10dp"
     android:clipChildren="true"
-    android:paddingBottom="10dp"
+    android:paddingBottom="14dp"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -50,7 +50,7 @@
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                android:layout_marginBottom="14dp"
+                android:layout_marginBottom="16dp"
 
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
