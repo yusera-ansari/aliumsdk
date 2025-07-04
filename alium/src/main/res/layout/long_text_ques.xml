@@ -22,9 +22,10 @@
         android:gravity="center_horizontal"
         app:boxStrokeWidthFocused="0dp"
         app:counterMaxLength="280"
+
         app:counterOverflowTextAppearance="@color/black"
         android:padding="5dp"
-        app:counterEnabled="true"
+        app:counterEnabled="false"
        app:hintEnabled="false"
         app:boxStrokeColor="@color/white"
         android:background="@drawable/text_input_layout_bg"
