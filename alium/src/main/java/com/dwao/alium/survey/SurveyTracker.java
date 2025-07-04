@@ -36,7 +36,6 @@ public class SurveyTracker {
     }
     public static void trackWithAlium(Context context,  Map<String, Object> parameters ) {
         try{
-
             CustomNetworkService.postTrackRequest("https://demo.dwao.in/tracker", parameters);
 //            volleyService.loadRequestWithVolley(  getUrl(context, parameters) );
 

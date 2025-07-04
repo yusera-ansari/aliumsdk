@@ -44,11 +44,15 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
     private void updateResponseString(){
         String resp="";
         for(int i=0; i< selectedItems.size(); i++){
+            Log.e("slected", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
             if(i==selectedItems.size()-1){
+                Log.e("slected2", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
                 resp+= checkBoxList.get(selectedItems.get(i));
                 break;
             }
+            Log.e("slected3", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
            resp+= checkBoxList.get(selectedItems.get(i))+",";
+           Log.e("resp", "resp: "+ resp);
         }
         currentQuestionResponse.setQuestionResponse(resp);
         Log.d("response changed", currentQuestionResponse.getQuestionResponse());
@@ -60,8 +64,9 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
       }else {
           this.selectedItems.remove(Integer.valueOf(pos));
       }
+
+        notifyItemChanged(pos);
         updateResponseString();
-        notifyDataSetChanged();
     }
     @NonNull
     @Override
@@ -94,6 +99,10 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
                Log.e("surveyUICheckBox", e.toString());
            }
         }
+        // Remove listener temporarily
+//        When notifyItemChanged(pos) is called, it triggers
+//        onBindViewHolder(), which includes setChecked(). This in turn would trigger OnCheckedChangeListener, causing your logic to re-fire unintentionally — potentially leading to a mismatch between UI and selectedItems.
+        holder.checkBox.setOnCheckedChangeListener(null);
         holder.checkBox.setChecked(selectedItems.contains(position));
 //    holder.checkBox.setButtonDrawable(R.drawable.ic_check_circle);
         Log.d("pos"+position, "pos: "+checkBoxList.get(position));
