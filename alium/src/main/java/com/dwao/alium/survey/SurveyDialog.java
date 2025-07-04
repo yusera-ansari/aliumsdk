@@ -2,6 +2,7 @@ package com.dwao.alium.survey;
 
 
 import static android.view.View.INVISIBLE;
+import static com.dwao.alium.utils.DeviceInfo.getUserAgent;
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
 import android.animation.ObjectAnimator;
@@ -9,6 +10,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -62,7 +64,7 @@ public class SurveyDialog extends SurveyController {
 //    LinearProgressIndicator bottomProgressBar;
     RelativeLayout layout;
 
-    ConstraintLayout questionContainer;
+
    void cleanUp(){
        this.executableSurveySpecs=null;
        survey=null;
@@ -120,7 +122,7 @@ public class SurveyDialog extends SurveyController {
         dialog=new Dialog(context, androidx.appcompat.R.style.Theme_AppCompat_Dialog);
         dialog.setContentView(R.layout.bottom_survey_layout);
         layout= dialog.findViewById(R.id.dialog_layout_content);
-          questionContainer= dialog.findViewById(R.id.question_container);
+
         currentQuestion=dialog.findViewById(R.id.survey_question_text);
 //        bottomProgressBar=dialog.findViewById(R.id.horizontal_bottom_progressbar);
 //        bottomProgressBar.setMax(100*100);
@@ -315,10 +317,9 @@ public class SurveyDialog extends SurveyController {
                 ||survey.getQuestions().get(currentIndx).getResponseType().equals("0")) {
             Log.d("responseType", "response type is"+survey.getQuestions().get(currentIndx).getResponseType());
                   setCtaEnabled(nextQuestionBtn, true);
-            RelativeLayout.LayoutParams lp=(RelativeLayout.LayoutParams) nextQuestionBtn.getLayoutParams();
-            lp.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            LinearLayout.LayoutParams lp=(LinearLayout.LayoutParams) nextQuestionBtn.getLayoutParams();
 
+lp.gravity = Gravity.CENTER_HORIZONTAL;
                 nextQuestionBtn.setLayoutParams(lp);
               }else{
             Log.d("responseType", "response type is"+survey.getQuestions().get(currentIndx).getResponseType());
@@ -326,9 +327,9 @@ public class SurveyDialog extends SurveyController {
             setCtaEnabled(nextQuestionBtn, !survey.getQuestions()
                           .get(currentIndx).getQuestionSetting().getRequired());
             nextQuestionBtn.setText("Next");
-            RelativeLayout.LayoutParams lp=(RelativeLayout.LayoutParams) nextQuestionBtn.getLayoutParams();
-            lp.removeRule(RelativeLayout.CENTER_HORIZONTAL);
-            lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            LinearLayout.LayoutParams lp=(LinearLayout.LayoutParams) nextQuestionBtn.getLayoutParams();
+
+            lp.gravity = Gravity.END;
             nextQuestionBtn.setLayoutParams(lp);
               }
 //        updateProgressIndicator();
@@ -354,8 +355,14 @@ public class SurveyDialog extends SurveyController {
     }
     @Override
     protected void showCurrentQuestion( ) {
+        int orientation = context.getResources().getConfiguration().orientation;
+        Log.d("Orientation", orientation == Configuration.ORIENTATION_LANDSCAPE ? "Landscape" : "Portrait");
+
+        Log.d("NextButton", "Next Button visibility: " + nextQuestionBtn.getVisibility());
+        Log.d("NextButton", "Button width: " + nextQuestionBtn.getWidth() + " height: " + nextQuestionBtn.getHeight());
+
         super.showCurrentQuestion();
-        RelativeLayout.LayoutParams lp =(RelativeLayout.LayoutParams) layout.getLayoutParams();
+        LinearLayout.LayoutParams lp =(LinearLayout.LayoutParams) layout.getLayoutParams();
 
         int marginInPx = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, 14, context.getResources().getDisplayMetrics()
@@ -480,7 +487,7 @@ public class SurveyDialog extends SurveyController {
 
         params.put("userId", "");
         params.put("custId", aliumPreferences.getCustomerId());
-
+        params.put("userAgent", getUserAgent(context));
         params.put("eventType", "question response");
         params.put("language", "1");
         params.put("surveyType", 7);
