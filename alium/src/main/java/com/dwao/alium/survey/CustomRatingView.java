@@ -67,7 +67,7 @@ public class CustomRatingView extends LinearLayout {
         removeAllViews();
         setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
         RatingIconDrawable drawable=  RatingIconDrawableFactory.getDrawable(this.ratingType, context);
-
+        Log.e("Image icon", "icon: "+drawable);
         if(ratingType.equals(RatingType.emoji)){
             filledIconList = drawable.getFilledIconList();
         }
@@ -75,7 +75,7 @@ public class CustomRatingView extends LinearLayout {
             emptyIcon = drawable.getEmptyIcon();
 
         icon = new ImageView[iconCount];
-
+        Log.e("Image icon", "icon: "+icon.toString());
         for (int i = 0; i < iconCount; i++) {
             final int index = i;
 

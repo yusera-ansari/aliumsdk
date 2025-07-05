@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.dwao.alium.R;
 
@@ -15,7 +16,7 @@ class TickRating implements   RatingIconDrawable{
     }
     @Override
     public Drawable getFilledIcon() {
-        return   ContextCompat.getDrawable(context, R.drawable.hugeicons_tick_double);
+        return   ResourcesCompat.getDrawable(context.getResources(), R.drawable.hugeicons_tick_double, null);
     }
 
     @Override
@@ -25,6 +26,6 @@ class TickRating implements   RatingIconDrawable{
 
     @Override
     public Drawable getEmptyIcon() {
-        return   ContextCompat.getDrawable(context, R.drawable.hugeicons_tick_double);
+        return   ResourcesCompat.getDrawable(context.getResources(), R.drawable.hugeicons_tick_double, null);
     }
 }
