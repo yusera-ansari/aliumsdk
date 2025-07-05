@@ -11,6 +11,9 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.appcompat.view.ContextThemeWrapper;
+
+import com.dwao.alium.R;
 import com.dwao.alium.listeners.RatingClickListener;
 import com.dwao.alium.models.ThemeColors;
 import com.dwao.alium.questions.RatingIconDrawable;
@@ -34,7 +37,7 @@ public class CustomRatingView extends LinearLayout {
         return this;
     }
     public CustomRatingView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        super(new ContextThemeWrapper(context, androidx.appcompat.R.style.Theme_AppCompat_Light_NoActionBar), attrs);
         this.context=context;
         init( );
 
