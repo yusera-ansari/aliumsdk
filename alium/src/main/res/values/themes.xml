@@ -3,9 +3,9 @@
 
 
 
-    <style name="RatingBar.Star" parent="@style/Widget.AppCompat.RatingBar">
-        <item name="android:progressDrawable">@drawable/rating_bar_star</item>
-<!--        <item name="android:minHeight">23dip</item>-->
-<!--        <item name="android:maxHeight">25dip</item>-->
-    </style>
+<!--    <style name="RatingBar.Star" parent="@style/Widget.AppCompat.RatingBar">-->
+<!--        <item name="android:progressDrawable">@drawable/rating_bar_star</item>-->
+<!--&lt;!&ndash;        <item name="android:minHeight">23dip</item>&ndash;&gt;-->
+<!--&lt;!&ndash;        <item name="android:maxHeight">25dip</item>&ndash;&gt;-->
+<!--    </style>-->
 </resources>
