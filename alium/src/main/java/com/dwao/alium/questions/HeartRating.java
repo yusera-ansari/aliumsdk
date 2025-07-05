@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.dwao.alium.R;
 
@@ -15,7 +16,7 @@ class HeartRating implements   RatingIconDrawable{
     }
     @Override
     public Drawable getFilledIcon() {
-        return   ContextCompat.getDrawable(context, R.drawable.ph_heart_fill);
+        return   ResourcesCompat.getDrawable(context.getResources(),R.drawable.ph_heart_fill,null) ;
     }
 
     @Override
@@ -25,6 +26,6 @@ class HeartRating implements   RatingIconDrawable{
 
     @Override
     public Drawable getEmptyIcon() {
-        return   ContextCompat.getDrawable(context, R.drawable.ph_heart);
+        return   ResourcesCompat.getDrawable(context.getResources(), R.drawable.ph_heart,null);
     }
 }

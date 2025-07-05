@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.dwao.alium.R;
 
@@ -15,7 +16,7 @@ class StarRating implements   RatingIconDrawable{
     }
     @Override
     public Drawable getFilledIcon() {
-     return   ContextCompat.getDrawable(context, R.drawable.tabler_star_filled);
+     return   ResourcesCompat.getDrawable(context.getResources(), R.drawable.tabler_star_filled,null);
     }
 
     @Override
@@ -25,6 +26,6 @@ class StarRating implements   RatingIconDrawable{
 
     @Override
     public Drawable getEmptyIcon() {
-        return   ContextCompat.getDrawable(context, R.drawable.tabler_star);
+        return   ResourcesCompat.getDrawable(context.getResources(), R.drawable.tabler_star,null);
     }
 }
