@@ -2,6 +2,7 @@ package com.dwao.alium.questions;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -16,6 +17,7 @@ class StarRating implements   RatingIconDrawable{
     }
     @Override
     public Drawable getFilledIcon() {
+       Log.e("star", "is resource null: "+(ResourcesCompat.getDrawable(context.getResources(), R.drawable.tabler_star_filled,null)==null));
      return   ResourcesCompat.getDrawable(context.getResources(), R.drawable.tabler_star_filled,null);
     }
 
