@@ -9,12 +9,10 @@
     android:scrollbars="none"
     android:layout_height="wrap_content"
     android:fillViewport="true">
+
 <LinearLayout
-
-     android:layout_width="match_parent"
-
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
     android:layout_marginHorizontal="4dp"
     android:paddingHorizontal="10dp"
     android:id="@+id/dialog_layout"
@@ -35,13 +33,6 @@
         android:src="@drawable/ic_close"
         android:visibility="visible" />
 
-
-
-
-
-
-
-
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/survey_question_text"
                 android:layout_width="match_parent"
@@ -51,16 +42,12 @@
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:layout_marginBottom="16dp"
-android:gravity="center_horizontal"
+                android:gravity="center_horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-
-
-
         <RelativeLayout
-
             android:id="@+id/dialog_layout_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -69,14 +56,11 @@ android:gravity="center_horizontal"
             android:gravity="center"
             />
 
-
-
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_layout_content"
-
         android:background="@drawable/next_btn_bg"
         android:enabled="false"
         android:foregroundGravity="center_horizontal"
@@ -90,9 +74,7 @@ android:gravity="center_horizontal"
         android:paddingBottom="8dp"
         android:text="Next"
         android:textAllCaps="false"
-
         android:textColor="@color/white"
         android:textSize="16sp" />
-
 
 </LinearLayout></ScrollView>
