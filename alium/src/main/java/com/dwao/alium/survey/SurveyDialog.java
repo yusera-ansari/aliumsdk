@@ -215,7 +215,6 @@ public class SurveyDialog extends SurveyController {
          super.submitSurvey();
             //check if to show next question or else show thank-you layout
             if( currentIndx< survey.getQuestions().size()){
-
                 executableSurveySpecs.getLoadableSurveySpecs().setCurrentIndex(currentIndx);
                 showCurrentQuestion();
                 return;
@@ -282,7 +281,7 @@ public class SurveyDialog extends SurveyController {
                   setCtaEnabled(nextQuestionBtn, true);
             LinearLayout.LayoutParams lp=(LinearLayout.LayoutParams) nextQuestionBtn.getLayoutParams();
 
-lp.gravity = Gravity.CENTER_HORIZONTAL;
+            lp.gravity = Gravity.CENTER_HORIZONTAL;
                 nextQuestionBtn.setLayoutParams(lp);
               }else{
             Log.d("responseType", "response type is"+survey.getQuestions().get(currentIndx).getResponseType());
@@ -328,7 +327,9 @@ lp.gravity = Gravity.CENTER_HORIZONTAL;
                 TypedValue.COMPLEX_UNIT_DIP, 14, context.getResources().getDisplayMetrics()
         );
         lp.bottomMargin = marginInPx;
-        if(currentIndx==0 && currentQuestionResponse.getResponseType().equals("0")){
+        if(currentIndx==0 && currentQuestionResponse.getResponseType().equals("0")||(
+                currentQuestionResponse.getResponseType().equals("-1")
+                )){
             responseSubmitIndex = 2;
            lp.bottomMargin=0;
         }
