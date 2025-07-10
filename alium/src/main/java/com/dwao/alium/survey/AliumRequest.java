@@ -14,7 +14,7 @@ public class AliumRequest {
         this.request=request;
         this.type=Request.TRIGGER;
     }
-    AliumRequest( String screenName){
+    public AliumRequest( String screenName){
         this.type=Request.STOP;
         this.screenName=screenName;
     }
