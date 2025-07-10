@@ -25,10 +25,13 @@ class SLQHandlerManager {
         SLQHandler execSurLoaderDM= surveyExecutingMap.get(screenName);
         if(execSurLoaderDM!=null){
             Queue<AliumSurveyLoader> loadedQueue=execSurLoaderDM.loadedQueue;
+            Log.d("SLQ", "loaded queue: "+loadedQueue.toString());
             if(!loadedQueue.isEmpty()){
                 Iterator<AliumSurveyLoader> iterator=loadedQueue.iterator();
                 while( iterator.hasNext()){
+
                     AliumSurveyLoader loader=iterator.next();
+                    Log.d("SLQ", "loaded queue: "+loader.getLoaderId()+" id: "+id);
                     if(loader.getLoaderId().equals(id)){
                         return loader.surveyDialogCallback;
                     }
@@ -47,6 +50,7 @@ class SLQHandlerManager {
         if(isTriggerExecuting||triggerRequestQueue.isEmpty()){
             Log.d("exec nex","execute next trigger "+isTriggerExecuting +" "+triggerRequestQueue.isEmpty());
             if(triggerRequestQueue.isEmpty()){
+                Log.d("exec nex", "trigger request queue is empty");
                 isTriggerExecuting=false;
             }
             return;
@@ -57,19 +61,23 @@ class SLQHandlerManager {
 
 
         if (request != null){
-            if (pendingStops.contains(request.surveyParameters.screenName)) {
-                      pendingStops.remove(request.surveyParameters.screenName);
-                  }
+            if (pendingStops.contains(request.surveyParameters.screenName))
+            {
+                pendingStops.remove(request.surveyParameters.screenName);
+            }
 
                       SLQHandler slqHandler = surveyExecutingMap.get(request.surveyParameters.screenName);
                       if (slqHandler == null) {
                           slqHandler = new SLQHandler(request.surveyParameters.screenName);
                           surveyExecutingMap.put(request.surveyParameters.screenName, slqHandler);
                       }
+                    Log.d("slqman","checking loaded queue before making request..." );
+                      if(slqHandler.loadedQueue.isEmpty()){ //limits the loader to one per screen
+                          Log.d("slqman", "loaded queue is empty....adding request...");
+                          slqHandler.offer(request);
+                      }
 
-                      slqHandler.offer(request);
-
-          }
+        }
           Log.d("exec nex","execute next trigger completed");
         isTriggerExecuting=false;
         executeNextTrigger(triggerRequestQueue);

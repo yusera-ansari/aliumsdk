@@ -14,9 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dwao.alium.R;
 import com.dwao.alium.adapters.RadioBtnAdapter;
 import com.dwao.alium.listeners.RadioClickListener;
+import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
 import com.dwao.alium.models.ThemeColors;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,8 +34,18 @@ public class RadioQuestionRenderer implements QuestionRenderer {
 
     private boolean isRequired = false;
 
+    private Question currentquestion;
+    public Question getCurrentquestion() {
+        return currentquestion;
+    }
 
-    public RadioQuestionRenderer setRequired(boolean required) {
+    public RadioQuestionRenderer setCurrentquestion(Question currentquestion) {
+        this.currentquestion = currentquestion;
+        return this.setOptions(this.currentquestion
+                .getResponseOptions()).setRequired(this.currentquestion.getQuestionSetting().getRequired());
+
+    }
+    private RadioQuestionRenderer setRequired(boolean required) {
         isRequired = required;
         return this;
     }
@@ -41,7 +53,7 @@ public class RadioQuestionRenderer implements QuestionRenderer {
         this.themeColors=themeColors;
         return this;
     }
-    public RadioQuestionRenderer setOptions(List options){
+    private RadioQuestionRenderer setOptions(List options){
         responseOpt =options;
         return this;
 
@@ -56,6 +68,7 @@ public class RadioQuestionRenderer implements QuestionRenderer {
 
         RecyclerView radioBtnRecyView=radioQues.findViewById(R.id.radio_btn_rec_view);
         radioBtnRecyView.setLayoutManager(new LinearLayoutManager(context));
+        TextInputLayout textInputLayout = radioQues.findViewById(R.id.radio_text_input_layout);
 
         RadioClickListener radioClickListener=new RadioClickListener() {
             @Override
@@ -68,6 +81,13 @@ public class RadioQuestionRenderer implements QuestionRenderer {
                         if(isRequired){
                             setCtaEnabled(nextQuestionBtn,
                                     !currentQuestionResponse.getQuestionResponse().isEmpty());
+                        }
+                        if(currentquestion.getQuestionSetting().getOtherOption()){
+                            if ( position == responseOpt.size() - 1) {
+                                textInputLayout.setVisibility(View.VISIBLE);
+                            } else  {
+                                textInputLayout.setVisibility(View.INVISIBLE);
+                            }
                         }
                     }
                 });

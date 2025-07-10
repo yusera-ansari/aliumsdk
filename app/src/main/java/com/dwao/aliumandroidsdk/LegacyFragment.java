@@ -36,7 +36,8 @@ public class LegacyFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Alium.stop("screen4");
+        Log.d("frag", "calling on stop on self...");
+//        Alium.stop("screen4");
     }
 
     @Override

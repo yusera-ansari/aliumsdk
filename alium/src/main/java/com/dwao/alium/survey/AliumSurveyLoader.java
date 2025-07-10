@@ -98,10 +98,13 @@ class AliumSurveyLoader implements Observer {
                     callback.onAliumLoaderExcecuted();
                 }
             }
+            Log.d("ExecutingSurv", "Executing surveys is "+executingSurveys);
         }
         @Override
         public void onCreate(String key){
-            executingSurveys.add(key);
+            Log.d("oncreate", "oncreaye callback called");
+        executingSurveys.add(key);
+            Log.d("oncreate", "oncreaye callback called"+executingSurveys.toString());
         }
     };
     public String getLoaderId(){
@@ -172,6 +175,7 @@ class AliumSurveyLoader implements Observer {
                 xfm = ((FragmentActivity) activity.get()).getSupportFragmentManager();
                 Fragment fragment = xfm.findFragmentByTag(key + "-" + surveyParameters.screenName);
                 if (fragment != null) {
+                    Log.d("onStop", "survey already running...calling stop");
                     surveyDialogCallback.onStop(key);
                     return true;
                 }
@@ -180,6 +184,7 @@ class AliumSurveyLoader implements Observer {
                 fm = activity.get().getFragmentManager();
                 android.app.Fragment fragment = fm.findFragmentByTag(key + "-" + surveyParameters.screenName);
                 if (fragment != null) {
+                    Log.d("onStop", "survey already running...calling stop");
                     surveyDialogCallback.onStop(key);
                     Log.d("Already", "Survey is already there!! "+ this);
                     return true;
@@ -234,16 +239,18 @@ class AliumSurveyLoader implements Observer {
                                   xfm = ((FragmentActivity) activity.get()).getSupportFragmentManager();
                                 Fragment fragment = xfm.findFragmentByTag(svs.get(i).getId() + "-" + surveyParameters.screenName);
                                 if (fragment != null) {
+                                    Log.d("onStop", "survey already running...calling stop");
                                     Log.d("findAndLoad", "and we return from here as survey fragment exists");
                                     surveyDialogCallback.onStop(svs.get(i).getId());
-                                    continue;
+                                    return;
                                 }
                             } else {
                                 fm = activity.get().getFragmentManager();
                                 android.app.Fragment fragment = fm.findFragmentByTag(svs.get(i).getId() + "-" + surveyParameters.screenName);
                                 if (fragment != null) {
+                                    Log.d("onStop", "survey already running...calling stop");
                                     surveyDialogCallback.onStop(svs.get(i).getId());
-                                    continue;
+                                    return;
                                 }
                             }
                         }else{
@@ -339,9 +346,8 @@ class AliumSurveyLoader implements Observer {
     }
 
     @Override
-    public synchronized void stop() { //stop means remove eevry fragment and destry loader object too
+    public synchronized void stop() { //stop means remove every fragment and destroy loader object too
         threadShouldExecute=false;
-
         executorService.shutdownNow();
         if(fm!=null ){
             if(executingSurveys.size()>0){
@@ -396,11 +402,6 @@ class AliumSurveyLoader implements Observer {
         }
     }
     private synchronized void loadSurveyFromDialogFragment(JSONObject json, LoadableSurveySpecs loadableSurveySpecs){
-//        Gson gson
-//                =new Gson();
-//        ExecutableSurveySpecs executableSurveySpecs=new ExecutableSurveySpecs(
-//                gson.fromJson(json.toString(), Survey.class)
-//                , loadableSurveySpecs);
         Log.d("Survey", "survey: "+json);
         Log.d("Survey", "survey: "+ AliumJSONParser.getSurveyFromJson(json));
 

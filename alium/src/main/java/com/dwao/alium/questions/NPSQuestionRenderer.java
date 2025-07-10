@@ -11,6 +11,7 @@ import android.widget.GridView;
 import com.dwao.alium.R;
 import com.dwao.alium.adapters.NpsGridViewAdapter;
 import com.dwao.alium.listeners.NpsOptionClickListener;
+import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
 import com.dwao.alium.models.ThemeColors;
@@ -26,7 +27,17 @@ public class NPSQuestionRenderer implements QuestionRenderer {
     List<String> responseOpt;
     ThemeColors themeColors;
     private boolean isRequired = false;
+    private Question currentquestion;
+    public Question getCurrentquestion() {
+        return currentquestion;
+    }
 
+    public NPSQuestionRenderer setCurrentquestion(Question currentquestion) {
+        this.currentquestion = currentquestion;
+        return this.setOptions(this.currentquestion.getResponseOptions())
+                .setRequired(this.currentquestion.getQuestionSetting().getRequired());
+
+    }
 
     public NPSQuestionRenderer setRequired(boolean required) {
         isRequired = required;

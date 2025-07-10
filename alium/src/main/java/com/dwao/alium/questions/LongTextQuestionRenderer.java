@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dwao.alium.R;
+import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -27,8 +28,17 @@ public class LongTextQuestionRenderer implements QuestionRenderer {
     }
     private boolean isRequired = false;
 
+    private Question currentquestion;
+    public Question getCurrentquestion() {
+        return currentquestion;
+    }
 
-    public LongTextQuestionRenderer setRequired(boolean required) {
+    public LongTextQuestionRenderer setCurrentquestion(Question currentquestion) {
+        this.currentquestion = currentquestion;
+        return this.setRequired(this.currentquestion.getQuestionSetting().getRequired());
+
+    }
+    private LongTextQuestionRenderer setRequired(boolean required) {
         isRequired = required;
         return this;
     }

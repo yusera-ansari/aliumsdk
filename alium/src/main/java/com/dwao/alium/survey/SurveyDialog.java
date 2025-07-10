@@ -366,7 +366,8 @@ public class SurveyDialog extends SurveyController {
                 Log.d("ResponseType", "response type i s "+1);
 
                 LongTextQuestionRenderer longtextRenderer = new LongTextQuestionRenderer();
-                longtextRenderer.setRequired(survey.getQuestions().get(currentIndx).getQuestionSetting().getRequired())
+                longtextRenderer
+                        .setCurrentquestion(survey.getQuestions().get(currentIndx))
                     .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
             case "2": //radio
@@ -374,10 +375,8 @@ public class SurveyDialog extends SurveyController {
 
                 RadioQuestionRenderer radioQuestionRenderer = new RadioQuestionRenderer();
                 radioQuestionRenderer
-                        .setOptions(survey.getQuestions().get(currentIndx)
-                                .getResponseOptions())
+                        .setCurrentquestion(survey.getQuestions().get(currentIndx))
                         .setTheme(survey.getSurveyInfo().getThemeColors())
-                        .setRequired(survey.getQuestions().get(currentIndx).getQuestionSetting().getRequired())
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
             case "3": //checkbox
@@ -385,40 +384,32 @@ public class SurveyDialog extends SurveyController {
 
                 CheckBoxQuestionRenderer checkBoxQuestionRenderer = new CheckBoxQuestionRenderer();
                 checkBoxQuestionRenderer
+                        .setCurrentquestion(survey.getQuestions().get(currentIndx))
                          .setTheme(survey.getSurveyInfo().getThemeColors())
-                        .setOptions(survey.getQuestions().get(currentIndx)
-                                .getResponseOptions())
-                        .setRequired(survey.getQuestions().get(currentIndx).getQuestionSetting().getRequired())
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
-            case "4"://nps
+                case "4"://nps
                 Log.d("ResponseType", "response type i s "+4);
 
                 NPSQuestionRenderer npsQuestionRenderer = new NPSQuestionRenderer();
                 npsQuestionRenderer
                         .setTheme(survey.getSurveyInfo().getThemeColors())
-                        .setOptions(survey.getQuestions().get(currentIndx).getResponseOptions())
-                        .setRequired(survey.getQuestions().get(currentIndx).getQuestionSetting().getRequired())
+                        .setCurrentquestion(survey.getQuestions().get(currentIndx))
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
-
                 case "5"://rating
                     RatingQuestionRenderer ratingQuestionRenderer=new RatingQuestionRenderer();
-                    ratingQuestionRenderer.setRatingOptions(survey.getQuestions().get(currentIndx)
-                            .getResponseOptions())
+                    ratingQuestionRenderer
+                            .setCurrentquestion(survey.getQuestions().get(currentIndx))
                             .setTheme(survey.getSurveyInfo().getThemeColors())
-                            .setRequired(survey.getQuestions().get(currentIndx).getQuestionSetting().getRequired())
-                            .setQuestionSetting(survey.getQuestions().get(currentIndx).getQuestionSetting())
-                                    .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
-
-
+                                   .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                     break;
             case "6": //opinion
                 Log.d("ResponseType", "response type i s  opinion scale"+6);
                 OpinionScaleQuesRenderer opinionScaleQuesRenderer=new OpinionScaleQuesRenderer();
-                opinionScaleQuesRenderer.setTheme(survey.getSurveyInfo().getThemeColors())
-                        .setRequired(survey.getQuestions().get(currentIndx).getQuestionSetting().getRequired())
-                        .setOptions(survey.getQuestions().get(currentIndx).getResponseOptions())
+                opinionScaleQuesRenderer
+                        .setTheme(survey.getSurveyInfo().getThemeColors())
+                        .setCurrentquestion(survey.getQuestions().get(currentIndx))
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
             case "-1": //Thank you
@@ -442,10 +433,8 @@ public class SurveyDialog extends SurveyController {
     @Override
     protected Map<String, Object>  generateTrackingParameters(){
         Map  params=new HashMap<>(surveyParameters.customerVariables);
-            params.put("surveyLoadId", uuid);
-
-            params.put("surveyPath", surveyParameters.screenName);
-
+        params.put("surveyLoadId", uuid);
+        params.put("surveyPath", surveyParameters.screenName);
         params.put("userId", "");
         params.put("custId", aliumPreferences.getCustomerId());
         params.put("userAgent", getUserAgent(context));

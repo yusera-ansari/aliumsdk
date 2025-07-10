@@ -110,7 +110,7 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 //           if(selectedItems.contains(Integer.valueOf(holder.getAdapterPosition())))
-               listener.onClick(holder.getAdapterPosition(), b);
+               listener.onClick(holder.getAdapterPosition(), b, selectedItems);
             }
         });
     }
