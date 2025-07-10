@@ -1,9 +1,6 @@
 package com.dwao.alium.survey;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,11 +14,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleObserver;
 
-import com.dwao.alium.R;
 import com.dwao.alium.models.Survey;
-
-
-import java.util.Iterator;
 
 public class SurveyDialogFragment extends DialogFragment implements LifecycleObserver {
     private SurveyDialog dialog ;
@@ -92,7 +85,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
 
             loaderId=savedInstanceState.getString("loaderId");
             if(loaderId!=null){
-                callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);
+                callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
 
         }else if(getArguments()!=null){
@@ -104,7 +97,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
               , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
             loaderId=getArguments().getString("loaderId");
             if(loaderId!=null){
-                callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);
+                callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
 
   }
