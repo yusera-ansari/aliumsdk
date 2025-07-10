@@ -51,15 +51,15 @@ import java.util.concurrent.Executors;
 
 
 class AliumSurveyLoader implements Observer {
-    private Queue<LoadableSurveySpecs> loadableSurveySpecsQueue=new LinkedList<>();
-    private boolean isSurveyFragmentLoading=false;
+//    private Queue<LoadableSurveySpecs> loadableSurveySpecsQueue=new LinkedList<>();
+//    private boolean isSurveyFragmentLoading=false;
     private AliumPreferences aliumPreferences;
 
 
 
     private volatile boolean threadShouldExecute=true;
     private WeakReference<Activity> activity;
-    private WeakReference<FragmentActivity> fragmentActivity;
+//    private WeakReference<FragmentActivity> fragmentActivity;
 //    private WeakReference<Fragment> xfragment;
     private FragmentManager xfm;
     private android.app.FragmentManager fm;
@@ -253,9 +253,10 @@ class AliumSurveyLoader implements Observer {
                                     return;
                                 }
                             }
-                        }else{
-                            continue;
                         }
+//                        else{
+//                            continue;
+//                        }
                     //survey is not already running...
                    loadSurveyIfShouldBeLoaded(svs.get(i));
                        return; // limits survey to one on each screen
@@ -298,19 +299,21 @@ class AliumSurveyLoader implements Observer {
                    .getFrequencyManager(aliumPreferences,currentSurveyJson.getId(), srvshowfrq,
                            customFreqSurveyData)
                    .shouldSurveyLoad()){
+
                Log.d("loadIF", "survey should be loaded...offerring....");
                if(!checkIfSurveyAlreadyRunning(currentSurveyJson.getId())){
-                   loadableSurveySpecsQueue.offer(new LoadableSurveySpecs(
+//                   loadableSurveySpecsQueue.offer(new LoadableSurveySpecs(
+//                           currentSurveyJson.getId(), srvshowfrq, spath.toString(),
+//                           customFreqSurveyData
+//                   ));
+                   Log.d("ExecureNext", "...calling execute next on survey");
+                                  loadSurvey( new LoadableSurveySpecs(
                            currentSurveyJson.getId(), srvshowfrq, spath.toString(),
                            customFreqSurveyData
                    ));
-                   Log.d("ExecureNext", "...calling execute next on survey");
-                   executeNextSurvey();
+//                   executeNextSurvey();
                }
-//               loadSurvey( new LoadableSurveySpecs(
-//                       key, srvshowfrq, spath.toString(), thankyouObj,
-//                       customFreqSurveyData
-//               ));
+
            }else{
                surveyDialogCallback.onStop(currentSurveyJson.getId());
            }
@@ -318,23 +321,23 @@ class AliumSurveyLoader implements Observer {
            Log.e("loadSurveyIfShouldLoad", e.toString());
        }
     }
-    private synchronized void executeNextSurvey(){
-        Log.d("ExecNext", "executeNextSurvey called on: "+surveyParameters.screenName);
-        Log.d("ExecNext", "Current THREAD: "+ Thread.currentThread().getName());
-        if(isSurveyFragmentLoading||loadableSurveySpecsQueue.isEmpty()){
-            if(loadableSurveySpecsQueue.isEmpty()){
-                callback.onAliumLoaderExcecuted();
-//                cleanUp();
-
-                Log.d("LoaderComplete", "Loader is complete loadable surveys called!!");
-            }
-            Log.d("ExecNext","A survey is loading..please wait...returning!!" );
-            return;
-        }
-        isSurveyFragmentLoading=true;
-        LoadableSurveySpecs currSpecs=loadableSurveySpecsQueue.poll();
-       if(currSpecs!=null) loadSurvey(currSpecs);
-    }
+//    private synchronized void executeNextSurvey(){
+//        Log.d("ExecNext", "executeNextSurvey called on: "+surveyParameters.screenName);
+//        Log.d("ExecNext", "Current THREAD: "+ Thread.currentThread().getName());
+//        if(isSurveyFragmentLoading||loadableSurveySpecsQueue.isEmpty()){
+//            if(loadableSurveySpecsQueue.isEmpty()){
+//                callback.onAliumLoaderExcecuted();
+////                cleanUp();
+//
+//                Log.d("LoaderComplete", "Loader is complete loadable surveys called!!");
+//            }
+//            Log.d("ExecNext","A survey is loading..please wait...returning!!" );
+//            return;
+//        }
+//        isSurveyFragmentLoading=true;
+//        LoadableSurveySpecs currSpecs=loadableSurveySpecsQueue.poll();
+//       if(currSpecs!=null) loadSurvey(currSpecs);
+//    }
     private void loadSurvey(LoadableSurveySpecs loadableSurveySpecs) {
         Log.d("loadSurvey", "loadSurvey called on: "+surveyParameters.screenName);
         Log.d("loadSurvey", "loadSurvey THREAD: "+ Thread.currentThread().getName());
@@ -451,8 +454,8 @@ class AliumSurveyLoader implements Observer {
         }
         Log.d("loadDial()", "loadSurveyFromDialogFragment called on: "+surveyParameters.screenName);
         Log.d("loadDial", "loadSurveyFromDialogFragmentTHREAD: "+ Thread.currentThread().getName());
-        isSurveyFragmentLoading=false;
-        executeNextSurvey();
+//        isSurveyFragmentLoading=false;
+//        executeNextSurvey();
     }
 
 }

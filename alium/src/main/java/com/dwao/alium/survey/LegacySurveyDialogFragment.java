@@ -1,11 +1,6 @@
 package com.dwao.alium.survey;
 
-import static androidx.core.content.ContentProviderCompat.requireContext;
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,12 +10,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 
 import com.dwao.alium.models.Survey;
-
-
-import java.util.Iterator;
 
 public class LegacySurveyDialogFragment extends android.app.DialogFragment {
     private SurveyDialog dialog ;
@@ -91,7 +82,7 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
             Log.d("SurveyDialogFragment", "saved state"+executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex());
             loaderId=savedInstanceState.getString("loaderId");
             if(loaderId!=null){
-                callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);
+                callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
         }else if(getArguments()!=null){
             Log.d("SurveyDialogFragment", "LegacySurveyDialog-inside oncreyae2");
@@ -103,7 +94,7 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
             loaderId=getArguments().getString("loaderId");
             if(loaderId!=null){
                 Log.d("LoaderId", "loader id is:"+loaderId);
-                callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);
+                callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
         }
         shouldCallOnStopCallback=true;

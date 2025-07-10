@@ -65,9 +65,11 @@ public class MainActivity extends Activity {
         params.put("custEmail", "test@gmail.co");//branch id
         params.put("custMobile", "9090909090");//branch id
         params.put("custSystemId", "0jdu07");//systemId id
+
          Alium.trigger(this, new SurveyParameters("screen4", params));
-         Alium.trigger(this, new SurveyParameters("screen4", params));
-//         Alium.stop("screen4");
+//        Alium.stop("screen4");
+                  Alium.trigger(this, new SurveyParameters("screen3", params));
+
 
 //          Alium.trigger(MainActivity.this, new SurveyParameters("firstscreen"));
 
@@ -86,11 +88,11 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        LegacyFragment fragment = new LegacyFragment();
-        fragmentTransaction.add(R.id.fragment_container, fragment);
-        fragmentTransaction.commit();
+//        FragmentManager fragmentManager = getFragmentManager();
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//        LegacyFragment fragment = new LegacyFragment();
+//        fragmentTransaction.add(R.id.fragment_container, fragment);
+//        fragmentTransaction.commit();
 
         Log.d("Activity", ""+this.getClass().getSimpleName());
         next=findViewById(R.id.main_next);

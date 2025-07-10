@@ -6,9 +6,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-
 import com.dwao.alium.listeners.ResponseListener;
 
 import com.dwao.alium.models.SurConf;
@@ -34,15 +31,12 @@ public class Alium {
 
 
      private static volatile Alium instance;
-     private static boolean appState=false;
-     static boolean isAppInForeground(){
-        return appState;
-    }
 
      private static String configURL;
-     private SLQHandlerManager slqHandlerManager=new SLQHandlerManager();
+     private AliumRequestManager aliumRequestManager=new AliumRequestManager();
      private static AliumPreferences preferences;
-     private volatile   Queue<TriggerRequest> triggerRequestQueue=new LinkedList<>();
+
+     private volatile  Queue<AliumRequest> aliumRequestQueue = new LinkedList<>();
      private static volatile boolean isConfigFetching=false;
      private  Alium(){
 
@@ -84,7 +78,9 @@ public class Alium {
 
 
     public static void stop(String screenName){
-       instance.slqHandlerManager.stop(screenName);
+        instance.aliumRequestQueue.offer(new AliumRequest(  screenName));
+        if(configURL==null||isConfigFetching ){return;}
+       instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
     }
 
       void fetchConfigJson( ){
@@ -116,17 +112,23 @@ public class Alium {
             }
             Log.e("trigger", "url not null...");
             Log.d("initiates", "Thread is :"+ Thread.currentThread().getName());
-            instance.triggerRequestQueue.offer(new TriggerRequest(object, parameters));
+//            instance.triggerRequestQueue.offer(new TriggerRequest(object, parameters));
+            instance.aliumRequestQueue.offer(new AliumRequest(  new TriggerRequest(object, parameters)));
             Log.d("Thread", "Thread is :"+ Thread.currentThread().getName());
-            for(TriggerRequest request: instance.triggerRequestQueue){
-                Log.d("Thread", "Thread is :"+ Thread.currentThread().getName());
-                Log.d("MyRequest", "request is not empty: "+request.surveyParameters.screenName);
-            }
+            for(AliumRequest request: instance.aliumRequestQueue){
+                if(request.type.equals(AliumRequest.Request.TRIGGER)){
+                    Log.d("Thread", "Thread is :"+ Thread.currentThread().getName());
+                    Log.d("MyRequest", "request is not empty: "+request.request.surveyParameters.screenName);
+
+                }
+                }
 
             if(surveyConfig==null && !isConfigFetching) {
                 instance.fetchConfigJson(  );
             }else{
-                if(configURL==null||isConfigFetching ){return;}  instance.slqHandlerManager.executeNextTrigger(instance.triggerRequestQueue);
+                if(configURL==null||isConfigFetching ){return;}
+                instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
+
             }
         }catch (Exception e){
             Log.e("initiate", "request trigger: "+e);
@@ -136,21 +138,7 @@ public class Alium {
         Log.e("trigger", "initiate trigger activity");
        initiateTrigger(activity, parameters);
     }
-//    public static synchronized void trigger(FragmentActivity activity, SurveyParameters parameters){
-//        Log.e("trigger", "initiate trigger activity");
-//        initiateTrigger(activity, parameters);
-//    }
 
-
-//    public static synchronized void trigger( Fragment fragment, SurveyParameters parameters){
-//        Log.e("trigger", "initiate trigger");
-//         initiateTrigger(fragment, parameters);
-//
-//    }
-//
-//    public static synchronized void trigger(android.app.Fragment fragment, SurveyParameters parameters){
-//        initiateTrigger(fragment, parameters);
-//    }
 
     private static class ConfigURLResponseListener implements ResponseListener{
         @Override
@@ -166,7 +154,7 @@ public class Alium {
                     Log.d("ALium", "is config fetching...done");
                     if(configURL==null||isConfigFetching ){return;}
                     Log.d("ALium", "function didn't retrun");
-                    instance.slqHandlerManager.executeNextTrigger(instance.triggerRequestQueue);
+                    instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
                     Log.d("ALium", "try completed");
                 }catch (Exception e){
                     Log.e("Alium","Alium"+ e);
