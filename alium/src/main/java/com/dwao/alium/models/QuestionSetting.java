@@ -5,17 +5,27 @@ import java.io.Serializable;
 public class QuestionSetting implements Serializable {
     Boolean required = true; //req
     String ratingType="star";
-
-    public String getRatingType() {
-        return ratingType;
-    }
+    Boolean otherOption = false;
 
     @Override
     public String toString() {
         return "QuestionSetting{" +
                 "required=" + required +
                 ", ratingType='" + ratingType + '\'' +
+                ", otherOption=" + otherOption +
                 '}';
+    }
+
+    public String getRatingType() {
+        return ratingType;
+    }
+
+    public Boolean getOtherOption() {
+        return otherOption;
+    }
+
+    public void setOtherOption(Boolean otherOption) {
+        this.otherOption = otherOption;
     }
 
     public void setRatingType(String ratingType) {

@@ -28,6 +28,7 @@ public class SLQHandler {
 
 
     synchronized void  offer(TriggerRequest request){
+
             Log.d("called", "offer is executing...");
             AliumSurveyLoader loader= AliumSurveyLoader.createInstance(request.object, request.surveyParameters,
 
@@ -48,7 +49,9 @@ public class SLQHandler {
                                                         AliumSurveyLoader loadertmp = iterator.next();
                                                         if(loadertmp.getLoaderId().equals(loader.getLoaderId())){
 //                                                            loader.callback.onQuitLoader(loader);
+                                                            Log.d("remove", "removing the loader..."+loadertmp);
                                                             iterator.remove();
+
                                                         }
                                                     }
                                                 }
@@ -59,7 +62,9 @@ public class SLQHandler {
                                     });
                             //create instance will retrun a loader to be added to the queue
                             //only move forward if its not null
+
                             if(loader!=null ) {
+                                Log.d("loader", "this is the created loader"+loader);
                                 //limiting the loader to one:-  && aliumSurveyLoaderQueue.size()==0 && loadedQueue.size()==0
                                 aliumSurveyLoaderQueue.add(loader);
 
@@ -86,10 +91,12 @@ public class SLQHandler {
             isAliumLoaderExecuting=true;
             AliumSurveyLoader aliumSurveyLoader= aliumSurveyLoaderQueue.poll();
             if(aliumSurveyLoader!=null){
+                Log.d("offer", "adding to loaded quue"+aliumSurveyLoader+" "+aliumSurveyLoader.getLoaderId());
                 loadedQueue.offer(aliumSurveyLoader);
                 currentLoader=aliumSurveyLoader;
                 aliumSurveyLoader.showSurvey();
             }
+            Log.d("QUEUE", " loaded quue: "+loadedQueue);
     }
     synchronized void stop(){ //Alium calls stop on a screen
         Log.d("stop", "offer stop is executing...");

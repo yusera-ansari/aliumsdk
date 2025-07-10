@@ -11,6 +11,7 @@ import android.widget.GridView;
 import com.dwao.alium.R;
 import com.dwao.alium.adapters.OpinionScaleGridAdapter;
 import com.dwao.alium.listeners.OpinionClickListener;
+import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.ThemeColors;
 
@@ -22,7 +23,16 @@ public class OpinionScaleQuesRenderer implements QuestionRenderer{
     List<String> respOptions;
     ThemeColors themeColors;
     private boolean isRequired = false;
+    private Question currentquestion;
+    public Question getCurrentquestion() {
+        return currentquestion;
+    }
 
+    public OpinionScaleQuesRenderer setCurrentquestion(Question currentquestion) {
+        this.currentquestion = currentquestion;
+        return this .setRequired(this.currentquestion.getQuestionSetting().getRequired())
+                .setOptions(this.currentquestion.getResponseOptions());
+    }
 
     public OpinionScaleQuesRenderer setRequired(boolean required) {
         isRequired = required;

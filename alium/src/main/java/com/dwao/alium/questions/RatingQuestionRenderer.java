@@ -16,6 +16,7 @@ import com.dwao.alium.R;
 import com.dwao.alium.adapters.RatingAdapter;
 import com.dwao.alium.listeners.RatingClickListener;
 import com.dwao.alium.listeners.RatingOptionListener;
+import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.QuestionSetting;
 import com.dwao.alium.models.ThemeColors;
@@ -31,7 +32,18 @@ List<String> ratingOptions;
     QuestionSetting questionSetting;
     private boolean isRequired = false;
 
+    private Question currentquestion;
+    public Question getCurrentquestion() {
+        return currentquestion;
+    }
 
+    public RatingQuestionRenderer setCurrentquestion(Question currentquestion) {
+        this.currentquestion = currentquestion;
+        return  this.setRatingOptions(this.currentquestion.getResponseOptions())
+                .setRequired(this.currentquestion.getQuestionSetting().getRequired())
+                .setQuestionSetting(this.currentquestion.getQuestionSetting());
+
+    }
     public RatingQuestionRenderer setRequired(boolean required) {
         isRequired = required;
         return this;

@@ -94,7 +94,7 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
                 callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
         }else if(getArguments()!=null){
-            Log.d("SurveyDialogFragment", "LegacySurveyDialog-inside oncreyae");
+            Log.d("SurveyDialogFragment", "LegacySurveyDialog-inside oncreyae2");
             shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
             surveyParameters=(SurveyParameters)getArguments().getSerializable("surveyParameters");
 
@@ -102,6 +102,7 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
                     ,(LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
             loaderId=getArguments().getString("loaderId");
             if(loaderId!=null){
+                Log.d("LoaderId", "loader id is:"+loaderId);
                 callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
         }
