@@ -3,6 +3,8 @@ package com.dwao.alium.questions;
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,7 @@ import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
 import com.dwao.alium.models.ThemeColors;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
@@ -67,6 +70,23 @@ public class CheckBoxQuestionRenderer implements QuestionRenderer {
         RecyclerView recyclerView=checkBoxQues.findViewById(R.id.checkbox_recy_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         TextInputLayout textInputLayout = checkBoxQues.findViewById(R.id.checkbox_text_input_layout);
+        TextInputEditText textInputEditText = checkBoxQues.findViewById(R.id.text_input_edit_text);
+        textInputEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                checkBoxRecyViewAdapter.updateResponseString(currentquestion.getQuestionSetting().getOtherOption(), textInputEditText.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         CheckBoxClickListener checkBoxClickListener=new CheckBoxClickListener() {
             @Override
             public void onClick(int position, boolean selected, List<Integer> selectedIndex) {
@@ -78,6 +98,8 @@ public class CheckBoxQuestionRenderer implements QuestionRenderer {
                           setCtaEnabled(nextQuestionBtn,
                                   !currentQuestionResponse.getQuestionResponse().isEmpty());
                       }
+                        checkBoxRecyViewAdapter.updateResponseString(currentquestion.getQuestionSetting().getOtherOption(),
+                                (textInputEditText.getText()!=null)? textInputEditText.getText().toString():"");
                         if(currentquestion.getQuestionSetting().getOtherOption()){
                             if (selected && position == responseOpt.size() - 1) {
                                 textInputLayout.setVisibility(View.VISIBLE);
