@@ -1,4 +1,4 @@
-package com.dwao.alium.survey;
+package com.dwao.alium.questions;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -13,12 +13,8 @@ import android.widget.LinearLayout;
 
 import androidx.appcompat.view.ContextThemeWrapper;
 
-import com.dwao.alium.R;
 import com.dwao.alium.listeners.RatingClickListener;
 import com.dwao.alium.models.ThemeColors;
-import com.dwao.alium.questions.RatingIconDrawable;
-import com.dwao.alium.questions.RatingIconDrawableFactory;
-import com.dwao.alium.questions.RatingType;
 
 public class CustomRatingView extends LinearLayout {
     private int iconCount = 5;

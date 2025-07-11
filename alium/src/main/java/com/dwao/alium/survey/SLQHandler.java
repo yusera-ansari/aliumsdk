@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 //SURVEY-LOADER-QUEUE-HANDLER
 // one for each screen and all the loaders for a screen stays here
 
-public class SLQHandler {
+class SLQHandler {
        volatile Queue<AliumSurveyLoader> loadedQueue=new ConcurrentLinkedQueue<>();
         volatile  Queue<AliumSurveyLoader> aliumSurveyLoaderQueue=new ConcurrentLinkedQueue<>();
         String screenName="";

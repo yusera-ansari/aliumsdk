@@ -1,11 +1,4 @@
-package com.dwao.alium.survey;
-
-import android.util.Log;
-
-import com.dwao.alium.models.Survey;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+package com.dwao.alium.models;
 
 import java.io.Serializable;
 

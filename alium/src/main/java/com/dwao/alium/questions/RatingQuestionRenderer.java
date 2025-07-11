@@ -7,20 +7,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
-import android.widget.RatingBar;
-
-import androidx.appcompat.widget.AppCompatRatingBar;
 
 import com.dwao.alium.R;
 import com.dwao.alium.adapters.RatingAdapter;
 import com.dwao.alium.listeners.RatingClickListener;
-import com.dwao.alium.listeners.RatingOptionListener;
 import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.QuestionSetting;
 import com.dwao.alium.models.ThemeColors;
-import com.dwao.alium.survey.CustomRatingView;
 
 import java.util.List;
 

@@ -18,7 +18,7 @@
 <!--        android:verticalSpacing="10dp"-->
 <!--        android:scrollbars="none"-->
 <!--        />-->
-    <com.dwao.alium.survey.CustomRatingView
+    <com.dwao.alium.questions.CustomRatingView
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
 
         android:id="@+id/custom_rating_view"

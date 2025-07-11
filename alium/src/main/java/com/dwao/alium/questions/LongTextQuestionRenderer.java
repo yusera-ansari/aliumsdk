@@ -58,19 +58,19 @@ public class LongTextQuestionRenderer implements QuestionRenderer {
 
         GradientDrawable d= (GradientDrawable)textInputLayout.getBackground();
         d.mutate();
-        input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-
-                if(hasFocus){
-
-                    d.setStroke(2, Color.BLUE);
-                }else{
-
-                    d.setStroke(2, Color.BLACK);
-                }
-            }
-        });
+//        input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//
+//                if(hasFocus){
+//
+//                    d.setStroke(2, Color.BLUE);
+//                }else{
+//
+//                    d.setStroke(2, Color.BLACK);
+//                }
+//            }
+//        });
         input.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -94,6 +94,7 @@ public class LongTextQuestionRenderer implements QuestionRenderer {
         });
 //                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
 //                        .getString("question")));
+        input.requestFocus();
         layout.addView(longtextQues);
     }
 }

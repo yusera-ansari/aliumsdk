@@ -22,7 +22,8 @@
         android:gravity="center_horizontal"
         android:padding="5dp"
         android:layout_marginVertical="2dp"
-
+        app:placeholderText="Enter your response here"
+        app:placeholderTextColor="#373232"
 
         app:hintEnabled="false">
 

@@ -1,22 +1,17 @@
 package com.dwao.aliumandroidsdk.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.dwao.alium.survey.Alium;
-import com.dwao.alium.survey.SurveyParameters;
-import com.dwao.aliumandroidsdk.Config;
+import com.dwao.alium.models.SurveyParameters;
 import com.dwao.aliumandroidsdk.R;
-
-import java.util.HashMap;
 
 public class TestActivity extends AppCompatActivity {
     TextView next;

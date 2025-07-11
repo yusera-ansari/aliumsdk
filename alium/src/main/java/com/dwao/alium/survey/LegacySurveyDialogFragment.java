@@ -11,7 +11,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.dwao.alium.models.ExecutableSurveySpecs;
+import com.dwao.alium.models.LoadableSurveySpecs;
 import com.dwao.alium.models.Survey;
+import com.dwao.alium.models.SurveyParameters;
 
 public class LegacySurveyDialogFragment extends android.app.DialogFragment {
     private SurveyDialog dialog ;
