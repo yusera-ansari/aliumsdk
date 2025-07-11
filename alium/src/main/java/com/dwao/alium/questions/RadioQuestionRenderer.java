@@ -3,6 +3,8 @@ package com.dwao.alium.questions;
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,7 @@ import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
 import com.dwao.alium.models.ThemeColors;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
@@ -69,7 +72,25 @@ public class RadioQuestionRenderer implements QuestionRenderer {
         RecyclerView radioBtnRecyView=radioQues.findViewById(R.id.radio_btn_rec_view);
         radioBtnRecyView.setLayoutManager(new LinearLayoutManager(context));
         TextInputLayout textInputLayout = radioQues.findViewById(R.id.radio_text_input_layout);
+        TextInputEditText textInputEditText = radioQues.findViewById(R.id.text_input_edit_text);
+        textInputEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.updateResponse(currentquestion.getQuestionSetting().getOtherOption(),
+                        textInputEditText.getText()!=null?textInputEditText.getText().toString():"");
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         RadioClickListener radioClickListener=new RadioClickListener() {
             @Override
             public void onClick(int position) {
@@ -78,10 +99,13 @@ public class RadioQuestionRenderer implements QuestionRenderer {
                     public void run() {
 
                         adapter.updateCheckedItem(position);
-                        if(isRequired){
+                         if(isRequired){
                             setCtaEnabled(nextQuestionBtn,
                                     !currentQuestionResponse.getQuestionResponse().isEmpty());
                         }
+                        adapter.updateResponse(currentquestion.getQuestionSetting().getOtherOption(),
+                                (textInputEditText.getText()!=null)?textInputEditText.getText().toString():"");
+
                         if(currentquestion.getQuestionSetting().getOtherOption()){
                             if ( position == responseOpt.size() - 1) {
                                 textInputLayout.setVisibility(View.VISIBLE);

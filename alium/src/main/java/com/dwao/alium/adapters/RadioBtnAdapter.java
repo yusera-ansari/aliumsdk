@@ -39,9 +39,17 @@ public class RadioBtnAdapter extends RecyclerView.Adapter<RadioBtnAdapter.ViewHo
     }
     public void updateCheckedItem(int selectedPosition){
         this.selectedPosition=selectedPosition;
-        currentQuestionResponse.setQuestionResponse(radioBtnList.get(selectedPosition));
-        currentQuestionResponse.setIndexOfSelectedAnswer(selectedPosition);
+
         notifyDataSetChanged();
+    }
+    public void updateResponse(boolean isOtherOptionEnabled,
+                                 String otherResponse){
+        currentQuestionResponse.setQuestionResponse(radioBtnList.get(selectedPosition));
+    if(isOtherOptionEnabled){
+       if(selectedPosition==radioBtnList.size()-1) currentQuestionResponse.setQuestionResponse(radioBtnList.get(selectedPosition)+"|"+otherResponse);
+    }
+        currentQuestionResponse.setIndexOfSelectedAnswer(selectedPosition);
+    Log.d("response", "response of the selected item is: "+ currentQuestionResponse.getQuestionResponse());
     }
     @NonNull
     @Override

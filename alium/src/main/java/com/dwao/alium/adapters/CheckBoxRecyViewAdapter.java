@@ -41,22 +41,48 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
         this.currentQuestionResponse=currentQuestionResponse;
       this.themeColors=themeColors;
     }
-    private void updateResponseString(){
+      public void updateResponseString(Boolean otherOptionEnabled, String otherResponse){
         String resp="";
-        for(int i=0; i< selectedItems.size(); i++){
-            Log.e("slected", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
-            if(i==selectedItems.size()-1){
-                Log.e("slected2", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
-                resp+= checkBoxList.get(selectedItems.get(i));
-                break;
+        if(otherOptionEnabled){
+            for(int i=0; i< selectedItems.size(); i++){
+                Log.e("slected", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
+                if(i==selectedItems.size()-1){
+                    Log.e("slected2", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
+                    if(selectedItems.get(i)== checkBoxList.size()-1){
+                        resp+= checkBoxList.get(selectedItems.get(i))+"|"+otherResponse;
+                        break;
+                    }
+                    resp+= checkBoxList.get(selectedItems.get(i));
+                    break;
+                }
+                Log.e("slected3", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
+                if(selectedItems.get(i)== checkBoxList.size()-1){
+                    resp+= checkBoxList.get(selectedItems.get(i))+"|"+otherResponse+",";
+                }
+                else{
+                    resp += checkBoxList.get(selectedItems.get(i)) + ",";
+                }
+                Log.e("resp", "resp: "+ resp);
             }
-            Log.e("slected3", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
-           resp+= checkBoxList.get(selectedItems.get(i))+",";
-           Log.e("resp", "resp: "+ resp);
+        }else{
+            for(int i=0; i< selectedItems.size(); i++){
+                Log.e("slected", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
+                if(i==selectedItems.size()-1){
+                    Log.e("slected2", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
+                    resp+= checkBoxList.get(selectedItems.get(i));
+                    break;
+                }
+                Log.e("slected3", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
+                resp+= checkBoxList.get(selectedItems.get(i))+",";
+                Log.e("resp", "resp: "+ resp);
+            }
         }
         currentQuestionResponse.setQuestionResponse(resp);
         Log.d("response changed", currentQuestionResponse.getQuestionResponse());
     }
+
+
+
     public void updateCheckedItem(int pos, boolean selected){
       if(selected){
           this.selectedItems.add(pos);
@@ -66,7 +92,7 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
       }
 
         notifyItemChanged(pos);
-        updateResponseString();
+
     }
     @NonNull
     @Override
