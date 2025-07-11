@@ -14,7 +14,10 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleObserver;
 
+import com.dwao.alium.models.ExecutableSurveySpecs;
+import com.dwao.alium.models.LoadableSurveySpecs;
 import com.dwao.alium.models.Survey;
+import com.dwao.alium.models.SurveyParameters;
 
 public class SurveyDialogFragment extends DialogFragment implements LifecycleObserver {
     private SurveyDialog dialog ;

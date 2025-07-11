@@ -4,14 +4,15 @@ import android.app.Application;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import com.dwao.alium.listeners.ResponseListener;
 
 import com.dwao.alium.models.SurConf;
+import com.dwao.alium.models.SurveyParameters;
 import com.dwao.alium.models.TriggerRequest;
 import com.dwao.alium.network.CustomNetworkService;
 
+import com.dwao.alium.services.Logger;
 import com.dwao.alium.utils.jsonhandlers.AliumJSONParser;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 
@@ -52,90 +53,91 @@ public class Alium {
                 }
             }
         if( url.trim().isEmpty()){
-            Log.e("Alium", "Configuration URL can't be empty. Please set a valid url: "+url );
+            Logger.log(Logger.LogLevel.ERROR, "config","Configuration URL can't be empty. Please set a valid url: "+url );
+//            Log.e("Alium", "Configuration URL can't be empty. Please set a valid url: "+url );
             return;
         }
             if(configURL==null ){
                synchronized (Alium.class){
                    if(configURL==null){
-                       Log.d("CONFIG", "url is null! setting....");
+//                       android.util.Log.d("CONFIG", "url is null! setting....");
+                       Logger.log(Logger.LogLevel.DEBUG, "config","url is null! setting value to: "+url);
                        configURL=url;
+                       Logger.log(Logger.LogLevel.INFO, "config", "url set to "+url);
                        instance.fetchConfigJson( );
                    }
                }
             }
-            if(!configURL.equals(url)) {
+            else if(!configURL.equals(url)) {
               synchronized (Alium.class){
                   if(!configURL.equals(url)){
+                      Logger.log(Logger.LogLevel.DEBUG, "config", "Resetting url from "+configURL+" to "+url);
                       configURL = url;
+                      Logger.log(Logger.LogLevel.INFO, "config", "url set to "+url);
                       instance.fetchConfigJson( );
                   }
               }
             }
-        }
+     }
 
 
 
 
     public static void stop(String screenName){
+         Logger.log(Logger.LogLevel.DEBUG, "stop", "called on stop on "+screenName);
         instance.aliumRequestQueue.offer(new AliumRequest(  screenName));
         if(configURL==null||isConfigFetching ){return;}
        instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
     }
 
-      void fetchConfigJson( ){
+      void fetchConfigJson(){
           isConfigFetching=true;
 //          String config = preferences.getConfig();
+          Logger.log(Logger.LogLevel.DEBUG, "fetch-config", "initiate config details fetching...");
           String config = null;
           try{
               if (config != null) {
+
                   surveyConfig = AliumJSONParser.getSurConfFromJSON(new JSONObject(config));
                   isConfigFetching=false;
               }else{
                   throw new NullPointerException("config in sharepref is null");
               }
           }catch (Exception e){
-              Log.d("getConfig", e.toString());
+              Logger.log(Logger.LogLevel.ERROR,"fetch-config", e.toString());
+              Logger.log(Logger.LogLevel.DEBUG, "fetch-config", "fetching config from config url: "+configURL);
               CustomNetworkService.getNetworkData(  configURL,
                       new Alium.ConfigURLResponseListener());
           }
 
     }
 
-    private static void initiateTrigger(Object object,SurveyParameters parameters ){
+    private static void initiateTrigger(Object object, SurveyParameters parameters ){
         try{
-            Log.e("trigger", " check url initiate trigger");
+            Logger.log(Logger.LogLevel.INFO, "init-trigger", "trigger called on"+parameters.screenName);
             if (configURL == null) {
-                Log.e("Alium", "Configuration URL not set. Call configure() method first.");
-//            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
+                Logger.log(Logger.LogLevel.ERROR,"init-trigger", "Configuration URL not set. Call configure() method first.");
                 return;
             }
-            Log.e("trigger", "url not null...");
-            Log.d("initiates", "Thread is :"+ Thread.currentThread().getName());
-//            instance.triggerRequestQueue.offer(new TriggerRequest(object, parameters));
-            instance.aliumRequestQueue.offer(new AliumRequest(  new TriggerRequest(object, parameters)));
-            Log.d("Thread", "Thread is :"+ Thread.currentThread().getName());
-            for(AliumRequest request: instance.aliumRequestQueue){
-                if(request.type.equals(AliumRequest.Request.TRIGGER)){
-                    Log.d("Thread", "Thread is :"+ Thread.currentThread().getName());
-                    Log.d("MyRequest", "request is not empty: "+request.request.surveyParameters.screenName);
 
-                }
-                }
+            Logger.log(Logger.LogLevel.DEBUG, "init-trigger", "adding to request queue...");
+            instance.aliumRequestQueue.offer(new AliumRequest(  new TriggerRequest(object, parameters)));
+
 
             if(surveyConfig==null && !isConfigFetching) {
-                instance.fetchConfigJson(  );
+                instance.fetchConfigJson();
             }else{
                 if(configURL==null||isConfigFetching ){return;}
                 instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
 
             }
         }catch (Exception e){
-            Log.e("initiate", "request trigger: "+e);
+            Logger.log(Logger.LogLevel.ERROR, "init-trigger", e.toString());
+
         }
     }
     public static synchronized void trigger( Activity activity, SurveyParameters parameters){
-        Log.e("trigger", "initiate trigger activity");
+
        initiateTrigger(activity, parameters);
     }
 
@@ -146,18 +148,19 @@ public class Alium {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                Log.d("Alium", "on response received" + Thread.currentThread().getName());
+
                 try{
                     surveyConfig= AliumJSONParser.getSurConfFromJSON(jsonObject);
+                    Logger.log(Logger.LogLevel.INFO, "config-resp",
+                            "received response for config "+surveyConfig.toString());
                     preferences.storeConfig(jsonObject.toString());
                     isConfigFetching=false;
-                    Log.d("ALium", "is config fetching...done");
                     if(configURL==null||isConfigFetching ){return;}
-                    Log.d("ALium", "function didn't retrun");
                     instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
-                    Log.d("ALium", "try completed");
+
                 }catch (Exception e){
-                    Log.e("Alium","Alium"+ e);
+                    Logger.log(Logger.LogLevel.ERROR, "config-resp", e.toString());
+
                 }
             }
         });

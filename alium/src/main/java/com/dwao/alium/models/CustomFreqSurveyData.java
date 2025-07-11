@@ -1,4 +1,4 @@
-package com.dwao.alium.survey;
+package com.dwao.alium.models;
 
 import java.io.Serializable;
 

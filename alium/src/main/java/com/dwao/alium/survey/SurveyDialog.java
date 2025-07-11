@@ -1,15 +1,11 @@
 package com.dwao.alium.survey;
 
 
-import static android.view.View.INVISIBLE;
 import static com.dwao.alium.utils.DeviceInfo.getUserAgent;
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
-import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -17,7 +13,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -26,24 +21,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.LinearInterpolator;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.dwao.alium.R;
-import com.dwao.alium.models.Survey;
+import com.dwao.alium.models.ExecutableSurveySpecs;
+import com.dwao.alium.models.SurveyParameters;
 import com.dwao.alium.questions.CheckBoxQuestionRenderer;
 import com.dwao.alium.questions.LongTextQuestionRenderer;
 import com.dwao.alium.questions.NPSQuestionRenderer;
 import com.dwao.alium.questions.OpinionScaleQuesRenderer;
-import com.dwao.alium.questions.QuestionRenderer;
 import com.dwao.alium.questions.RadioQuestionRenderer;
 import com.dwao.alium.questions.RatingQuestionRenderer;
 
@@ -51,11 +44,10 @@ import com.dwao.alium.questions.RatingQuestionRenderer;
 import org.json.JSONException;
 
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SurveyDialog extends SurveyController {
+class SurveyDialog extends SurveyController {
     Dialog dialog;
     View layoutView;
     AppCompatButton nextQuestionBtn;
@@ -88,7 +80,7 @@ public class SurveyDialog extends SurveyController {
     }
 
     public SurveyDialog(Context ctx, ExecutableSurveySpecs executableSurveySpecs,
-                 SurveyParameters surveyParameters, boolean shouldUpdatePreferences)
+                        SurveyParameters surveyParameters, boolean shouldUpdatePreferences)
     {
 
         super(ctx,executableSurveySpecs.getLoadableSurveySpecs(), shouldUpdatePreferences);

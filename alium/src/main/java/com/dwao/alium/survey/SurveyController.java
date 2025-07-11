@@ -9,14 +9,15 @@ import androidx.annotation.CallSuper;
 
 import com.dwao.alium.frequencyManager.FrequencyManagerFactory;
 import com.dwao.alium.frequencyManager.SurveyFrequencyManager;
+import com.dwao.alium.models.ExecutableSurveySpecs;
+import com.dwao.alium.models.LoadableSurveySpecs;
 import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
+import com.dwao.alium.models.SurveyParameters;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;

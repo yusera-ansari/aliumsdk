@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dwao.alium.survey.Alium;
-import com.dwao.alium.survey.SurveyParameters;
+import com.dwao.alium.models.SurveyParameters;
 
 /**
  * A simple {@link Fragment} subclass.

@@ -109,8 +109,10 @@ public class RadioQuestionRenderer implements QuestionRenderer {
                         if(currentquestion.getQuestionSetting().getOtherOption()){
                             if ( position == responseOpt.size() - 1) {
                                 textInputLayout.setVisibility(View.VISIBLE);
+                                textInputEditText.requestFocus();
                             } else  {
-                                textInputLayout.setVisibility(View.INVISIBLE);
+                                textInputLayout.setVisibility(View.GONE);
+                                textInputEditText.clearFocus();
                             }
                         }
                     }

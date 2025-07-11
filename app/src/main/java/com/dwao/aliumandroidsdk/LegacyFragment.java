@@ -9,9 +9,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
-import com.dwao.alium.survey.Alium;
-import com.dwao.alium.survey.SurveyParameters;
-
 public class LegacyFragment extends Fragment {
 
     @Override

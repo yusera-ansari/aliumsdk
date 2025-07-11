@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/text_input_layout"
-
+        app:placeholderText="Enter your response here"
+        app:placeholderTextColor="#373232"
         app:boxCornerRadiusBottomEnd="5dp"
         app:boxCornerRadiusBottomStart="5dp"
         app:boxCornerRadiusTopEnd="5dp"
@@ -40,7 +41,8 @@
             android:id="@+id/text_input_edit_text"
             android:inputType="textMultiLine"
             android:lines="5"
-            android:elegantTextHeight="true"
+            android:textSize="16sp"
+
             android:background="@color/white"
 
 

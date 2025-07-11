@@ -1,12 +1,12 @@
-package com.dwao.alium.survey;
+package com.dwao.alium.models;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SurveyParameters implements Serializable {
-    String screenName;
-    Map<String, String> customerVariables;
+    public String screenName;
+    public Map<String, String> customerVariables;
     public SurveyParameters(String screenName){
         this.screenName=screenName;
         this.customerVariables=new HashMap<>();

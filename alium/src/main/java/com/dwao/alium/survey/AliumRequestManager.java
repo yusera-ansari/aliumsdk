@@ -23,12 +23,12 @@ class AliumRequestManager {
         SLQHandler execSurLoaderDM= surveyExecutingMap.get(screenName);
         if(execSurLoaderDM!=null){
             Queue<AliumSurveyLoader> loadedQueue=execSurLoaderDM.loadedQueue;
-            Log.d("SLQ", "loaded queue: "+loadedQueue.toString());
+            
             if(!loadedQueue.isEmpty()){
                 Iterator<AliumSurveyLoader> iterator=loadedQueue.iterator();
                 while( iterator.hasNext()){
                     AliumSurveyLoader loader=iterator.next();
-                    Log.d("SLQ", "loaded queue: "+loader.getLoaderId()+" id: "+id);
+                    
                     if(loader.getLoaderId().equals(id)){
                         return loader.surveyDialogCallback;
                     }
@@ -40,42 +40,37 @@ class AliumRequestManager {
 
 synchronized  void executeNextRequest(Queue<AliumRequest> aliumRequestQueue){
 
-        Log.d("exec nex","execute next trigger");
+       
         if(isAliumRequestExecuting||aliumRequestQueue.isEmpty()){
-            Log.d("exec nex","execute next trigger "+isAliumRequestExecuting +" "+aliumRequestQueue.isEmpty());
+            
             if(aliumRequestQueue.isEmpty()){
-                Log.d("exec nex", "trigger request queue is empty");
+                
                 isAliumRequestExecuting=false;
             }
             return;
         }
         isAliumRequestExecuting=true;
-        Log.d("exec nex","execute next trigger");
+       
         AliumRequest request= aliumRequestQueue.poll();
 
 
         if (request != null){
             if(request.type.equals(AliumRequest.Request.TRIGGER)){
-                Log.d("REQUEST", "request for trigger: "+request.request.surveyParameters.screenName);
-                TriggerRequest triggerRequest = request.request;
+                    TriggerRequest triggerRequest = request.request;
 
                 SLQHandler slqHandler = surveyExecutingMap.get(triggerRequest.surveyParameters.screenName);
                 if (slqHandler == null) {
                     slqHandler = new SLQHandler(triggerRequest.surveyParameters.screenName);
                     surveyExecutingMap.put(triggerRequest.surveyParameters.screenName, slqHandler);
                 }
-                Log.d("slqman","checking loaded queue before making request..." );
                 if(slqHandler.loadedQueue.isEmpty()){ //limits the loader to one per screen
-                    Log.d("slqman", "loaded queue is empty....adding request...");
                     slqHandler.offer(triggerRequest);
                 }
             }else{
-                Log.d("REQUEST", "request for STOP executing...."+ request.screenName);
                 stop(request.screenName);
             }
 
         }
-        Log.d("exec nex","execute next trigger completed");
         isAliumRequestExecuting=false;
         executeNextRequest(aliumRequestQueue);
 }

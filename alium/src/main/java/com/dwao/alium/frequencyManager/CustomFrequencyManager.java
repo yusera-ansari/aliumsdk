@@ -2,7 +2,7 @@ package com.dwao.alium.frequencyManager;
 
 import android.util.Log;
 
-import com.dwao.alium.survey.CustomFreqSurveyData;
+import com.dwao.alium.models.CustomFreqSurveyData;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 
 import org.json.JSONException;

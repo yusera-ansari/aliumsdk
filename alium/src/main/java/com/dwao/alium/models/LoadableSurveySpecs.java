@@ -1,14 +1,12 @@
-package com.dwao.alium.survey;
+package com.dwao.alium.models;
 
-
-import android.net.Uri;
 
 import java.io.Serializable;
 
 public class LoadableSurveySpecs  implements Serializable {
-    String key, surveyFreq, thankYouMsg;
-    String uri;
-    int currentIndex=0;
+    public String key, surveyFreq, thankYouMsg;
+    public String uri;
+    public int currentIndex=0;
 
     public int getCurrentIndex() {
         return currentIndex;
@@ -17,7 +15,7 @@ public class LoadableSurveySpecs  implements Serializable {
     public void setCurrentIndex(int currentIndex) {
         this.currentIndex = currentIndex;
     }
-    CustomFreqSurveyData customSurveyData;
+    public CustomFreqSurveyData customSurveyData;
 
     public LoadableSurveySpecs(String key, String surveyFreq, String uri,  CustomFreqSurveyData customSurveyData) {
         this.key = key;
