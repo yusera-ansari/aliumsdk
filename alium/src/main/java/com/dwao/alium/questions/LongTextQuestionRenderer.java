@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dwao.alium.R;
+import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -25,7 +26,22 @@ public class LongTextQuestionRenderer implements QuestionRenderer {
         this.surveyUi=surveyUi;
         return this;
     }
+    private boolean isRequired = false;
 
+    private Question currentquestion;
+    public Question getCurrentquestion() {
+        return currentquestion;
+    }
+
+    public LongTextQuestionRenderer setCurrentquestion(Question currentquestion) {
+        this.currentquestion = currentquestion;
+        return this.setRequired(this.currentquestion.getQuestionSetting().getRequired());
+
+    }
+    private LongTextQuestionRenderer setRequired(boolean required) {
+        isRequired = required;
+        return this;
+    }
     @Override
     public void renderQuestion(Context context, ViewGroup layout, QuestionResponse currentQuestionResponse
     ,View nextQuestionBtn) {
@@ -42,19 +58,19 @@ public class LongTextQuestionRenderer implements QuestionRenderer {
 
         GradientDrawable d= (GradientDrawable)textInputLayout.getBackground();
         d.mutate();
-        input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-
-                if(hasFocus){
-
-                    d.setStroke(2, Color.BLUE);
-                }else{
-
-                    d.setStroke(2, Color.BLACK);
-                }
-            }
-        });
+//        input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//
+//                if(hasFocus){
+//
+//                    d.setStroke(2, Color.BLUE);
+//                }else{
+//
+//                    d.setStroke(2, Color.BLACK);
+//                }
+//            }
+//        });
         input.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -65,8 +81,9 @@ public class LongTextQuestionRenderer implements QuestionRenderer {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 currentQuestionResponse.setQuestionResponse(input.getText().toString().trim()
                         .replace(" ", "%20"));
-                setCtaEnabled(nextQuestionBtn, !currentQuestionResponse.getQuestionResponse().isEmpty());
-//                Log.d("Alium-input", currentQuestionResponse.getQuestionResponse());
+                if(isRequired){
+                    setCtaEnabled(nextQuestionBtn, !currentQuestionResponse.getQuestionResponse().isEmpty());
+                }
             }
 
             @Override
@@ -74,8 +91,8 @@ public class LongTextQuestionRenderer implements QuestionRenderer {
 
             }
         });
-//                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
-//                        .getString("question")));
+
+        input.requestFocus();
         layout.addView(longtextQues);
     }
 }

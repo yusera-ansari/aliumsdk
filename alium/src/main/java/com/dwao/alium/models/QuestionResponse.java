@@ -1,12 +1,35 @@
 package com.dwao.alium.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class QuestionResponse implements Serializable {
     int questionId, indexOfSelectedAnswer=0;
+    List<Integer> indexOfSelectedAnswers= new ArrayList<>( );
 
     public int getIndexOfSelectedAnswer() {
         return indexOfSelectedAnswer;
+    }
+
+    public List<Integer> getIndexOfSelectedAnswers() {
+        return indexOfSelectedAnswers;
+    }
+
+    @Override
+    public String toString() {
+        return "QuestionResponse{" +
+                "questionId=" + questionId +
+                ", indexOfSelectedAnswer=" + indexOfSelectedAnswer +
+                ", indexOfSelectedAnswers=" + (indexOfSelectedAnswers) +
+                ", questionResponse='" + questionResponse + '\'' +
+                ", ResponseType='" + ResponseType + '\'' +
+                '}';
+    }
+
+    public void setIndexOfSelectedAnswers(List<Integer> indexOfSelectedAnswers) {
+        this.indexOfSelectedAnswers = indexOfSelectedAnswers;
     }
 
     public void setIndexOfSelectedAnswer(int indexOfSelectedAnswer) {

@@ -1,26 +1,25 @@
 package com.dwao.alium.survey;
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
-import android.util.Log;
 
-import androidx.fragment.app.Fragment;
-//import androidx.lifecycle.ProcessLifecycleOwner;
+import android.os.Handler;
+import android.os.Looper;
 
-import com.dwao.alium.listeners.VolleyResponseListener;
-import com.dwao.alium.models.SurveyConfig;
+import com.dwao.alium.listeners.ResponseListener;
+
+import com.dwao.alium.models.SurConf;
+import com.dwao.alium.models.SurveyParameters;
 import com.dwao.alium.models.TriggerRequest;
-import com.dwao.alium.network.VolleyService;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.dwao.alium.network.CustomNetworkService;
+
+import com.dwao.alium.services.Logger;
+import com.dwao.alium.utils.jsonhandlers.AliumJSONParser;
+import com.dwao.alium.utils.preferences.AliumPreferences;
+
 
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Queue;
 
 //main class
@@ -28,136 +27,145 @@ import java.util.Queue;
 
 public class Alium {
 
-     private static JSONObject surveyConfigJSON;
-     static volatile Map<String, SurveyConfig> surveyConfigMap =new HashMap<>();
-     protected static AppLifeCycleListener appLifeCycleListener;
+
+     static volatile SurConf surveyConfig =null;
+
+
      private static volatile Alium instance;
-     private static boolean appState=false;
-     static boolean isAppInForeground(){
-        return appState;
-    }
-     private static VolleyService volleyService;
+
      private static String configURL;
-     private SLQHandlerManager slqHandlerManager=new SLQHandlerManager();
-     private volatile   Queue<TriggerRequest> triggerRequestQueue=new LinkedList<>();
+     private AliumRequestManager aliumRequestManager=new AliumRequestManager();
+     private static AliumPreferences preferences;
+
+     private volatile  Queue<AliumRequest> aliumRequestQueue = new LinkedList<>();
      private static volatile boolean isConfigFetching=false;
      private  Alium(){
-         surveyConfigJSON=new JSONObject();
+
      }
 
     public static void config(Application application,String url){
-
             if(instance==null){
                 synchronized (Alium.class){
                     if(instance==null){
-                        volleyService=VolleyService.getInstance(application);
                         instance=new Alium();
+                        preferences= AliumPreferences.setInstance(application);
                     }
                 }
             }
         if( url.trim().isEmpty()){
-            Log.e("Alium", "Configuration URL can't be empty. Please set a valid url: "+url );
-//             throw new IllegalStateException("Configuration URL can't be empty. Please set a valid url: "+url );
+            Logger.log(Logger.LogLevel.ERROR, "config","Configuration URL can't be empty. Please set a valid url: "+url );
+//            Log.e("Alium", "Configuration URL can't be empty. Please set a valid url: "+url );
             return;
         }
             if(configURL==null ){
                synchronized (Alium.class){
                    if(configURL==null){
-                       Log.d("CONFIG", "url is null! setting....");
+//                       android.util.Log.d("CONFIG", "url is null! setting....");
+                       Logger.log(Logger.LogLevel.DEBUG, "config","url is null! setting value to: "+url);
                        configURL=url;
-                       surveyConfigJSON=new JSONObject();
+                       Logger.log(Logger.LogLevel.INFO, "config", "url set to "+url);
                        instance.fetchConfigJson( );
                    }
                }
             }
-            if(!configURL.equals(url)) {
+            else if(!configURL.equals(url)) {
               synchronized (Alium.class){
                   if(!configURL.equals(url)){
+                      Logger.log(Logger.LogLevel.DEBUG, "config", "Resetting url from "+configURL+" to "+url);
                       configURL = url;
-                      surveyConfigJSON=new JSONObject();
+                      Logger.log(Logger.LogLevel.INFO, "config", "url set to "+url);
                       instance.fetchConfigJson( );
                   }
               }
             }
-        }
+     }
 
 
 
 
     public static void stop(String screenName){
-       instance.slqHandlerManager.stop(screenName);
+         Logger.log(Logger.LogLevel.DEBUG, "stop", "called on stop on "+screenName);
+        instance.aliumRequestQueue.offer(new AliumRequest(  screenName));
+        if(configURL==null||isConfigFetching ){return;}
+       instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
     }
 
-      void fetchConfigJson( ){
-        isConfigFetching=true;
-        volleyService.callVolley(  configURL,
-                new Alium.ConfigURLResponseListener());
+      void fetchConfigJson(){
+          isConfigFetching=true;
+//          String config = preferences.getConfig();
+          Logger.log(Logger.LogLevel.DEBUG, "fetch-config", "initiate config details fetching...");
+          String config = null;
+          try{
+              if (config != null) {
+
+                  surveyConfig = AliumJSONParser.getSurConfFromJSON(new JSONObject(config));
+                  isConfigFetching=false;
+              }else{
+                  throw new NullPointerException("config in sharepref is null");
+              }
+          }catch (Exception e){
+              Logger.log(Logger.LogLevel.ERROR,"fetch-config", e.toString());
+              Logger.log(Logger.LogLevel.DEBUG, "fetch-config", "fetching config from config url: "+configURL);
+              CustomNetworkService.getNetworkData(  configURL,
+                      new Alium.ConfigURLResponseListener());
+          }
+
     }
 
+    private static void initiateTrigger(Object object, SurveyParameters parameters ){
+        try{
+            Logger.log(Logger.LogLevel.INFO, "init-trigger", "trigger called on"+parameters.screenName);
+            if (configURL == null) {
+                Logger.log(Logger.LogLevel.ERROR,"init-trigger", "Configuration URL not set. Call configure() method first.");
+                return;
+            }
+
+            Logger.log(Logger.LogLevel.DEBUG, "init-trigger", "adding to request queue...");
+            instance.aliumRequestQueue.offer(new AliumRequest(  new TriggerRequest(object, parameters)));
+
+
+            if(surveyConfig==null && !isConfigFetching) {
+                instance.fetchConfigJson();
+            }else{
+                if(configURL==null||isConfigFetching ){return;}
+                instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
+
+            }
+        }catch (Exception e){
+            Logger.log(Logger.LogLevel.ERROR, "init-trigger", e.toString());
+
+        }
+    }
     public static synchronized void trigger( Activity activity, SurveyParameters parameters){
-        if (configURL == null) {
-            Log.e("Alium", "Configuration URL not set. Call configure() method first.");
-//            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
-            return;
-        }
-        instance.triggerRequestQueue.offer(new TriggerRequest(activity, parameters));
-        for(TriggerRequest request: instance.triggerRequestQueue){
-            Log.d("Thread", "Thread is :"+ Thread.currentThread().getName());
-            Log.d("MyRequest", "request is not empty: "+request.surveyParameters.screenName);
-        }
 
-        if(surveyConfigMap.isEmpty() && !isConfigFetching) {
-            instance.fetchConfigJson(  );
-         }else{
-            if(configURL==null||isConfigFetching ){return;}  instance.slqHandlerManager.executeNextTrigger(instance.triggerRequestQueue);
-        }
+       initiateTrigger(activity, parameters);
     }
 
-    public static synchronized void trigger( Fragment fragment, SurveyParameters parameters){
-        if (configURL == null) {
-            Log.e("Alium", "Configuration URL not set. Call configure() method first.");
-//            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
-            return;
-        }
-        for(TriggerRequest request: instance.triggerRequestQueue){
-            Log.d("My request", "request is not empty: "+request.surveyParameters.screenName);
-        }
-        instance.triggerRequestQueue.offer(new TriggerRequest(fragment, parameters));
-        if(surveyConfigMap.isEmpty() && !isConfigFetching) {
-            instance.fetchConfigJson( );
-        }else{
-            if(configURL==null||isConfigFetching ){return;}   instance.slqHandlerManager.executeNextTrigger(instance.triggerRequestQueue);
-        }
-    }
 
-    public static synchronized void trigger(android.app.Fragment fragment, SurveyParameters parameters){
-        if (configURL == null) {
-            Log.e("Alium", "Configuration URL not set. Call configure() method first.");
-//            throw new IllegalStateException("Configuration URL not set. Call configure() method first.");
-            return;
-        }
-        for(TriggerRequest request: instance.triggerRequestQueue){
-            Log.d("My request", "request is not empty: "+request.surveyParameters.screenName);
-        }
-        instance.triggerRequestQueue.offer(new TriggerRequest(fragment, parameters));
-        if(surveyConfigMap.isEmpty() && !isConfigFetching) {
-            instance.fetchConfigJson(  );
-        }else{
-            if(configURL==null||isConfigFetching ){return;}   instance.slqHandlerManager.executeNextTrigger(instance.triggerRequestQueue);
-        }
-    }
-
-    private static class ConfigURLResponseListener implements VolleyResponseListener{
+    private static class ConfigURLResponseListener implements ResponseListener{
         @Override
         public void onResponseReceived(JSONObject jsonObject) {
-            surveyConfigJSON=jsonObject;
-            Gson gson=new Gson();
-            Type mapType = new TypeToken<HashMap<String,SurveyConfig >>(){}.getType();
-            surveyConfigMap = gson.fromJson(jsonObject.toString(), mapType);
-            Log.d("THREAD", "on response received: "+Thread.currentThread().getName());
-            isConfigFetching=false;
-            if(configURL==null||isConfigFetching ){return;}  instance.slqHandlerManager.executeNextTrigger(instance.triggerRequestQueue);
-        }
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+
+                try{
+                    surveyConfig= AliumJSONParser.getSurConfFromJSON(jsonObject);
+                    Logger.log(Logger.LogLevel.INFO, "config-resp",
+                            "received response for config "+surveyConfig.toString());
+                    preferences.storeConfig(jsonObject.toString());
+                    isConfigFetching=false;
+                    if(configURL==null||isConfigFetching ){return;}
+                    instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
+
+                }catch (Exception e){
+                    Logger.log(Logger.LogLevel.ERROR, "config-resp", e.toString());
+
+                }
+            }
+        });
+
+           }
      }
 
 }

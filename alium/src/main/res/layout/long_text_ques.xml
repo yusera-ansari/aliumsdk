@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/text_input_layout"
-        android:layout_marginVertical="10dp"
+        app:placeholderText="Enter your response here"
+        app:placeholderTextColor="#373232"
         app:boxCornerRadiusBottomEnd="5dp"
         app:boxCornerRadiusBottomStart="5dp"
         app:boxCornerRadiusTopEnd="5dp"
@@ -22,9 +23,10 @@
         android:gravity="center_horizontal"
         app:boxStrokeWidthFocused="0dp"
         app:counterMaxLength="280"
+
         app:counterOverflowTextAppearance="@color/black"
         android:padding="5dp"
-        app:counterEnabled="true"
+        app:counterEnabled="false"
        app:hintEnabled="false"
         app:boxStrokeColor="@color/white"
         android:background="@drawable/text_input_layout_bg"
@@ -39,7 +41,8 @@
             android:id="@+id/text_input_edit_text"
             android:inputType="textMultiLine"
             android:lines="5"
-            android:elegantTextHeight="true"
+            android:textSize="16sp"
+
             android:background="@color/white"
 
 
