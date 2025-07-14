@@ -15,6 +15,7 @@ import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
 import com.dwao.alium.models.SurveyParameters;
+import com.dwao.alium.services.Logger;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 
 import org.json.JSONException;
@@ -73,7 +74,7 @@ abstract class SurveyController {
     @CallSuper
     protected void show(){
         if(shouldUpdatePreferences){
-            Log.i("shouldUpdatePreferences", ""+shouldUpdatePreferences);
+
             if (!loadableSurveySpecs.surveyFreq.equals("os")) {//untilresponse
                 if(currentIndx>=responseSubmitIndex){
                     surveyFrequencyManager.recordSurveyTriggerOnPreferences(
@@ -103,7 +104,6 @@ abstract class SurveyController {
         try{
             if(question!=null && !question.getConditionMapping().isEmpty()){
                 List<Integer> conditionMappingArray=question.getConditionMapping();
-                Log.e("condition-index", conditionMappingArray.toString()+"" +currentQuestionResponse.getIndexOfSelectedAnswer() );
 
                 int nextQuestIndx= conditionMappingArray.get(
                         currentQuestionResponse.getIndexOfSelectedAnswer()
@@ -116,10 +116,9 @@ abstract class SurveyController {
                 }else {
                     currentIndx=nextQuestIndx;//set currentIndx as nextQuestIndx
                 }
-                Log.e("condition", "" +currentQuestionResponse.getIndexOfSelectedAnswer()+" nxtQuesIndx: "+nextQuestIndx );
             }
         }catch (Exception e){
-            Log.e("Condition Map", e.toString());
+            Logger.log(Logger.LogLevel.ERROR,"Condition-Map", e.toString());
             currentIndx++;
         }
     }
@@ -142,7 +141,7 @@ abstract class SurveyController {
 
             currentQuestionResponse.setIndexOfSelectedAnswer(0);
         }catch (Exception e){
-            Log.d("updateQuestionResp", e.toString());
+            Logger.log(Logger.LogLevel.ERROR,"updateQuestionResp", e.toString());
         }
     }
 

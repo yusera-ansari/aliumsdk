@@ -18,6 +18,7 @@ import com.dwao.alium.listeners.NpsOptionClickListener;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
 import com.dwao.alium.models.ThemeColors;
+import com.dwao.alium.services.Logger;
 
 import org.json.JSONObject;
 
@@ -47,13 +48,6 @@ public class NpsGridViewAdapter extends BaseAdapter{
         }else{
             this.selectedOption=position;
 
-//            if(position>5){
-//                currentQuestionResponse.setIndexOfSelectedAnswer(2);
-//            }else if(position<5){
-//                currentQuestionResponse.setIndexOfSelectedAnswer(0);
-//            }else {
-//                currentQuestionResponse.setIndexOfSelectedAnswer(1);
-//            }
 
         }
        if(selectedOption!=-1) {
@@ -64,7 +58,7 @@ public class NpsGridViewAdapter extends BaseAdapter{
            currentQuestionResponse.setQuestionResponse("");
            currentQuestionResponse.setIndexOfSelectedAnswer(-1);
        };
-       Log.d("selected Opt", ""+selectedOption);
+
        notifyDataSetChanged();
     }
     @Override
@@ -104,12 +98,11 @@ public class NpsGridViewAdapter extends BaseAdapter{
                     npsOption.setTextColor(Color.parseColor(themeColors.getColor12()
                            ));
             } catch (Exception e) {
-                Log.e("surveyUICheckBox", e.toString());
+                Logger.log(Logger.LogLevel.ERROR,"surveyUICheckBox", e.toString());
             }
         }
         if(selectedOption==position){
             try{
-//                assert surveyUi != null; //this will throw assertion error
 
                 d.setColor(Color.parseColor(themeColors.getColor13() ));
                 npsOption.setTextColor(Color.parseColor(themeColors.getColor14()));

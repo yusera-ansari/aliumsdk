@@ -15,6 +15,7 @@ import androidx.appcompat.view.ContextThemeWrapper;
 
 import com.dwao.alium.listeners.RatingClickListener;
 import com.dwao.alium.models.ThemeColors;
+import com.dwao.alium.services.Logger;
 
 public class CustomRatingView extends LinearLayout {
     private int iconCount = 5;
@@ -66,7 +67,7 @@ public class CustomRatingView extends LinearLayout {
         removeAllViews();
         setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
         RatingIconDrawable drawable=  RatingIconDrawableFactory.getDrawable(this.ratingType, context);
-        Log.e("Image icon", "icon: "+drawable);
+
         if(ratingType.equals(RatingType.emoji)){
             filledIconList = drawable.getFilledIconList();
         }
@@ -74,7 +75,7 @@ public class CustomRatingView extends LinearLayout {
             emptyIcon = drawable.getEmptyIcon();
 
         icon = new ImageView[iconCount];
-        Log.e("Image icon", "icon: "+icon.toString());
+
         for (int i = 0; i < iconCount; i++) {
             final int index = i;
 
@@ -117,10 +118,9 @@ public class CustomRatingView extends LinearLayout {
 
     public CustomRatingView setRating(float rating) {
         try{
-            Log.d("rating", "current rating..." + rating);
+
             currentRating = rating;
             for (int i = 0; i < iconCount; i++) {
-Log.d("rating", "index: "+i+" iconCount: "+iconCount+" rating: "+rating);
 
                 if (i < rating) {
                     icon[i].setImageDrawable(ratingType.equals(RatingType.emoji) ?
@@ -131,7 +131,6 @@ Log.d("rating", "index: "+i+" iconCount: "+iconCount+" rating: "+rating);
                         icon[i].setColorFilter(Color.parseColor(themeColors.getColor21()));
                     }
                 } else {
-                    Log.d("rating2", "current rating..." + rating);
                     icon[i].setImageDrawable(emptyIcon);
                     icon[i].setColorFilter(Color.parseColor(themeColors.getColor19()));
                 }
@@ -140,7 +139,7 @@ Log.d("rating", "index: "+i+" iconCount: "+iconCount+" rating: "+rating);
                 listener.onClick((int) (rating -1));
             }
         } catch (Exception e) {
-            Log.e("CustomRating", "error: "+e);
+            Logger.log(Logger.LogLevel.ERROR,"CustomRating", "error: "+e);
         }
         return this;
     }

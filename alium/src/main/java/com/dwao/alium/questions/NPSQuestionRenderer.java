@@ -61,7 +61,7 @@ public class NPSQuestionRenderer implements QuestionRenderer {
         GridView npsRecView=npsQues.findViewById(R.id.nps_recy_view);
         if(currentQuestionResponse.getQuestionResponse().isEmpty() && currentQuestionResponse.getIndexOfSelectedAnswer()==0){
             currentQuestionResponse.setIndexOfSelectedAnswer(-1);
-            Log.d("index", "resetting the indes");
+
         }
         NpsOptionClickListener listener=new NpsOptionClickListener() {
             @Override

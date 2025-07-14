@@ -1,6 +1,8 @@
 package com.dwao.aliumandroidsdk;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -68,11 +70,11 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        FragmentManager fragmentManager = getFragmentManager();
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        LegacyFragment fragment = new LegacyFragment();
-//        fragmentTransaction.add(R.id.fragment_container, fragment);
-//        fragmentTransaction.commit();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        LegacyFragment fragment = new LegacyFragment();
+        fragmentTransaction.add(R.id.fragment_container, fragment);
+        fragmentTransaction.commit();
 
         Log.d("Activity", ""+this.getClass().getSimpleName());
         next=findViewById(R.id.main_next);

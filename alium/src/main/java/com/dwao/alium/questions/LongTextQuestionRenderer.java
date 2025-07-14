@@ -84,7 +84,6 @@ public class LongTextQuestionRenderer implements QuestionRenderer {
                 if(isRequired){
                     setCtaEnabled(nextQuestionBtn, !currentQuestionResponse.getQuestionResponse().isEmpty());
                 }
-//                Log.d("Alium-input", currentQuestionResponse.getQuestionResponse());
             }
 
             @Override
@@ -92,8 +91,7 @@ public class LongTextQuestionRenderer implements QuestionRenderer {
 
             }
         });
-//                if(surveyUi!=null)currentQuestion.setTextColor(Color.parseColor(surveyUi
-//                        .getString("question")));
+
         input.requestFocus();
         layout.addView(longtextQues);
     }

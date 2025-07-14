@@ -9,18 +9,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dwao.alium.R;
-import com.dwao.alium.adapters.RatingAdapter;
 import com.dwao.alium.listeners.RatingClickListener;
 import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.QuestionSetting;
 import com.dwao.alium.models.ThemeColors;
+import com.dwao.alium.services.Logger;
 
 import java.util.List;
 
 public class RatingQuestionRenderer implements QuestionRenderer{
 
-RatingAdapter ratingAdapter;
 List<String> ratingOptions;
     ThemeColors themeColors;
     QuestionSetting questionSetting;
@@ -67,10 +66,8 @@ List<String> ratingOptions;
     public void renderQuestion(Context context, ViewGroup layout, QuestionResponse currentQuestionResponse, View nextQuestionBtn) {
         View view = LayoutInflater.from(context).inflate(R.layout.rating_question, null);
         CustomRatingView customRatingView=view.findViewById(R.id.custom_rating_view);
-        Log.d("current", "current response: "+currentQuestionResponse.getIndexOfSelectedAnswer());
         if(currentQuestionResponse.getQuestionResponse().isEmpty() && currentQuestionResponse.getIndexOfSelectedAnswer()==0){
             currentQuestionResponse.setIndexOfSelectedAnswer(-1);
-            Log.d("index", "resetting the indes");
         }
 
         RatingClickListener listener=new RatingClickListener() {
@@ -96,7 +93,7 @@ List<String> ratingOptions;
                 ratingType=RatingType.valueOf(questionSetting.getRatingType().toLowerCase());
             }
         }catch (Exception e){
-                Log.e("RatingType", "RatingType Doesn't exist"+questionSetting.getRatingType());
+                Logger.log(Logger.LogLevel.ERROR,"RatingType", "RatingType Doesn't exist"+questionSetting.getRatingType());
         }
             customRatingView.setRatingType(ratingType)
                             .setIconCount(ratingOptions.size())

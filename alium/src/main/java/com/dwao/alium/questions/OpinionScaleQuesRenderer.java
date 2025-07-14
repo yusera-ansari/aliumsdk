@@ -57,7 +57,6 @@ public class OpinionScaleQuesRenderer implements QuestionRenderer{
         if(respOptions!=null)opinionScaleGrid.setNumColumns(respOptions.size());
         if(currentQuestionResponse.getQuestionResponse().isEmpty() && currentQuestionResponse.getIndexOfSelectedAnswer()==0){
             currentQuestionResponse.setIndexOfSelectedAnswer(-1);
-            Log.d("index", "resetting the indes");
         }
         OpinionClickListener listener=new OpinionClickListener() {
             @Override
