@@ -1,5 +1,6 @@
 package com.dwao.alium.utils.preferences;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -10,6 +11,8 @@ import org.json.JSONObject;
 import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,6 +23,7 @@ public class AliumPreferences {
     private SharedPreferences.Editor editor;
     private SharedPreferences aliumSharedPreferences;
 
+//    private Context context;
     public SharedPreferences getAliumSharedPreferences() {
         return aliumSharedPreferences;
     }
@@ -33,12 +37,15 @@ public class AliumPreferences {
         return aliumSharedPreferences.getString("customerId", "");
     }
 
-    public static AliumPreferences getInstance(Context ctx) {
+    public static AliumPreferences setInstance(Application ctx ) {
         if (instance == null) {
             synchronized (AliumPreferences.class) {
                 instance = new AliumPreferences(ctx);
             }
         }
+        return instance;
+    }
+    public static AliumPreferences getInstance( ) {
         return instance;
     }
 
@@ -65,6 +72,47 @@ public class AliumPreferences {
         editor.apply();
 
     }
+
+    public String getConfig(){
+       try{
+           Log.d("getConfig", "getting config from storage...");
+           String lastFetched=aliumSharedPreferences.getString("last_fetched_config", null);
+           String config =aliumSharedPreferences.getString("config", null);
+           if(lastFetched==null||config==null){
+               Log.d("getConfig", "lastFetched==null...");
+               Log.d("getConfig", "config: "+config);
+               Log.d("getConfig", "lastfetched: "+lastFetched);
+
+               return null;
+           }
+
+           SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+           //setting today's time to midnight
+           Date today=format.parse(format.format(Calendar.getInstance().getTime()));
+           if(today==null){
+               return null;
+           }
+           if( today.compareTo(format.parse(lastFetched))>0){
+               Log.d("getConfig", "getting config from storage...");
+               Log.d("getConfig", "today is greater than last fetched....");
+               return null;
+           }
+           Log.d("getConfig", "getting config from storage..."+config);
+           return  config;
+       }catch (Exception e){
+           Log.e("ALium", "getConfig: "+e.toString());
+           return null;
+       }
+    }
+    public void storeConfig(String string){
+        Date today = Calendar.getInstance().getTime();
+        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+
+        editor.putString("last_fetched_config",format.format(today));
+        editor.putString("config", string);
+        editor.apply();
+    }
+
 //
 //    public boolean checkForBasicFrequencyUpdate(String key, String freq) {
 //        if (!aliumSharedPreferences.getString(key, "").isEmpty()) {

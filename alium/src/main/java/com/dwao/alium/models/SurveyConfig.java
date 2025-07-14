@@ -1,6 +1,5 @@
 package com.dwao.alium.models;
 
-import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
@@ -52,7 +51,7 @@ public class SurveyConfig implements Serializable {
         this.srv = srv;
     }
 
-    @SerializedName("appsrv")
+
     public  Srv srv=new Srv();
 
 }

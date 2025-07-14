@@ -2,7 +2,8 @@ package com.dwao.alium.frequencyManager;
 
 import android.util.Log;
 
-import com.dwao.alium.survey.CustomFreqSurveyData;
+import com.dwao.alium.models.CustomFreqSurveyData;
+import com.dwao.alium.services.Logger;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 
 import org.json.JSONException;
@@ -30,7 +31,7 @@ import java.util.Date;
 
     @Override
     public void handleFrequency( ) {
-        Log.d("frequency", "custom frequency");
+//        Log.d("frequency", "custom frequency");
         try {
             String[] freqData = customFreqSurveyData.freq.split("-");
             freqObj.put("showFreq", this.srvShowFreq);
@@ -49,14 +50,14 @@ import java.util.Date;
             }
 
             //key doesn't exists
-            Log.d("frequency", "alium preference does not have your key ");
-
-            Log.d("final-frequency", freqObj.toString());
+//            Log.d("frequency", "alium preference does not have your key ");
+//
+//            Log.d("final-frequency", freqObj.toString());
             aliumPreferences.addToAliumPreferences(this.surveyKey, freqObj.toString());
             Log.d(TAG, freqObj.toString());
         }
         catch (Exception e){
-            Log.e(TAG, e.toString());
+            Logger.log(Logger.LogLevel.ERROR,TAG, e.toString());
         }
     }
 
@@ -74,7 +75,7 @@ import java.util.Date;
         }
 
         String freqDetailString=aliumPreferences.getFromAliumPreferences(this.surveyKey);
-        Log.d("showFreq", "outside frequency comparison---"+ freqDetailString);
+//        Log.d("showFreq", "outside frequency comparison---"+ freqDetailString);
         JSONObject freqDetailJsonObject=null;
         String[] freqData = customFreqSurveyData.freq.split("-");
         if(!freqDetailString.isEmpty()) {
@@ -83,21 +84,21 @@ import java.util.Date;
                 // frq data for integer and custom must be an object
                 freqDetailJsonObject = new JSONObject(freqDetailString);
             } catch (JSONException e) {
-                Log.e("frequency-Exception", " removing the key: " + freqDetailString + e.toString());
+                Logger.log(Logger.LogLevel.ERROR,"frequency-Exception", " removing the key: " + freqDetailString + e.toString());
                 aliumPreferences.removeFromAliumPreferences(this.surveyKey);
             }
-            Log.i("handleShouldShowOnTime","custom freq");
+            Logger.log(Logger.LogLevel.INFO,"handleShouldShowOnTime","custom freq");
 
         }
        if(freqDetailJsonObject!=null){
            if (hasFrequencyChanged(customFreqSurveyData, freqDetailJsonObject)) {
                aliumPreferences.removeFromAliumPreferences(this.surveyKey);
-               Log.i(TAG,"1"+ freqDetailJsonObject.toString());
+//               Log.i(TAG,"1"+ freqDetailJsonObject.toString());
            }
        }
-        Log.i("handleShouldShowOnTime", customFreqSurveyData.toString());
+//        Log.i("handleShouldShowOnTime", customFreqSurveyData.toString());
         if(freqData[1].equals("min")||freqData[1].equals("hrs")){
-            Log.i("handleShouldShowOnTime", customFreqSurveyData.toString());
+//            Log.i("handleShouldShowOnTime", customFreqSurveyData.toString());
             return handleShouldShowOnTime(this.surveyKey); //throw invalid custom frequency error
         }
         else  {
@@ -110,7 +111,7 @@ import java.util.Date;
             String key
     ) throws JSONException, ParseException {
         String TAG="handleShouldShowOnDay";
-        Log.i(TAG, customFreqSurveyData.toString());
+//        Log.i(TAG, customFreqSurveyData.toString());
         String[] freqData = customFreqSurveyData. freq.split("-");
         String freqDetailString=aliumPreferences.getFromAliumPreferences(key);
 
@@ -149,7 +150,7 @@ import java.util.Date;
        setTimeToMidNight(calendar);
          calendar.add(Calendar.DAY_OF_MONTH, Integer.parseInt(freqData[0]));
          Date nextShowOn=calendar.getTime();
-         Log.d("last shown", lastShownDate+" "+format.format(today));
+//         Log.d("last shown", lastShownDate+" "+format.format(today));
          return today.compareTo(nextShowOn)>=0;
      }
 
@@ -162,8 +163,8 @@ import java.util.Date;
          Date today = todayCal.getTime();
                  SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
                  boolean isTodayAfter=today.compareTo(format.parse(endOn))>0;
-                 Log.d("todays",endOn+" "+format.format(today)
-                 +" "+isTodayAfter+" "+today.compareTo(format.parse(endOn)));
+//                 Log.d("todays",endOn+" "+format.format(today)
+//                 +" "+isTodayAfter+" "+today.compareTo(format.parse(endOn)));
                  //>0 means after end date
                  return today.compareTo(format.parse(endOn))>0;
 
@@ -179,7 +180,7 @@ import java.util.Date;
             setTimeToMidNight(todayCal);
          Date today = todayCal.getTime();
             SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
-         Log.d("beforeSTrat", startOn+" "+format.format(today));
+//         Log.d("beforeSTrat", startOn+" "+format.format(today));
             //<0 before to start date
             return today.compareTo(format.parse(startOn))<0;
      }
@@ -211,25 +212,25 @@ import java.util.Date;
         long lastShownOnMillis=lastShownOnMillis=0L;
          if(!freqDetailString.isEmpty()){
              freqDetailJsonObject=new JSONObject(freqDetailString);
-             Log.i(TAG,"0"+ freqDetailJsonObject.toString());
+//             Log.i(TAG,"0"+ freqDetailJsonObject.toString());
              if(freqDetailJsonObject.has("lastShownOnMillis")){
                  lastShownOnMillis=freqDetailJsonObject.getLong("lastShownOnMillis");
              }
          }
-         Log.i(TAG,"2"+ customFreqSurveyData.toString());
+//         Log.i(TAG,"2"+ customFreqSurveyData.toString());
          if (isTodayBeforeStartDate(customFreqSurveyData.startOn)) {
              return false;
          }
-         Log.i(TAG,"3"+ customFreqSurveyData.toString());
+//         Log.i(TAG,"3"+ customFreqSurveyData.toString());
          if (isTodayAfterEndDate(customFreqSurveyData.endOn)) {
              return false;
          }
-         Log.i(TAG,"4"+ customFreqSurveyData.toString());
+//         Log.i(TAG,"4"+ customFreqSurveyData.toString());
         long intervalInMillis=getLongIntervalInMillis(freqData);
         boolean hasIntervalCrossed=(System.currentTimeMillis()-
                 lastShownOnMillis) >=intervalInMillis;
         if(!hasIntervalCrossed){
-            Log.d(TAG, "interval hasn't crossed");
+//            Log.d(TAG, "interval hasn't crossed");
             return false;
         }
 

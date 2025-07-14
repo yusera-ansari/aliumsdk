@@ -8,7 +8,9 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.dwao.alium.network.VolleyService;
+import com.dwao.alium.network.CustomNetworkService;
+import com.dwao.alium.services.Logger;
+
 
 import java.util.Iterator;
 import java.util.Map;
@@ -16,9 +18,10 @@ import java.util.Map;
 public class SurveyTracker {
 
     private static final String BASE_URL="https://tracker.alium.co.in/tracker?";
+
     private static Uri.Builder getUriBuilder(){
         return new Uri.Builder().scheme("https"
-                ).authority("tracker.alium.co.in")
+                ).authority("demo.dwao.in")
                 .path("tracker");
     }
 
@@ -32,18 +35,19 @@ public class SurveyTracker {
         }
         return appendableTrackString.replace(" ", "%20");
     }
-    public static void trackWithAlium(Context context,  Map<String, String> parameters ) {
+    public static void trackWithAlium(Context context,  Map<String, Object> parameters ) {
         try{
-            VolleyService volleyService=  VolleyService.getInstance();
-            volleyService.loadRequestWithVolley(  getUrl(context, parameters) );
+            CustomNetworkService.postTrackRequest("https://demo.dwao.in/tracker", parameters);
+//            volleyService.loadRequestWithVolley(  getUrl(context, parameters) );
+
         }catch(Exception e){
-            Log.e("track", e.toString());
+            Logger.log(Logger.LogLevel.ERROR,"tracker", e.toString());
         }
     }
     @NonNull
     private static String getUrl(Context context, Map<String, String> parameters ){
         Uri.Builder builder=getUriBuilder();
-        builder.appendQueryParameter("ua", getUserAgent(context));
+        builder.appendQueryParameter("userAgent", getUserAgent(context));
         return builder.build().toString()+getAppendableVariables(parameters);
     }
 }

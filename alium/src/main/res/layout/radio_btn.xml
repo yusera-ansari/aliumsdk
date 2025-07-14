@@ -5,5 +5,10 @@
    android:id="@+id/radio_btn"
     android:text="radio btn text"
     android:textSize="18sp"
+android:button="@drawable/padded_icon"
+
+    android:layout_marginVertical="2dp"
+    android:paddingVertical="10dp"
+    android:background="@drawable/rounded_background"
     android:theme="@style/Theme.AppCompat.Light.NoActionBar"
 />

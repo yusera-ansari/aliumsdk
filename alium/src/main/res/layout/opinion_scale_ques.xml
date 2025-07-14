@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridView
+    android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:numColumns="11"
+    android:horizontalSpacing="2dp"
+    android:verticalSpacing="10dp"
+    android:scrollbars="none"
+    android:layout_centerInParent="true"
+    android:id="@+id/opinion_scale_ques"
+    />

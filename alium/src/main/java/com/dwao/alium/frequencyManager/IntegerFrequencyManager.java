@@ -2,7 +2,7 @@ package com.dwao.alium.frequencyManager;
 
 import android.util.Log;
 
-import com.dwao.alium.survey.CustomFreqSurveyData;
+import com.dwao.alium.services.Logger;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 
 import org.json.JSONException;
@@ -23,11 +23,10 @@ import java.text.ParseException;
         try{
             int freq=Integer.parseInt(this.srvShowFreq);
             JSONObject freqObj=new JSONObject();
-            Log.d("showFreq", " "+freq);
+
             freqObj.put("showFreq",freq);
             freqObj.put("counter", 0);
-            Log.i("frequency-simple",aliumPreferences.getFromAliumPreferences(this.surveyKey));
-            if (!aliumPreferences.getFromAliumPreferences(this.surveyKey).isEmpty()) {
+               if (!aliumPreferences.getFromAliumPreferences(this.surveyKey).isEmpty()) {
                 JSONObject storedFreq=
                         new JSONObject(aliumPreferences.getFromAliumPreferences(this.surveyKey))
                         ;
@@ -43,8 +42,7 @@ import java.text.ParseException;
                 freqObj.put("counter",1);
             }
             aliumPreferences.addToAliumPreferences(this.surveyKey, freqObj.toString());
-            Log.i("showFreq-changed", ""+aliumPreferences.getFromAliumPreferences(this.surveyKey)
-                    +" "+freqObj);
+
         }catch (Exception e){
             Log.e(TAG, e.toString());
         }
@@ -53,8 +51,7 @@ import java.text.ParseException;
     @Override
     public boolean shouldSurveyLoad( ) throws ParseException, JSONException {
             String freqDetailString=aliumPreferences.getFromAliumPreferences(this.surveyKey);
-            Log.d("showFreq", "outside frequency comparison---"+ freqDetailString);
-            JSONObject freqDetailJsonObject=new JSONObject();
+             JSONObject freqDetailJsonObject=new JSONObject();
             if(freqDetailString.isEmpty()){
                 return true;
             }
@@ -63,16 +60,16 @@ import java.text.ParseException;
                 // frq data for integer and custom must be an object
                 freqDetailJsonObject = new JSONObject(freqDetailString);
             } catch (JSONException e) {
-                Log.e("frequency-Exception", " removing the key: " + freqDetailString + e.toString());
+                Logger.log(Logger.LogLevel.ERROR,"frequency-Exception", " removing the key: " + freqDetailString + e.toString());
                 aliumPreferences.removeFromAliumPreferences(this.surveyKey);
                 return true;
             }
 
         int freq=Integer.parseInt(this.srvShowFreq);
-        Log.d("showFreq", "outside frequency comparison 1" + freq);
+//        Log.d("showFreq", "outside frequency comparison 1" + freq);
 
         //this only checks if survey has reached its frequency count
-        Log.d("showFreq", "outside frequency comparison 2 "+freqDetailJsonObject);
+//        Log.d("showFreq", "outside frequency comparison 2 "+freqDetailJsonObject);
         try{
             if(freqDetailJsonObject.getInt("showFreq")==freq){
                 if(freqDetailJsonObject.getInt("counter")==freq){
@@ -81,16 +78,15 @@ import java.text.ParseException;
                 }
             }
         }catch (Exception e){
-            Log.i("frequency","couldn;t convert freq to int "
+            Logger.log(Logger.LogLevel.ERROR,"frequency","couldn;t convert freq to int "
                     +freqDetailJsonObject+ e.toString());
-            Log.i("frequency", "resetting again...");
+//            Log.i("frequency", "resetting again...");
             aliumPreferences.removeFromAliumPreferences(this.surveyKey);
             return true;
 
         }
 
-//            }
-        Log.d("showFreq", "after frequency comparison");
+
 
 
 

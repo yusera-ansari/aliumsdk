@@ -1,0 +1,9 @@
+<!-- res/drawable/custom_rating_drawable.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/background"
+        android:drawable="@drawable/tabler_star" />
+    <item android:id="@android:id/secondaryProgress"
+        android:drawable="@drawable/tabler_star_half_filled" />
+    <item android:id="@android:id/progress"
+        android:drawable="@drawable/tabler_star_filled" />
+</layer-list>

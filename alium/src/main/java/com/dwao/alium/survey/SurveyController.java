@@ -9,14 +9,16 @@ import androidx.annotation.CallSuper;
 
 import com.dwao.alium.frequencyManager.FrequencyManagerFactory;
 import com.dwao.alium.frequencyManager.SurveyFrequencyManager;
+import com.dwao.alium.models.ExecutableSurveySpecs;
+import com.dwao.alium.models.LoadableSurveySpecs;
 import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
+import com.dwao.alium.models.SurveyParameters;
+import com.dwao.alium.services.Logger;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +30,7 @@ abstract class SurveyController {
     Survey survey;
     protected ExecutableSurveySpecs executableSurveySpecs;
 
-
+    int responseSubmitIndex=1;
     protected SurveyParameters surveyParameters;
     protected QuestionResponse currentQuestionResponse=new QuestionResponse();
 
@@ -46,7 +48,7 @@ abstract class SurveyController {
         this.shouldUpdatePreferences=shouldUpdatePreferences;
         this.uuid= UUID.randomUUID().toString();
         this.loadableSurveySpecs=loadableSurveySpecs;
-        this.aliumPreferences= AliumPreferences.getInstance(context);
+        this.aliumPreferences= AliumPreferences.getInstance();
         this.surveyFrequencyManager=  FrequencyManagerFactory
                 .getFrequencyManager(aliumPreferences, loadableSurveySpecs.key,
                 loadableSurveySpecs.surveyFreq,
@@ -54,10 +56,10 @@ abstract class SurveyController {
     }
 
     abstract protected void generateQuestion(String responseType) throws JSONException;
-    abstract protected Map<String, String > generateTrackingParameters();
+    abstract protected Map<String, Object > generateTrackingParameters();
     @CallSuper
     protected void  showCurrentQuestion( ) {
-        updateCurrentQuestionResponse();
+      if(shouldUpdatePreferences)  updateCurrentQuestionResponse();
     }
     @CallSuper
     protected void handleNextQuestion() throws JSONException {
@@ -66,22 +68,35 @@ abstract class SurveyController {
         handleConditionMapping(survey.getQuestions().get(currentIndx));
 
     };
-
+    //os: Once per Submit -untilresponse
+    //o: Once - onlyonce
+    //rp: Repeatedly -overandover
     @CallSuper
     protected void show(){
         if(shouldUpdatePreferences){
-            Log.i("shouldUpdatePreferences", ""+shouldUpdatePreferences);
-            if (!loadableSurveySpecs.surveyFreq.equals("untilresponse"))
-                surveyFrequencyManager.recordSurveyTriggerOnPreferences(
-                );
+
+            if (!loadableSurveySpecs.surveyFreq.equals("os")) {//untilresponse
+                if(currentIndx>=responseSubmitIndex){
+                    surveyFrequencyManager.recordSurveyTriggerOnPreferences(
+                    );
+                }
+
+            }
             trackWithAlium(context, generateTrackingParameters());
         }
+    shouldUpdatePreferences=true;
     }
 
     @CallSuper
     protected  void submitSurvey(){
-        if(loadableSurveySpecs.surveyFreq.equals("untilresponse"))surveyFrequencyManager.recordSurveyTriggerOnPreferences(
-        );
+        if(loadableSurveySpecs.surveyFreq.equals("os")
+        && !currentQuestionResponse.getResponseType().equals("0")
+        ){
+            if(currentIndx>=responseSubmitIndex){
+                surveyFrequencyManager.recordSurveyTriggerOnPreferences(
+                );
+            }
+        }
     };
 
 
@@ -89,7 +104,7 @@ abstract class SurveyController {
         try{
             if(question!=null && !question.getConditionMapping().isEmpty()){
                 List<Integer> conditionMappingArray=question.getConditionMapping();
-                Log.e("condition-index", conditionMappingArray.toString()+"" +currentQuestionResponse.getIndexOfSelectedAnswer() );
+
                 int nextQuestIndx= conditionMappingArray.get(
                         currentQuestionResponse.getIndexOfSelectedAnswer()
                 );
@@ -101,17 +116,17 @@ abstract class SurveyController {
                 }else {
                     currentIndx=nextQuestIndx;//set currentIndx as nextQuestIndx
                 }
-                Log.e("condition", "" +currentQuestionResponse.getIndexOfSelectedAnswer() );
             }
         }catch (Exception e){
-            Log.e("Condition Map", e.toString());
+            Logger.log(Logger.LogLevel.ERROR,"Condition-Map", e.toString());
+            currentIndx++;
         }
     }
     private void submitResponse() {
-        Map<String, String > responseMap=new HashMap<>(generateTrackingParameters());
-        responseMap.put("qusid",""+(currentQuestionResponse.getQuestionId()+1));
-        responseMap.put("qusrs",currentQuestionResponse.getQuestionResponse());
-        responseMap.put("restp",currentQuestionResponse.getResponseType());
+        Map<String, Object > responseMap=new HashMap<>(generateTrackingParameters());
+        responseMap.put("questionId",(currentQuestionResponse.getQuestionId()));
+        responseMap.put("response",currentQuestionResponse.getQuestionResponse());
+        responseMap.put("respType",currentQuestionResponse.getResponseType());
         trackWithAlium(context,responseMap );
     }
 
@@ -122,10 +137,11 @@ abstract class SurveyController {
                     .getId());
             currentQuestionResponse.setResponseType(survey.getQuestions().get(currentIndx)
                     .getResponseType());
+            currentQuestionResponse.setQuestionResponse("");
 
             currentQuestionResponse.setIndexOfSelectedAnswer(0);
         }catch (Exception e){
-            Log.d("updateQuestionResp", e.toString());
+            Logger.log(Logger.LogLevel.ERROR,"updateQuestionResp", e.toString());
         }
     }
 

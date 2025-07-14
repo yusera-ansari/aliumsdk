@@ -1,0 +1,29 @@
+name: Test Library on Multiple Java Versions
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [ 17, 21]  # Skip JDK 8 here because AGP 8.1+ requires JDK 11+
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Java ${{ matrix.java-version }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java-version }}
+
+      - name: Verify Java version
+        run: java -version
+
+      - name: Run Gradle build
+        run: ./gradlew clean build --no-daemon
+        env:
+          JAVA_HOME: ${{ steps.setup-java.outputs.java-home }}

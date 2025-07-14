@@ -1,9 +1,6 @@
 package com.dwao.alium.survey;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,11 +14,12 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleObserver;
 
-import com.dwao.alium.R;
+import com.dwao.alium.models.ExecutableSurveySpecs;
+import com.dwao.alium.models.LoadableSurveySpecs;
+import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
-import com.google.gson.Gson;
-
-import java.util.Iterator;
+import com.dwao.alium.models.SurveyParameters;
+import com.dwao.alium.services.Logger;
 
 public class SurveyDialogFragment extends DialogFragment implements LifecycleObserver {
     private SurveyDialog dialog ;
@@ -31,7 +29,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     ExecutableSurveySpecs executableSurveySpecs;
     private String loaderId;
     private boolean shouldCallOnStopCallback=true;
-
+    QuestionResponse currentQuestionResponse;
     public SurveyDialogFragment(){
     }
 
@@ -47,8 +45,8 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         SurveyDialogFragment surveyDialogFragment=new SurveyDialogFragment();
         Bundle bundle=new Bundle();
         bundle.putSerializable("surveyParameters",surveyParameters);
-        Gson gson=new Gson();
-        bundle.putSerializable("surveyJson",gson.toJson(executableSurveySpecs.survey) );
+
+        bundle.putSerializable("surveyJson", executableSurveySpecs.getSurvey() );
         bundle.putSerializable("loadableSurveySpecs", executableSurveySpecs.getLoadableSurveySpecs()
         );
         bundle.putBoolean("shouldUpdatePreferences", shouldUpdatePreferences);
@@ -61,49 +59,55 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d("onsave", "on save instnace state");
         shouldCallOnStopCallback=false;
         outState.putSerializable("surveyParameters",surveyParameters);
-        Gson gson=new Gson();
-        outState.putSerializable("surveyJson",gson.toJson(executableSurveySpecs.survey) );
-        outState.putSerializable("loadableSurveySpecs", executableSurveySpecs.getLoadableSurveySpecs()
+
+        outState.putSerializable("surveyJson",executableSurveySpecs.getSurvey());
+        outState.putSerializable("loadableSurveySpecs",
+                executableSurveySpecs.getLoadableSurveySpecs()
         );
         outState.putBoolean("shouldUpdatePreferences", shouldUpdatePreferences);
         outState.putString("loaderId", loaderId);
+        outState.putSerializable("currentQuestionResponse", currentQuestionResponse);
+        Logger.log(Logger.LogLevel.INFO, "Dial", "Instance State Saved");
+
     }
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("SurveyDialogFragment", "outside oncreyae "+savedInstanceState);
-        Log.d("SurveyDialogFragment", "outside oncreyae "+getArguments());
-        if(savedInstanceState!=null){
-            Log.d("SurveyDialogFragment", "instance saved-inside oncreyae");
-            shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
-            surveyParameters=(SurveyParameters)getArguments().getSerializable("surveyParameters");
-            Gson gson=new Gson();
-            executableSurveySpecs=new ExecutableSurveySpecs(
-                    gson.fromJson(getArguments().getString("surveyJson"), Survey.class)
-                    , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
-            loaderId=getArguments().getString("loaderId");
-            if(loaderId!=null){
-                callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);
-            }
+         if(savedInstanceState!=null){
 
-        }else if(getArguments()!=null){
+            shouldUpdatePreferences=savedInstanceState.getBoolean("shouldUpdatePreferences");
+            surveyParameters=(SurveyParameters)savedInstanceState.getSerializable("surveyParameters");
+
+            executableSurveySpecs=new ExecutableSurveySpecs(
+                    (Survey)savedInstanceState.getSerializable("surveyJson")
+                    , (LoadableSurveySpecs)savedInstanceState.getSerializable("loadableSurveySpecs"));
+
+            loaderId=savedInstanceState.getString("loaderId");
+            if(loaderId!=null){
+                callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
+            }
+            currentQuestionResponse = (QuestionResponse) savedInstanceState.getSerializable("currentQuestionResponse");
+             Logger.log(Logger.LogLevel.INFO, "Dial-create", "Saved Instance State retrieved");
+
+         }else if(getArguments()!=null){
        shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
       surveyParameters=(SurveyParameters)getArguments().getSerializable("surveyParameters");
-      Gson gson=new Gson();
+
       executableSurveySpecs=new ExecutableSurveySpecs(
-              gson.fromJson(getArguments().getString("surveyJson"), Survey.class)
+              (Survey)getArguments().getSerializable("surveyJson")
               , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
             loaderId=getArguments().getString("loaderId");
             if(loaderId!=null){
-                callback=SLQHandlerManager.reAttachCallback(loaderId, surveyParameters.screenName);
+                callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
+            currentQuestionResponse = new QuestionResponse();
+             Logger.log(Logger.LogLevel.INFO, "Dial-create", "retrieved arguments");
 
-  }
+         }
         shouldCallOnStopCallback=true;
     }
 
@@ -115,6 +119,11 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+       if(getDialog()!=null){
+           getDialog().setCancelable(true);
+           getDialog().setCanceledOnTouchOutside(true);
+       }
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -122,22 +131,27 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         Dialog dialogInstance=null;
-        if (executableSurveySpecs != null && surveyParameters != null) {
-            dialog = new SurveyDialog(requireContext(), executableSurveySpecs, surveyParameters,savedInstanceState==null?true: false);
-            setCancelable(false);
-            if(savedInstanceState==null){
-             try{
-                 callback.onCreate(executableSurveySpecs.getLoadableSurveySpecs().key);
-             }
-             catch (Exception e){
-                 Log.e("callbalCreate", e.toString());
-             }
+
+        try{
+            if (executableSurveySpecs != null && surveyParameters != null) {
+                dialog = new SurveyDialog(requireContext(), executableSurveySpecs, surveyParameters, savedInstanceState == null ? true : false);
+                dialog.currentQuestionResponse = currentQuestionResponse;
+                setCancelable(false);
+                if (savedInstanceState == null) {
+                    try {
+                        callback.onCreate(executableSurveySpecs.getLoadableSurveySpecs().key);
+                    } catch (Exception e) {
+                        Logger.log(Logger.LogLevel.ERROR, "Dial-call-back", e.toString());
+                    }
+                }
+                dialogInstance = dialog.getInstance();
+            } else {
+                throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");
             }
-            dialogInstance=dialog.getInstance();
+        }catch (Exception e){
+            Logger.log(Logger.LogLevel.ERROR, "Dial-on-create", e.toString());
         }
-        else {
-            throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");
-        }
+        setCancelable(true);
 
         return dialogInstance;
     }
@@ -150,7 +164,8 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d("DialogFragment", "onDestroyView called");
+        Logger.log(Logger.LogLevel.DEBUG,"Dial", "onDestroyView called");
+
     }
 
     @Override
@@ -161,14 +176,14 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
             callback=null;
             dialog=null;
         }catch (Exception e){
-            Log.e("callbalstop", e.toString());
+            Logger.log(Logger.LogLevel.ERROR,"Dial-dest", e.toString());
         }
-        Log.d("DialogFragment", "onDestroy called");
+
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.d("Dialog", "detached");
+        Logger.log(Logger.LogLevel.DEBUG,"Dialog", "detached");
     }
 }

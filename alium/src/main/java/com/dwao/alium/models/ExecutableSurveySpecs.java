@@ -1,0 +1,33 @@
+package com.dwao.alium.models;
+
+import java.io.Serializable;
+
+public class ExecutableSurveySpecs implements Serializable {
+
+
+
+    private LoadableSurveySpecs loadableSurveySpecs;
+
+    public Survey survey=null;
+
+    public LoadableSurveySpecs getLoadableSurveySpecs() {
+        return loadableSurveySpecs;
+    }
+
+    public void setLoadableSurveySpecs(LoadableSurveySpecs loadableSurveySpecs) {
+        this.loadableSurveySpecs = loadableSurveySpecs;
+    }
+
+    public Survey getSurvey() {
+        return survey;
+    }
+
+    public void setSurvey(Survey survey) {
+        this.survey = survey;
+    }
+
+    public ExecutableSurveySpecs(Survey survey, LoadableSurveySpecs loadableSurveySpecs) {
+        this.survey=survey;
+        this.loadableSurveySpecs = loadableSurveySpecs;
+    }
+}

@@ -7,7 +7,6 @@
 
     <GridView
 
-        android:layout_marginVertical="10dp"
         android:layout_marginHorizontal="2dp"
         android:id="@+id/nps_recy_view"
         android:layout_width="match_parent"

@@ -1,6 +1,6 @@
 package com.dwao.alium.frequencyManager;
 
-import com.dwao.alium.survey.CustomFreqSurveyData;
+import com.dwao.alium.models.CustomFreqSurveyData;
 import com.dwao.alium.utils.preferences.AliumPreferences;
 
 public  class FrequencyManagerFactory{
@@ -21,8 +21,11 @@ public  class FrequencyManagerFactory{
                     key, srvShowFreq,
                     customFreqSurveyData);
         }
-        else  if(srvShowFreq.matches("overandover")||srvShowFreq.matches("onlyonce")||
-                srvShowFreq.matches("untilresponse")){
+        //os: Once per Submit -untilresponse
+        //o: Once - onlyonce
+        //rp: Repeatedly -overandover
+        else  if(srvShowFreq.matches("rp")||srvShowFreq.matches("o")||
+                srvShowFreq.matches("os")){
             return new BasicFrequencyManager(aliumPreferences, key, srvShowFreq);
         }
         else{

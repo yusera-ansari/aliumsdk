@@ -2,6 +2,13 @@
 <androidx.appcompat.widget.AppCompatCheckBox xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/checkbox_btn"
-    android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-    />
+    android:layout_marginVertical="2dp"
+    android:paddingLeft="10dp"
+    android:button="@drawable/padded_checkbox_icon"
+    android:paddingVertical="10dp"
+    android:textSize="18sp"
+    android:background="@drawable/rounded_background"
+
+    android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
