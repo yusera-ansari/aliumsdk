@@ -38,6 +38,7 @@ public class NpsGridViewAdapter extends BaseAdapter{
     this.currentQuestionResponse=currentQuestionResponse;
     this.themeColors = themeColors;
     this.respOptions = respOptions;
+    this.selectedOption=currentQuestionResponse.getIndexOfSelectedAnswer();
 }
 
     public void updatedSelectedOption(int position){
@@ -58,9 +59,10 @@ public class NpsGridViewAdapter extends BaseAdapter{
        if(selectedOption!=-1) {
            currentQuestionResponse.setIndexOfSelectedAnswer(selectedOption);
            currentQuestionResponse.setQuestionResponse(String.valueOf(selectedOption));
+
        }else{
            currentQuestionResponse.setQuestionResponse("");
-           currentQuestionResponse.setIndexOfSelectedAnswer(0);
+           currentQuestionResponse.setIndexOfSelectedAnswer(-1);
        };
        Log.d("selected Opt", ""+selectedOption);
        notifyDataSetChanged();

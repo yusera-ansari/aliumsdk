@@ -34,7 +34,7 @@ public class RadioBtnAdapter extends RecyclerView.Adapter<RadioBtnAdapter.ViewHo
          this.currentQuestionResponse=currentQuestionResponse;
         this.radioBtnList=radioBtnList;
         this.radioClickListener=radioClickListener;
-        this.selectedPosition=-1;
+        this.selectedPosition=currentQuestionResponse.getIndexOfSelectedAnswer();
         this.themeColors=themeColors;
     }
     public void updateCheckedItem(int selectedPosition){
@@ -44,12 +44,15 @@ public class RadioBtnAdapter extends RecyclerView.Adapter<RadioBtnAdapter.ViewHo
     }
     public void updateResponse(boolean isOtherOptionEnabled,
                                  String otherResponse){
-        currentQuestionResponse.setQuestionResponse(radioBtnList.get(selectedPosition));
-    if(isOtherOptionEnabled){
-       if(selectedPosition==radioBtnList.size()-1) currentQuestionResponse.setQuestionResponse(radioBtnList.get(selectedPosition)+"|"+otherResponse);
-    }
-        currentQuestionResponse.setIndexOfSelectedAnswer(selectedPosition);
-    Log.d("response", "response of the selected item is: "+ currentQuestionResponse.getQuestionResponse());
+        if(selectedPosition>=0){
+            currentQuestionResponse.setQuestionResponse(radioBtnList.get(selectedPosition));
+            if (isOtherOptionEnabled) {
+                if (selectedPosition == radioBtnList.size() - 1)
+                    currentQuestionResponse.setQuestionResponse(radioBtnList.get(selectedPosition) + "|" + otherResponse);
+            }
+            currentQuestionResponse.setIndexOfSelectedAnswer(selectedPosition);
+            Log.d("response", "response of the selected item is: " + currentQuestionResponse.getQuestionResponse());
+        }
     }
     @NonNull
     @Override

@@ -58,7 +58,7 @@ abstract class SurveyController {
     abstract protected Map<String, Object > generateTrackingParameters();
     @CallSuper
     protected void  showCurrentQuestion( ) {
-        updateCurrentQuestionResponse();
+      if(shouldUpdatePreferences)  updateCurrentQuestionResponse();
     }
     @CallSuper
     protected void handleNextQuestion() throws JSONException {
@@ -83,6 +83,7 @@ abstract class SurveyController {
             }
             trackWithAlium(context, generateTrackingParameters());
         }
+    shouldUpdatePreferences=true;
     }
 
     @CallSuper

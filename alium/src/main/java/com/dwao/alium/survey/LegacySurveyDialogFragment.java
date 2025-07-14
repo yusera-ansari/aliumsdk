@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import com.dwao.alium.models.ExecutableSurveySpecs;
 import com.dwao.alium.models.LoadableSurveySpecs;
+import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
 import com.dwao.alium.models.SurveyParameters;
 
@@ -24,6 +25,7 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
     ExecutableSurveySpecs executableSurveySpecs;
     private boolean shouldCallOnStopCallback=true;
     private AliumSurveyLoader.SurveyDialogCallback callback;
+    QuestionResponse currentQuestionResponse;
 
     public LegacySurveyDialogFragment(){
 
@@ -62,9 +64,10 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
         outState.putSerializable("surveyJson",executableSurveySpecs.getSurvey());
         outState.putSerializable("loadableSurveySpecs", executableSurveySpecs.getLoadableSurveySpecs()
         );
-        Log.d("onSaveInstanceState", "saved state"+executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex());
+        Log.d("onSaveInstanceState1", "saved state"+executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex());
         outState.putBoolean("shouldUpdatePreferences", shouldUpdatePreferences);
         outState.putString("loaderId", loaderId);
+        outState.putSerializable("currentQuestionResponse", currentQuestionResponse);
     }
 
 
@@ -84,6 +87,7 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
                     , (LoadableSurveySpecs)savedInstanceState.getSerializable("loadableSurveySpecs"));
             Log.d("SurveyDialogFragment", "saved state"+executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex());
             loaderId=savedInstanceState.getString("loaderId");
+            currentQuestionResponse = (QuestionResponse) savedInstanceState.getSerializable("currentQuestionResponse");
             if(loaderId!=null){
                 callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
@@ -99,6 +103,7 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
                 Log.d("LoaderId", "loader id is:"+loaderId);
                 callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
+            currentQuestionResponse = new QuestionResponse();
         }
         shouldCallOnStopCallback=true;
     }
@@ -125,7 +130,9 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
         Dialog dialogInstance=null;
         if (executableSurveySpecs != null && surveyParameters != null) {
             dialog = new SurveyDialog(getActivity(), executableSurveySpecs,
-                    surveyParameters,savedInstanceState==null?true: false);
+                    surveyParameters, savedInstanceState == null);
+              Log.d("notnull", "saved instance not null.."+currentQuestionResponse.getIndexOfSelectedAnswer());
+              dialog.currentQuestionResponse = currentQuestionResponse;
             setCancelable(false);
             if(savedInstanceState==null){
                 try{

@@ -67,11 +67,20 @@ List<String> ratingOptions;
     public void renderQuestion(Context context, ViewGroup layout, QuestionResponse currentQuestionResponse, View nextQuestionBtn) {
         View view = LayoutInflater.from(context).inflate(R.layout.rating_question, null);
         CustomRatingView customRatingView=view.findViewById(R.id.custom_rating_view);
+        Log.d("current", "current response: "+currentQuestionResponse.getIndexOfSelectedAnswer());
+        if(currentQuestionResponse.getQuestionResponse().isEmpty() && currentQuestionResponse.getIndexOfSelectedAnswer()==0){
+            currentQuestionResponse.setIndexOfSelectedAnswer(-1);
+            Log.d("index", "resetting the indes");
+        }
 
         RatingClickListener listener=new RatingClickListener() {
             @Override
             public void onClick(int position) {
-                currentQuestionResponse.setQuestionResponse(ratingOptions.get(position));
+               if(position>=0){
+                   currentQuestionResponse.setQuestionResponse(ratingOptions.get(position));
+               }else{
+                   currentQuestionResponse.setQuestionResponse( "");
+               }
                 currentQuestionResponse.setIndexOfSelectedAnswer(position);
 
                 if(isRequired){
@@ -94,7 +103,7 @@ List<String> ratingOptions;
                     .setThemeColors(themeColors)
                     .setListener(listener)
                     .render( );
-
+            customRatingView.setRating(currentQuestionResponse.getIndexOfSelectedAnswer()+1);
         layout.addView(view);
 
     }

@@ -33,6 +33,7 @@ public class OpinionScaleGridAdapter extends BaseAdapter {
         this.options=options;
         this.currentQuestionResponse= currentQuestionResponse;
         this.listener=listener;
+        this.selectedOption = currentQuestionResponse.getIndexOfSelectedAnswer();
 
     }
 
@@ -48,7 +49,7 @@ public class OpinionScaleGridAdapter extends BaseAdapter {
             currentQuestionResponse.setQuestionResponse(options.get(selectedOption));
         }else{
             currentQuestionResponse.setQuestionResponse("");
-            currentQuestionResponse.setIndexOfSelectedAnswer(0);
+            currentQuestionResponse.setIndexOfSelectedAnswer(-1);
         };
         Log.d("selected Opt", ""+selectedOption);
         notifyDataSetChanged();
