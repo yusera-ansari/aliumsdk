@@ -9,6 +9,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.dwao.alium.network.CustomNetworkService;
+import com.dwao.alium.services.Logger;
 
 
 import java.util.Iterator;
@@ -40,7 +41,7 @@ public class SurveyTracker {
 //            volleyService.loadRequestWithVolley(  getUrl(context, parameters) );
 
         }catch(Exception e){
-            Log.e("track", e.toString());
+            Logger.log(Logger.LogLevel.ERROR,"tracker", e.toString());
         }
     }
     @NonNull

@@ -39,6 +39,7 @@ import com.dwao.alium.questions.NPSQuestionRenderer;
 import com.dwao.alium.questions.OpinionScaleQuesRenderer;
 import com.dwao.alium.questions.RadioQuestionRenderer;
 import com.dwao.alium.questions.RatingQuestionRenderer;
+import com.dwao.alium.services.Logger;
 
 
 import org.json.JSONException;
@@ -84,11 +85,10 @@ class SurveyDialog extends SurveyController {
     {
 
         super(ctx,executableSurveySpecs.getLoadableSurveySpecs(), shouldUpdatePreferences);
-        Log.d("should--", "shouldupdate::: "+shouldUpdatePreferences);
+
         this.executableSurveySpecs=executableSurveySpecs;
         survey=executableSurveySpecs.survey;
         this.surveyParameters=surveyParameters;
-        Log.e("cuurentIndex","currentIndex: "+executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex() );
         currentIndx= executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex();
 
 
@@ -137,7 +137,7 @@ class SurveyDialog extends SurveyController {
                         Color.parseColor(survey.getSurveyInfo().getThemeColors().getColor1()));
             }
         }catch (Exception e){
-            Log.e("surveyUI", e.toString());
+            Logger.log(Logger.LogLevel.ERROR,"surveyUI", e.toString());
         }
     }
     private void configureDialogWindow(){
@@ -166,7 +166,7 @@ class SurveyDialog extends SurveyController {
         nextQuestionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Alium-indx", ""+currentIndx);
+
 
 
                 handleNextQuestion();
@@ -194,7 +194,7 @@ class SurveyDialog extends SurveyController {
                         PorterDuff.Mode.MULTIPLY);
             }
         }catch (Exception e){
-            Log.e("nextQues", e.toString());
+            Logger.log(Logger.LogLevel.ERROR,"nextQues", e.toString());
         }
 
     }
@@ -203,7 +203,6 @@ class SurveyDialog extends SurveyController {
      protected void handleNextQuestion() {
         try{
          super.handleNextQuestion(); //updates index
-         Log.d("next called", ""+currentIndx+" "+survey.getQuestions().size());
          super.submitSurvey();
             //check if to show next question or else show thank-you layout
             if( currentIndx< survey.getQuestions().size()){
@@ -216,7 +215,7 @@ class SurveyDialog extends SurveyController {
 
 
         }catch(Exception e){
-            Log.d("nextQuest",e.toString()+" "+currentIndx+" "+survey.getQuestions().size());
+            Logger.log(Logger.LogLevel.ERROR,"nextQuest",e.toString()+" "+currentIndx+" "+survey.getQuestions().size());
         }
 
     }
@@ -250,13 +249,11 @@ class SurveyDialog extends SurveyController {
         imageView.setImageResource(R.drawable.avd_anim);
         Drawable drawable= imageView.getDrawable();
         if(drawable instanceof AnimatedVectorDrawableCompat){
-//            Log.d("Alium-instance", "AnimatedVectorDrawableCompat");
             AnimatedVectorDrawableCompat avd=(AnimatedVectorDrawableCompat)drawable;
             avd.start();
 
         }else if(drawable instanceof AnimatedVectorDrawable){
             AnimatedVectorDrawable avd=(AnimatedVectorDrawable)drawable;
-//            Log.d("Alium-instance2", "AnimatedVectorDrawableCompat");
             avd.start();
 
         }
@@ -269,14 +266,12 @@ class SurveyDialog extends SurveyController {
         this.layout.removeAllViews();
         if(survey.getQuestions().get(currentIndx).getResponseType().equals("-1")
                 ||survey.getQuestions().get(currentIndx).getResponseType().equals("0")) {
-            Log.d("responseType", "response type is"+survey.getQuestions().get(currentIndx).getResponseType());
                   setCtaEnabled(nextQuestionBtn, true);
             LinearLayout.LayoutParams lp=(LinearLayout.LayoutParams) nextQuestionBtn.getLayoutParams();
 
             lp.gravity = Gravity.CENTER_HORIZONTAL;
                 nextQuestionBtn.setLayoutParams(lp);
               }else{
-            Log.d("responseType", "response type is"+survey.getQuestions().get(currentIndx).getResponseType());
 
             setCtaEnabled(nextQuestionBtn, !survey.getQuestions()
                           .get(currentIndx).getQuestionSetting().getRequired());
@@ -301,16 +296,12 @@ class SurveyDialog extends SurveyController {
 
             }
         }catch (Exception e){
-            Log.e("", e.toString());
+            Logger.log(Logger.LogLevel.ERROR,"color-scheme", e.toString());
         }
     }
     @Override
     protected void showCurrentQuestion( ) {
-        int orientation = context.getResources().getConfiguration().orientation;
-        Log.d("Orientation", orientation == Configuration.ORIENTATION_LANDSCAPE ? "Landscape" : "Portrait");
-
-        Log.d("NextButton", "Next Button visibility: " + nextQuestionBtn.getVisibility());
-        Log.d("NextButton", "Button width: " + nextQuestionBtn.getWidth() + " height: " + nextQuestionBtn.getHeight());
+//        int orientation = context.getResources().getConfiguration().orientation;
 
         super.showCurrentQuestion();
         LinearLayout.LayoutParams lp =(LinearLayout.LayoutParams) layout.getLayoutParams();
@@ -329,7 +320,6 @@ class SurveyDialog extends SurveyController {
         layout.setLayoutParams(lp);
 
         resetElementsForNextQuestion();
-        Log.i("question", "going to next question " + currentIndx);
 
 
         try {
@@ -337,8 +327,7 @@ class SurveyDialog extends SurveyController {
                     .getQuestion());
             String responseType = survey.getQuestions().get(currentIndx).getResponseType();
             generateQuestion(responseType); //matches response type and generates corresponding ques
-//            Log.d("surveyQuestion", "id: " + currentQuestionResponse.getQuestionId()
-//                    + " type: " + currentQuestionResponse.getResponseType());
+
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -346,16 +335,13 @@ class SurveyDialog extends SurveyController {
     }
     @Override
     protected void generateQuestion(String responseType) throws JSONException {
-        Log.d("ResponseType", "response type i s "+responseType);
 
         switch (responseType) {
             case "0":
-                Log.d("ResponseType", "response type i s "+1);
                 if(survey.getQuestions().get(currentIndx).getId()==0)nextQuestionBtn.setText("Start");
                 break;
 
             case "1": //long question
-                Log.d("ResponseType", "response type i s "+1);
 
                 LongTextQuestionRenderer longtextRenderer = new LongTextQuestionRenderer();
                 longtextRenderer
@@ -363,7 +349,6 @@ class SurveyDialog extends SurveyController {
                     .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
             case "2": //radio
-                Log.d("ResponseType", "response type i s "+2);
 
                 RadioQuestionRenderer radioQuestionRenderer = new RadioQuestionRenderer();
                 radioQuestionRenderer
@@ -372,7 +357,6 @@ class SurveyDialog extends SurveyController {
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
             case "3": //checkbox
-                Log.d("ResponseType", "response type i s "+3);
 
                 CheckBoxQuestionRenderer checkBoxQuestionRenderer = new CheckBoxQuestionRenderer();
                 checkBoxQuestionRenderer
@@ -381,7 +365,6 @@ class SurveyDialog extends SurveyController {
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
                 case "4"://nps
-                Log.d("ResponseType", "response type i s "+4);
 
                 NPSQuestionRenderer npsQuestionRenderer = new NPSQuestionRenderer();
                 npsQuestionRenderer
@@ -397,7 +380,6 @@ class SurveyDialog extends SurveyController {
                                    .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                     break;
             case "6": //opinion
-                Log.d("ResponseType", "response type i s  opinion scale"+6);
                 OpinionScaleQuesRenderer opinionScaleQuesRenderer=new OpinionScaleQuesRenderer();
                 opinionScaleQuesRenderer
                         .setTheme(survey.getSurveyInfo().getThemeColors())
@@ -405,7 +387,6 @@ class SurveyDialog extends SurveyController {
                         .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                 break;
             case "-1": //Thank you
-                Log.d("ResponseType", "response type i s "+7);
                 setCtaEnabled(nextQuestionBtn, true);
                 nextQuestionBtn.setText("Close");
                 nextQuestionBtn.setOnClickListener(new View.OnClickListener() {
@@ -437,7 +418,7 @@ class SurveyDialog extends SurveyController {
             params.put("surveyId", survey.getSurveyInfo().getSurveyId());
             params.put("orgId",survey.getSurveyInfo().getOrgId());
         }catch (Exception e){
-            Log.e("Generate Params Map", "Couldn't get srvid/orgId");
+            Logger.log(Logger.LogLevel.ERROR,"track-params", "Couldn't get srvid/orgId");
         }
         return params;
     }

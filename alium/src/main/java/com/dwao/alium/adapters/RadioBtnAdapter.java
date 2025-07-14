@@ -18,6 +18,7 @@ import com.dwao.alium.listeners.RadioClickListener;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
 import com.dwao.alium.models.ThemeColors;
+import com.dwao.alium.services.Logger;
 
 import org.json.JSONObject;
 
@@ -51,7 +52,6 @@ public class RadioBtnAdapter extends RecyclerView.Adapter<RadioBtnAdapter.ViewHo
                     currentQuestionResponse.setQuestionResponse(radioBtnList.get(selectedPosition) + "|" + otherResponse);
             }
             currentQuestionResponse.setIndexOfSelectedAnswer(selectedPosition);
-            Log.d("response", "response of the selected item is: " + currentQuestionResponse.getQuestionResponse());
         }
     }
     @NonNull
@@ -76,7 +76,7 @@ public class RadioBtnAdapter extends RecyclerView.Adapter<RadioBtnAdapter.ViewHo
                 background.mutate();
                    background.setColor(Color.parseColor(themeColors.getColor8()));
             }catch (Exception e){
-                Log.e("surveyUICheckBox", e.toString());
+                Logger.log(Logger.LogLevel.ERROR,"radio-ques", e.toString());
             }}
         holder.radioButton.setChecked(position==selectedPosition);
         holder.radioButton.setButtonTintList(new ColorStateList(new int[][]{
@@ -86,7 +86,6 @@ public class RadioBtnAdapter extends RecyclerView.Adapter<RadioBtnAdapter.ViewHo
                Color.parseColor(themeColors.getColor9()),
                 Color.parseColor(themeColors.getColor9())
         }));
-        Log.d("pos"+position, "pos: "+radioBtnList.get(position));
         holder.radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {

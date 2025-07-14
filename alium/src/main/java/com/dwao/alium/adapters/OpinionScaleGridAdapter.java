@@ -51,7 +51,6 @@ public class OpinionScaleGridAdapter extends BaseAdapter {
             currentQuestionResponse.setQuestionResponse("");
             currentQuestionResponse.setIndexOfSelectedAnswer(-1);
         };
-        Log.d("selected Opt", ""+selectedOption);
         notifyDataSetChanged();
     }
 
@@ -76,7 +75,6 @@ public class OpinionScaleGridAdapter extends BaseAdapter {
         view= LayoutInflater.from(context).inflate(R.layout.opnion_scale_option, null);
         AppCompatButton button = view.findViewById(R.id.opinion_scale_option);
         button.setText(options.get(position));
-        Log.d("render", "opinion scale options: "+position);
         GradientDrawable d=(GradientDrawable) button.getBackground();
    if(d!=null){
        d.mutate();

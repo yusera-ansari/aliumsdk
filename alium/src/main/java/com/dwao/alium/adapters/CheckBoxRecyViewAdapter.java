@@ -19,6 +19,7 @@ import com.dwao.alium.listeners.CheckBoxClickListener;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
 import com.dwao.alium.models.ThemeColors;
+import com.dwao.alium.services.Logger;
 
 import org.json.JSONObject;
 
@@ -45,9 +46,7 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
         String resp="";
         if(otherOptionEnabled){
             for(int i=0; i< selectedItems.size(); i++){
-                Log.e("slected", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
                 if(i==selectedItems.size()-1){
-                    Log.e("slected2", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
                     if(selectedItems.get(i)== checkBoxList.size()-1){
                         resp+= checkBoxList.get(selectedItems.get(i))+"|"+otherResponse;
                         break;
@@ -55,30 +54,23 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
                     resp+= checkBoxList.get(selectedItems.get(i));
                     break;
                 }
-                Log.e("slected3", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
                 if(selectedItems.get(i)== checkBoxList.size()-1){
                     resp+= checkBoxList.get(selectedItems.get(i))+"|"+otherResponse+",";
                 }
                 else{
                     resp += checkBoxList.get(selectedItems.get(i)) + ",";
                 }
-                Log.e("resp", "resp: "+ resp);
             }
         }else{
             for(int i=0; i< selectedItems.size(); i++){
-                Log.e("slected", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
                 if(i==selectedItems.size()-1){
-                    Log.e("slected2", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
                     resp+= checkBoxList.get(selectedItems.get(i));
                     break;
                 }
-                Log.e("slected3", "item : "+i+ " size: "+(selectedItems.size()-1)+" resp: "+resp);
                 resp+= checkBoxList.get(selectedItems.get(i))+",";
-                Log.e("resp", "resp: "+ resp);
             }
         }
         currentQuestionResponse.setQuestionResponse(resp);
-        Log.d("response changed", currentQuestionResponse.getQuestionResponse());
         currentQuestionResponse.setIndexOfSelectedAnswers(selectedItems);
     }
 
@@ -123,7 +115,7 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
                }, new int[]{ Color.parseColor(themeColors.getColor6()),
                        Color.parseColor(themeColors.getColor6())}));
            }catch (Exception e){
-               Log.e("surveyUICheckBox", e.toString());
+               Logger.log(Logger.LogLevel.ERROR, "surveyUICheckBox", e.toString());
            }
         }
         // Remove listener temporarily
@@ -132,7 +124,6 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
         holder.checkBox.setOnCheckedChangeListener(null);
         holder.checkBox.setChecked(selectedItems.contains(position));
 //    holder.checkBox.setButtonDrawable(R.drawable.ic_check_circle);
-        Log.d("pos"+position, "pos: "+checkBoxList.get(position));
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {

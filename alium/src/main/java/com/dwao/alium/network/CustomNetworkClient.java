@@ -10,7 +10,6 @@ public class CustomNetworkClient {
 
         public static void get(String urlString, NetworkCallback callback) {
             new Thread(() -> {
-                Log.d("GET", "Thread created: "+Thread.currentThread().getName());
                 try {
                     String response = NetworkUtils.makeGetRequest(urlString);
                     if (response != null) {
@@ -21,7 +20,6 @@ public class CustomNetworkClient {
                 } catch (Exception e) {
                     callback.onError(e);
                 }
-                Log.d("GET", "Thread destroyed: "+Thread.currentThread().getName());
             }).start();
         }
 

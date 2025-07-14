@@ -119,13 +119,7 @@ public class CheckBoxQuestionRenderer implements QuestionRenderer {
         recyclerView.setAdapter(checkBoxRecyViewAdapter);
 
 
-        Log.d("track", " "+currentQuestionResponse.getQuestionResponse()+" index"+" "+  (currentQuestionResponse.getIndexOfSelectedAnswers()));
-//        if(currentQuestionResponse.getQuestionResponse().isEmpty() &&
-//        currentQuestionResponse.getIndexOfSelectedAnswers().size()==1 && currentQuestionResponse.getIndexOfSelectedAnswers().get(0)==-1
-//        ){
-//            currentQuestionResponse.setIndexOfSelectedAnswers(new ArrayList<>(Arrays.asList(-1)));
-//            Log.d("index", "resetting the indes");
-//        }
+
         if(currentquestion.getQuestionSetting().getOtherOption()){
             if ( currentQuestionResponse.getIndexOfSelectedAnswers().contains(responseOpt.size() - 1)) {
                 textInputLayout.setVisibility(View.VISIBLE);

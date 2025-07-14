@@ -19,6 +19,7 @@ import com.dwao.alium.models.LoadableSurveySpecs;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
 import com.dwao.alium.models.SurveyParameters;
+import com.dwao.alium.services.Logger;
 
 public class SurveyDialogFragment extends DialogFragment implements LifecycleObserver {
     private SurveyDialog dialog ;
@@ -58,7 +59,6 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d("onsave", "on save instnace state");
         shouldCallOnStopCallback=false;
         outState.putSerializable("surveyParameters",surveyParameters);
 
@@ -66,35 +66,34 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         outState.putSerializable("loadableSurveySpecs",
                 executableSurveySpecs.getLoadableSurveySpecs()
         );
-        Log.e("onSaveInstanceState",  " "+executableSurveySpecs.getLoadableSurveySpecs().currentIndex);
         outState.putBoolean("shouldUpdatePreferences", shouldUpdatePreferences);
         outState.putString("loaderId", loaderId);
         outState.putSerializable("currentQuestionResponse", currentQuestionResponse);
+        Logger.log(Logger.LogLevel.INFO, "Dial", "Instance State Saved");
+
     }
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("SurveyDialogFragment", "outside oncreyae "+savedInstanceState);
-        Log.d("SurveyDialogFragment", "outside oncreyae "+getArguments());
-        if(savedInstanceState!=null){
-            Log.d("SurveyDialogFragment", "instance saved-inside oncreyae");
+         if(savedInstanceState!=null){
+
             shouldUpdatePreferences=savedInstanceState.getBoolean("shouldUpdatePreferences");
             surveyParameters=(SurveyParameters)savedInstanceState.getSerializable("surveyParameters");
 
             executableSurveySpecs=new ExecutableSurveySpecs(
                     (Survey)savedInstanceState.getSerializable("surveyJson")
                     , (LoadableSurveySpecs)savedInstanceState.getSerializable("loadableSurveySpecs"));
-            Log.e("savedInstanceState",  " "+executableSurveySpecs.getLoadableSurveySpecs().currentIndex);
 
             loaderId=savedInstanceState.getString("loaderId");
             if(loaderId!=null){
                 callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
             currentQuestionResponse = (QuestionResponse) savedInstanceState.getSerializable("currentQuestionResponse");
+             Logger.log(Logger.LogLevel.INFO, "Dial-create", "Saved Instance State retrieved");
 
-        }else if(getArguments()!=null){
+         }else if(getArguments()!=null){
        shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
       surveyParameters=(SurveyParameters)getArguments().getSerializable("surveyParameters");
 
@@ -106,7 +105,9 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
                 callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
             currentQuestionResponse = new QuestionResponse();
-  }
+             Logger.log(Logger.LogLevel.INFO, "Dial-create", "retrieved arguments");
+
+         }
         shouldCallOnStopCallback=true;
     }
 
@@ -131,22 +132,24 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         Dialog dialogInstance=null;
 
-        if (executableSurveySpecs != null && surveyParameters != null) {
-            dialog = new SurveyDialog(requireContext(), executableSurveySpecs, surveyParameters,savedInstanceState==null?true: false);
-            dialog.currentQuestionResponse = currentQuestionResponse;
-            setCancelable(false);
-            if(savedInstanceState==null){
-             try{
-                 callback.onCreate(executableSurveySpecs.getLoadableSurveySpecs().key);
-             }
-             catch (Exception e){
-                 Log.e("callbalCreate", e.toString());
-             }
+        try{
+            if (executableSurveySpecs != null && surveyParameters != null) {
+                dialog = new SurveyDialog(requireContext(), executableSurveySpecs, surveyParameters, savedInstanceState == null ? true : false);
+                dialog.currentQuestionResponse = currentQuestionResponse;
+                setCancelable(false);
+                if (savedInstanceState == null) {
+                    try {
+                        callback.onCreate(executableSurveySpecs.getLoadableSurveySpecs().key);
+                    } catch (Exception e) {
+                        Logger.log(Logger.LogLevel.ERROR, "Dial-call-back", e.toString());
+                    }
+                }
+                dialogInstance = dialog.getInstance();
+            } else {
+                throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");
             }
-            dialogInstance=dialog.getInstance();
-        }
-        else {
-            throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");
+        }catch (Exception e){
+            Logger.log(Logger.LogLevel.ERROR, "Dial-on-create", e.toString());
         }
         setCancelable(true);
 
@@ -161,7 +164,8 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d("DialogFragment", "onDestroyView called");
+        Logger.log(Logger.LogLevel.DEBUG,"Dial", "onDestroyView called");
+
     }
 
     @Override
@@ -172,14 +176,14 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
             callback=null;
             dialog=null;
         }catch (Exception e){
-            Log.e("callbalstop", e.toString());
+            Logger.log(Logger.LogLevel.ERROR,"Dial-dest", e.toString());
         }
-        Log.d("DialogFragment", "onDestroy called");
+
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.d("Dialog", "detached");
+        Logger.log(Logger.LogLevel.DEBUG,"Dialog", "detached");
     }
 }

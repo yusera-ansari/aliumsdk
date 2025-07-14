@@ -5,6 +5,7 @@ package com.dwao.alium.survey;
 import android.util.Log;
 
 import com.dwao.alium.models.TriggerRequest;
+import com.dwao.alium.services.Logger;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,13 +41,14 @@ class AliumRequestManager {
 
 synchronized  void executeNextRequest(Queue<AliumRequest> aliumRequestQueue){
 
-       
         if(isAliumRequestExecuting||aliumRequestQueue.isEmpty()){
             
             if(aliumRequestQueue.isEmpty()){
-                
+                Logger.log(Logger.LogLevel.DEBUG, "exec-nex-req", "a request already in process: "+isAliumRequestExecuting
+                        +" and queue is empty, so we return from here");
                 isAliumRequestExecuting=false;
             }
+
             return;
         }
         isAliumRequestExecuting=true;
@@ -54,9 +56,10 @@ synchronized  void executeNextRequest(Queue<AliumRequest> aliumRequestQueue){
         AliumRequest request= aliumRequestQueue.poll();
 
 
-        if (request != null){
+    if (request != null){
             if(request.type.equals(AliumRequest.Request.TRIGGER)){
                     TriggerRequest triggerRequest = request.request;
+                Logger.log(Logger.LogLevel.DEBUG, "exec-nex-req", "executing next request: TRIGGER "+triggerRequest.surveyParameters.screenName);
 
                 SLQHandler slqHandler = surveyExecutingMap.get(triggerRequest.surveyParameters.screenName);
                 if (slqHandler == null) {
@@ -64,9 +67,14 @@ synchronized  void executeNextRequest(Queue<AliumRequest> aliumRequestQueue){
                     surveyExecutingMap.put(triggerRequest.surveyParameters.screenName, slqHandler);
                 }
                 if(slqHandler.loadedQueue.isEmpty()){ //limits the loader to one per screen
+                    Logger.log(Logger.LogLevel.INFO, "exec-nex-req", "loaded queue is empty...proceeding");
                     slqHandler.offer(triggerRequest);
+                }else {
+                    Logger.log(Logger.LogLevel.INFO, "exec-nex-req", "loaded queue is not empty...not proceeding further with this request. A request with current key: "+triggerRequest.surveyParameters.screenName+ " is already in process");
                 }
             }else{
+                Logger.log(Logger.LogLevel.DEBUG, "exec-nex-req", "executing next request: STOP "+request.screenName);
+
                 stop(request.screenName);
             }
 

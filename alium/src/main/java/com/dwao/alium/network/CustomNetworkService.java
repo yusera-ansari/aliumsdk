@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.dwao.alium.listeners.NetworkCallback;
 import com.dwao.alium.listeners.ResponseListener;
+import com.dwao.alium.services.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,12 +22,12 @@ public class CustomNetworkService {
 
            @Override
            public void onSuccess(String response) {
-               Log.d("track","track request successfull for paylaod: "+params.toString());
+               Logger.log(Logger.LogLevel.INFO,"track","track request successfull for paylaod: "+params.toString());
            }
 
            @Override
            public void onError(Exception e) {
-               Log.e("track","track request failed with error: "+e.toString()+ "for paylaod: "+params.toString());
+               Logger.log(Logger.LogLevel.INFO,"track","track request failed with error: "+e.toString()+ "for paylaod: "+params.toString());
 
 
            }

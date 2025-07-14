@@ -28,8 +28,6 @@ class SLQHandler {
 
 
     synchronized void  offer(TriggerRequest request){
-
-            Log.d("called", "offer is executing...");
             AliumSurveyLoader loader= AliumSurveyLoader.createInstance(request.object, request.surveyParameters,
 
                                     new AliumSurveyLoader.Callback() {
@@ -49,7 +47,6 @@ class SLQHandler {
                                                         AliumSurveyLoader loadertmp = iterator.next();
                                                         if(loadertmp.getLoaderId().equals(loader.getLoaderId())){
 //                                                            loader.callback.onQuitLoader(loader);
-                                                            Log.d("remove", "removing the loader..."+loadertmp);
                                                             iterator.remove();
 
                                                         }
@@ -64,7 +61,6 @@ class SLQHandler {
                             //only move forward if its not null
 
                             if(loader!=null ) {
-                                Log.d("loader", "this is the created loader"+loader);
                                 //limiting the loader to one:-  && aliumSurveyLoaderQueue.size()==0 && loadedQueue.size()==0
                                 aliumSurveyLoaderQueue.add(loader);
 
@@ -74,12 +70,6 @@ class SLQHandler {
         }
 
     private synchronized void executeNextLoader(){
-        Log.d("exec nex","execute next trigger executeNextLoader");
-//            if(currentLoader!=null){
-//                Log.d("CURRENT", "Current LOADER is not NULL");
-//                loadedQueue.offer(currentLoader); //it should be added to loaded-queue
-//                currentLoader=null;
-//            }
 
             if(aliumSurveyLoaderQueue.isEmpty()||isAliumLoaderExecuting){
                 if(aliumSurveyLoaderQueue.isEmpty()){
@@ -91,15 +81,12 @@ class SLQHandler {
             isAliumLoaderExecuting=true;
             AliumSurveyLoader aliumSurveyLoader= aliumSurveyLoaderQueue.poll();
             if(aliumSurveyLoader!=null){
-                Log.d("offer", "adding to loaded quue"+aliumSurveyLoader+" "+aliumSurveyLoader.getLoaderId());
                 loadedQueue.offer(aliumSurveyLoader);
                 currentLoader=aliumSurveyLoader;
                 aliumSurveyLoader.showSurvey();
             }
-            Log.d("QUEUE", " loaded quue: "+loadedQueue);
     }
     synchronized void stop(){ //Alium calls stop on a screen
-        Log.d("stop", "offer stop is executing...");
             isStopped=true;
             isAliumLoaderExecuting=false;
             if(currentLoader!=null) currentLoader.stop();

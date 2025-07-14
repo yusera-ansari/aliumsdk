@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
+import com.dwao.alium.models.SurveyParameters;
+import com.dwao.alium.survey.Alium;
+
 public class LegacyFragment extends Fragment {
 
     @Override
@@ -23,7 +26,7 @@ public class LegacyFragment extends Fragment {
         super.onCreate(savedInstanceState);
 //        if(savedInstanceState == null){
             Log.e("oncreate", "dialog created legacy");
-//            Alium.trigger(getActivity(), new SurveyParameters("screen4"));
+            Alium.trigger(getActivity(), new SurveyParameters("screen4"));
 
 //        }
         Log.e("ONCREATE", "vre ted");
