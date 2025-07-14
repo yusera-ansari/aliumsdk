@@ -37,7 +37,7 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
                                    QuestionResponse currentQuestionResponse, ThemeColors themeColors){
         this.checkBoxList=checkBoxList;
         this.listener=listener;
-        selectedItems=new ArrayList<>();
+        selectedItems=currentQuestionResponse.getIndexOfSelectedAnswers();
         this.currentQuestionResponse=currentQuestionResponse;
       this.themeColors=themeColors;
     }
@@ -79,6 +79,7 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
         }
         currentQuestionResponse.setQuestionResponse(resp);
         Log.d("response changed", currentQuestionResponse.getQuestionResponse());
+        currentQuestionResponse.setIndexOfSelectedAnswers(selectedItems);
     }
 
 

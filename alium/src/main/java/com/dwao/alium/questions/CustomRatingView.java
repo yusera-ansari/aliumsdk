@@ -115,28 +115,34 @@ public class CustomRatingView extends LinearLayout {
         }
     }
 
-    public void setRating(float rating) {
+    public CustomRatingView setRating(float rating) {
+        try{
+            Log.d("rating", "current rating..." + rating);
+            currentRating = rating;
+            for (int i = 0; i < iconCount; i++) {
+Log.d("rating", "index: "+i+" iconCount: "+iconCount+" rating: "+rating);
 
-        currentRating = rating;
-        for (int i = 0; i < iconCount; i++) {
-
-
-            if (i < rating) {
-                icon[i].setImageDrawable(ratingType.equals(RatingType.emoji)?
-             filledIconList[i]
-            : fullIcon);
-                if(themeColors!=null){
-                    //		--color21 - #ffc100 Rating Button selected bg
-                    icon[i].setColorFilter(Color.parseColor(themeColors.getColor21()));
+                if (i < rating) {
+                    icon[i].setImageDrawable(ratingType.equals(RatingType.emoji) ?
+                            filledIconList[i]
+                            : fullIcon);
+                    if (themeColors != null) {
+                        //		--color21 - #ffc100 Rating Button selected bg
+                        icon[i].setColorFilter(Color.parseColor(themeColors.getColor21()));
+                    }
+                } else {
+                    Log.d("rating2", "current rating..." + rating);
+                    icon[i].setImageDrawable(emptyIcon);
+                    icon[i].setColorFilter(Color.parseColor(themeColors.getColor19()));
                 }
-            } else {
-                icon[i].setImageDrawable(emptyIcon);
-                icon[i].setColorFilter(Color.parseColor(themeColors.getColor19()));
             }
+            if (listener != null) {
+                listener.onClick((int) (rating -1));
+            }
+        } catch (Exception e) {
+            Log.e("CustomRating", "error: "+e);
         }
-        if(listener!=null){
-            listener.onClick((int) (rating-1));
-        }
+        return this;
     }
 
     public float getRating() {

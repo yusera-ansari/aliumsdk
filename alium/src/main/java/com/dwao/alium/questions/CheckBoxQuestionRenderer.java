@@ -27,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CheckBoxQuestionRenderer implements QuestionRenderer {
@@ -116,6 +117,26 @@ public class CheckBoxQuestionRenderer implements QuestionRenderer {
         checkBoxRecyViewAdapter=new CheckBoxRecyViewAdapter(responseOpt,
                 checkBoxClickListener, currentQuestionResponse, themeColors);
         recyclerView.setAdapter(checkBoxRecyViewAdapter);
+
+
+        Log.d("track", " "+currentQuestionResponse.getQuestionResponse()+" index"+" "+  (currentQuestionResponse.getIndexOfSelectedAnswers()));
+//        if(currentQuestionResponse.getQuestionResponse().isEmpty() &&
+//        currentQuestionResponse.getIndexOfSelectedAnswers().size()==1 && currentQuestionResponse.getIndexOfSelectedAnswers().get(0)==-1
+//        ){
+//            currentQuestionResponse.setIndexOfSelectedAnswers(new ArrayList<>(Arrays.asList(-1)));
+//            Log.d("index", "resetting the indes");
+//        }
+        if(currentquestion.getQuestionSetting().getOtherOption()){
+            if ( currentQuestionResponse.getIndexOfSelectedAnswers().contains(responseOpt.size() - 1)) {
+                textInputLayout.setVisibility(View.VISIBLE);
+                textInputEditText.requestFocus();
+            } else  {
+                textInputLayout.setVisibility(View.GONE);
+                textInputEditText.clearFocus();
+            }
+        }
+
+
         layout.addView(checkBoxQues);
 
     }

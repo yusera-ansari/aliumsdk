@@ -16,6 +16,7 @@ import androidx.lifecycle.LifecycleObserver;
 
 import com.dwao.alium.models.ExecutableSurveySpecs;
 import com.dwao.alium.models.LoadableSurveySpecs;
+import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
 import com.dwao.alium.models.SurveyParameters;
 
@@ -27,7 +28,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     ExecutableSurveySpecs executableSurveySpecs;
     private String loaderId;
     private boolean shouldCallOnStopCallback=true;
-
+    QuestionResponse currentQuestionResponse;
     public SurveyDialogFragment(){
     }
 
@@ -68,6 +69,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
         Log.e("onSaveInstanceState",  " "+executableSurveySpecs.getLoadableSurveySpecs().currentIndex);
         outState.putBoolean("shouldUpdatePreferences", shouldUpdatePreferences);
         outState.putString("loaderId", loaderId);
+        outState.putSerializable("currentQuestionResponse", currentQuestionResponse);
     }
 
 
@@ -90,6 +92,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
             if(loaderId!=null){
                 callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
+            currentQuestionResponse = (QuestionResponse) savedInstanceState.getSerializable("currentQuestionResponse");
 
         }else if(getArguments()!=null){
        shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
@@ -102,7 +105,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
             if(loaderId!=null){
                 callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
-
+            currentQuestionResponse = new QuestionResponse();
   }
         shouldCallOnStopCallback=true;
     }
@@ -130,6 +133,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
 
         if (executableSurveySpecs != null && surveyParameters != null) {
             dialog = new SurveyDialog(requireContext(), executableSurveySpecs, surveyParameters,savedInstanceState==null?true: false);
+            dialog.currentQuestionResponse = currentQuestionResponse;
             setCancelable(false);
             if(savedInstanceState==null){
              try{

@@ -3,6 +3,7 @@ package com.dwao.alium.questions;
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,10 @@ public class OpinionScaleQuesRenderer implements QuestionRenderer{
         View opinionScaleQues= LayoutInflater.from(context).inflate(R.layout.opinion_scale_ques, null);
         GridView opinionScaleGrid=opinionScaleQues.findViewById(R.id.opinion_scale_ques);
         if(respOptions!=null)opinionScaleGrid.setNumColumns(respOptions.size());
+        if(currentQuestionResponse.getQuestionResponse().isEmpty() && currentQuestionResponse.getIndexOfSelectedAnswer()==0){
+            currentQuestionResponse.setIndexOfSelectedAnswer(-1);
+            Log.d("index", "resetting the indes");
+        }
         OpinionClickListener listener=new OpinionClickListener() {
             @Override
             public void onClick(int position) {

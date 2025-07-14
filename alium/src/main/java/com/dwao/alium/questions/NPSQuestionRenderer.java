@@ -3,6 +3,7 @@ package com.dwao.alium.questions;
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +59,10 @@ public class NPSQuestionRenderer implements QuestionRenderer {
                                QuestionResponse currentQuestionResponse, View nextQuestionBtn) {
         View npsQues= LayoutInflater.from(context).inflate(R.layout.nps_ques, null);
         GridView npsRecView=npsQues.findViewById(R.id.nps_recy_view);
-
+        if(currentQuestionResponse.getQuestionResponse().isEmpty() && currentQuestionResponse.getIndexOfSelectedAnswer()==0){
+            currentQuestionResponse.setIndexOfSelectedAnswer(-1);
+            Log.d("index", "resetting the indes");
+        }
         NpsOptionClickListener listener=new NpsOptionClickListener() {
             @Override
             public void onClick(int position) {

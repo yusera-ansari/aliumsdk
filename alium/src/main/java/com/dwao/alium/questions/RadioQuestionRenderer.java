@@ -91,6 +91,20 @@ public class RadioQuestionRenderer implements QuestionRenderer {
 
             }
         });
+        Log.d("track", " "+currentQuestionResponse.getQuestionResponse()+" index"+" "+currentQuestionResponse.getIndexOfSelectedAnswer());
+        if(currentQuestionResponse.getQuestionResponse().isEmpty() && currentQuestionResponse.getIndexOfSelectedAnswer()==0){
+            currentQuestionResponse.setIndexOfSelectedAnswer(-1);
+            Log.d("index", "resetting the indes");
+        }
+        if(currentquestion.getQuestionSetting().getOtherOption()){
+            if ( currentQuestionResponse.getIndexOfSelectedAnswer() == responseOpt.size() - 1) {
+                textInputLayout.setVisibility(View.VISIBLE);
+                textInputEditText.requestFocus();
+            } else  {
+                textInputLayout.setVisibility(View.GONE);
+                textInputEditText.clearFocus();
+            }
+        }
         RadioClickListener radioClickListener=new RadioClickListener() {
             @Override
             public void onClick(int position) {
