@@ -133,7 +133,7 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
                 setCancelable(false);
                 if(savedInstanceState==null){
                     try{
-                        callback.onCreate(executableSurveySpecs.getLoadableSurveySpecs().key);
+                         callback.onCreate(executableSurveySpecs.getLoadableSurveySpecs().key);
                     }
                     catch (Exception e){
                         Logger.log(Logger.LogLevel.ERROR,"LDial-call-back", e.toString());
@@ -146,6 +146,10 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
             }
         }catch (Exception e){
             Logger.log(Logger.LogLevel.ERROR, "LDial-on-create", e.toString());
+            dismissAllowingStateLoss();
+            dialogInstance = new Dialog(getActivity()); // return an empty fallback dialog
+            dialogInstance.setCancelable(true);
+            dialogInstance.setOnShowListener(d -> dismissAllowingStateLoss());
         }
 
         setCancelable(true);
@@ -168,7 +172,12 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
     public void onDestroy() {
         super.onDestroy();
         try {
-            if(shouldCallOnStopCallback) callback.onStop(executableSurveySpecs.getLoadableSurveySpecs().key);
+
+            if (callback != null && executableSurveySpecs != null && shouldCallOnStopCallback) {
+                callback.onStop(executableSurveySpecs.getLoadableSurveySpecs().key);
+            }else if(surveyParameters != null&& shouldCallOnStopCallback){
+                Alium.stop(surveyParameters.screenName);
+            }
             callback=null;
             dialog=null;
         }catch (Exception e){

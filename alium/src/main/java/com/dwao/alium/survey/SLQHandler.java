@@ -51,7 +51,8 @@ class SLQHandler {
 
                                                         }
                                                     }
-                                                }
+
+                                            }
                                                 isAliumLoaderExecuting=false;
                                                 currentLoader=null;
 

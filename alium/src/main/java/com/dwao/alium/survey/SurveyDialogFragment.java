@@ -150,6 +150,11 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
             }
         }catch (Exception e){
             Logger.log(Logger.LogLevel.ERROR, "Dial-on-create", e.toString());
+            dismissAllowingStateLoss();
+            dialogInstance = new Dialog(requireContext()); // return an empty fallback dialog
+            dialogInstance.setCancelable(true);
+            dialogInstance.setOnShowListener(d -> dismissAllowingStateLoss());
+
         }
         setCancelable(true);
 
@@ -172,7 +177,11 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     public void onDestroy() {
         super.onDestroy();
         try {
-            if(shouldCallOnStopCallback) callback.onStop(executableSurveySpecs.getLoadableSurveySpecs().key);
+            if (callback != null && executableSurveySpecs != null && shouldCallOnStopCallback) {
+                callback.onStop(executableSurveySpecs.getLoadableSurveySpecs().key);
+            }else if(surveyParameters != null&& shouldCallOnStopCallback){
+                Alium.stop(surveyParameters.screenName);
+            }
             callback=null;
             dialog=null;
         }catch (Exception e){
