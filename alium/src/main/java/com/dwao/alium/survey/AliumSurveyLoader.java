@@ -40,6 +40,50 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
+/**
+ * AliumSurveyLoader is responsible for loading and displaying surveys within an Android application.
+ * It observes changes and manages the lifecycle of survey dialogs.
+ *
+ * <p>Key functionalities include:
+ * <ul>
+ *   <li>Creating and managing instances of survey loaders for specific screens.</li>
+ *   <li>Checking if a survey is already running to prevent duplicates.</li>
+ *   <li>Fetching survey data from a network source.</li>
+ *   <li>Determining if a survey should be loaded based on frequency settings.</li>
+ *   <li>Displaying surveys using either {@link androidx.fragment.app.DialogFragment} (for {@link FragmentActivity})
+ *       or {@link android.app.DialogFragment} (for older Activities).</li>
+ *   <li>Handling the stopping and cleanup of survey loaders and their associated dialogs.</li>
+ *   <li>Utilizing an {@link ExecutorService} for background operations like network requests.</li>
+ *   <li>Communicating results and lifecycle events back to a {@link Callback}.</li>
+ * </ul>
+ *
+ * <p><b>Usage Example:</b></p>
+ * <pre>{@code
+ * SurveyParameters params = new SurveyParameters("your_screen_name");
+ * AliumSurveyLoader.Callback callback = new AliumSurveyLoader.Callback() {
+ *     @Override
+ *     public void onAliumLoaderExcecuted() {
+ *         // Called when the loader has finished its execution (e.g., survey shown or decided not to show)
+ *     }
+ *
+ *     @Override
+ *     public void onQuitLoader(AliumSurveyLoader loader) {
+ *         // Called when the loader is being stopped or cleaned up
+ *     }
+ * };
+ *
+ * // 'this' should be an Activity or FragmentActivity instance
+ * AliumSurveyLoader loader = AliumSurveyLoader.createInstance(this, params, callback);
+ * if (loader != null) {
+ *     loader.showSurvey();
+ * }
+ * }</pre>
+ *
+ * <p>The loader ensures that only one survey is displayed per screen at a time. It uses
+ * {@link AliumPreferences} to store and retrieve user-specific data like customer ID and
+ * survey display frequencies.</p>
+ *
+ */
 class AliumSurveyLoader implements Observer {
 
     private AliumPreferences aliumPreferences;
@@ -208,11 +252,11 @@ class AliumSurveyLoader implements Observer {
                     executingSurveys.add(svs.get(i).getId());
 
                     //check if its already running
-                    boolean alreadyRunning= checkIfSurveyAlreadyRunning(svs.get(i).getId());
-                    if(alreadyRunning){
-                        Logger.log(Logger.LogLevel.DEBUG, "find-&-load", "already running...returning");
-                        return;
-                    }
+//                    boolean alreadyRunning= checkIfSurveyAlreadyRunning(svs.get(i).getId());
+//                    if(alreadyRunning){
+//                        Logger.log(Logger.LogLevel.DEBUG, "find-&-load", "already running...returning");
+//                        return;
+//                    }
                     Logger.log(Logger.LogLevel.DEBUG, "find-&-load", "not running...proceeding");
 
 
@@ -259,15 +303,15 @@ class AliumSurveyLoader implements Observer {
                            customFreqSurveyData)
                    .shouldSurveyLoad()){
                 Logger.log(Logger.LogLevel.DEBUG, "should-load", "survey frequency handled..survey should load");
-               if(!checkIfSurveyAlreadyRunning(currentSurveyJson.getId())){
-                   Logger.log(Logger.LogLevel.DEBUG, "should-load", "survet not running...proceeding");
+//               if(!checkIfSurveyAlreadyRunning(currentSurveyJson.getId())){
+//                   Logger.log(Logger.LogLevel.DEBUG, "should-load", "survet not running...proceeding");
 
                    loadSurvey( new LoadableSurveySpecs(
                            currentSurveyJson.getId(), srvshowfrq, spath.toString(),
                            customFreqSurveyData
                    ));
 
-               }
+//               }
 
            }else{
                Logger.log(Logger.LogLevel.DEBUG, "should-load", "survey frequency setting restricts loading...stopping....");

@@ -26,7 +26,7 @@ public class LegacyFragment extends Fragment {
         super.onCreate(savedInstanceState);
 //        if(savedInstanceState == null){
             Log.e("oncreate", "dialog created legacy");
-            Alium.trigger(getActivity(), new SurveyParameters("screen4"));
+//            Alium.trigger(getActivity(), new SurveyParameters("screen4"));
 
 //        }
         Log.e("ONCREATE", "vre ted");
