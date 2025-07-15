@@ -158,18 +158,18 @@ class AliumSurveyLoader implements Observer {
                 if (surveyParameters.screenName.equals(screenName)){
                     //check if its already running
 
-                        if(instance.activity  !=null){
+                    if (instance != null && instance.activity != null) {
                         if (instance.activity.get() instanceof FragmentActivity) {
                             instance.xfm = ((FragmentActivity) instance.activity.get()).getSupportFragmentManager();
                             Fragment fragment = instance.xfm.findFragmentByTag(svs.get(i).getId() + "-" + surveyParameters.screenName);
                             if (fragment != null) {
-                                instance= null;
+                                instance = null;
                             }
                         } else {
                             instance.fm = instance.activity.get().getFragmentManager();
                             android.app.Fragment fragment = instance.fm.findFragmentByTag(svs.get(i).getId() + "-" + surveyParameters.screenName);
                             if (fragment != null) {
-                                instance= null;
+                                instance = null;
                             }
                         }
                     }
@@ -251,22 +251,12 @@ class AliumSurveyLoader implements Observer {
                 if (surveyParameters.screenName.equals(screenName)){
                     executingSurveys.add(svs.get(i).getId());
 
-                    //check if its already running
-//                    boolean alreadyRunning= checkIfSurveyAlreadyRunning(svs.get(i).getId());
-//                    if(alreadyRunning){
-//                        Logger.log(Logger.LogLevel.DEBUG, "find-&-load", "already running...returning");
-//                        return;
-//                    }
-                    Logger.log(Logger.LogLevel.DEBUG, "find-&-load", "not running...proceeding");
-
-
-
                     //survey is not already running...
                    loadSurveyIfShouldBeLoaded(svs.get(i));
                        return; // limits survey to one on each screen
                 }
             } catch (Exception e) {
-                Log.i("error", "inside catch block");
+                Logger.log(Logger.LogLevel.ERROR,"error", "inside catch block");
                 e.printStackTrace();
             }
         }
@@ -303,15 +293,11 @@ class AliumSurveyLoader implements Observer {
                            customFreqSurveyData)
                    .shouldSurveyLoad()){
                 Logger.log(Logger.LogLevel.DEBUG, "should-load", "survey frequency handled..survey should load");
-//               if(!checkIfSurveyAlreadyRunning(currentSurveyJson.getId())){
-//                   Logger.log(Logger.LogLevel.DEBUG, "should-load", "survet not running...proceeding");
 
                    loadSurvey( new LoadableSurveySpecs(
                            currentSurveyJson.getId(), srvshowfrq, spath.toString(),
                            customFreqSurveyData
                    ));
-
-//               }
 
            }else{
                Logger.log(Logger.LogLevel.DEBUG, "should-load", "survey frequency setting restricts loading...stopping....");

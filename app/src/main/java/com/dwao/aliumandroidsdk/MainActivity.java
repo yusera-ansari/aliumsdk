@@ -50,6 +50,7 @@ public class MainActivity extends Activity {
 
          Alium.trigger(this, new SurveyParameters("screen4", params));
 //        Alium.stop("screen4");
+//        Alium.trigger(this, new SurveyParameters("screen4", params));
 //                  Alium.trigger(this, new SurveyParameters("screen3", params));
 
 

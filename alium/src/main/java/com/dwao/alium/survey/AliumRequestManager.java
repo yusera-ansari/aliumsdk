@@ -17,7 +17,6 @@ import java.util.Set;
 
 class AliumRequestManager {
     private static boolean isAliumRequestExecuting=false;
-    private final Set<String> pendingStops = Collections.synchronizedSet(new HashSet<>());
 
     private volatile static Map<String, SLQHandler> surveyExecutingMap=new HashMap<>();
     public static synchronized AliumSurveyLoader.SurveyDialogCallback reAttachCallback(String id, String screenName){
@@ -40,7 +39,6 @@ class AliumRequestManager {
     };
 
 synchronized  void executeNextRequest(Queue<AliumRequest> aliumRequestQueue){
-
         if(isAliumRequestExecuting||aliumRequestQueue.isEmpty()){
             
             if(aliumRequestQueue.isEmpty()){
@@ -57,6 +55,7 @@ synchronized  void executeNextRequest(Queue<AliumRequest> aliumRequestQueue){
 
 
     if (request != null){
+
             if(request.type.equals(AliumRequest.Request.TRIGGER)){
                     TriggerRequest triggerRequest = request.request;
                 Logger.log(Logger.LogLevel.DEBUG, "exec-nex-req", "executing next request: TRIGGER "+triggerRequest.surveyParameters.screenName);
@@ -87,8 +86,6 @@ synchronized  void executeNextRequest(Queue<AliumRequest> aliumRequestQueue){
         SLQHandler execSurLoaderDM= surveyExecutingMap.get(screenName);
         if(execSurLoaderDM!=null ){
             execSurLoaderDM.stop();
-        }else{
-            pendingStops.add(screenName);
         }
     }
 
