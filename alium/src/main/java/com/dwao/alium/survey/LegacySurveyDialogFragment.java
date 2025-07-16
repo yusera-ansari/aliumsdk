@@ -86,7 +86,7 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
             loaderId=savedInstanceState.getString("loaderId");
             currentQuestionResponse = (QuestionResponse) savedInstanceState.getSerializable("currentQuestionResponse");
             if(loaderId!=null){
-                callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
+//                callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
             Logger.log(Logger.LogLevel.INFO, "LDial-create", "Saved Instance State retrieved");
         }else if(getArguments()!=null){
@@ -97,7 +97,7 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
                     ,(LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
             loaderId=getArguments().getString("loaderId");
             if(loaderId!=null){
-                 callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
+//                 callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
             currentQuestionResponse = new QuestionResponse();
             Logger.log(Logger.LogLevel.INFO, "LDial-create", "retrieved arguments");
@@ -131,14 +131,14 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
                         surveyParameters, savedInstanceState == null);
                 dialog.currentQuestionResponse = currentQuestionResponse;
                 setCancelable(false);
-                if(savedInstanceState==null){
-                    try{
-                         callback.onCreate(executableSurveySpecs.getLoadableSurveySpecs().key);
-                    }
-                    catch (Exception e){
-                        Logger.log(Logger.LogLevel.ERROR,"LDial-call-back", e.toString());
-                    }
-                }
+//                if(savedInstanceState==null){
+//                    try{
+//                         callback.onCreate(executableSurveySpecs.getLoadableSurveySpecs().key);
+//                    }
+//                    catch (Exception e){
+//                        Logger.log(Logger.LogLevel.ERROR,"LDial-call-back", e.toString());
+//                    }
+//                }
                 dialogInstance=dialog.getInstance();
             }
             else {
@@ -173,9 +173,10 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
         super.onDestroy();
         try {
 
-            if (callback != null && executableSurveySpecs != null && shouldCallOnStopCallback) {
-                callback.onStop(executableSurveySpecs.getLoadableSurveySpecs().key);
-            }else if(surveyParameters != null&& shouldCallOnStopCallback){
+//            if (callback != null && executableSurveySpecs != null && shouldCallOnStopCallback) {
+//                callback.onStop(executableSurveySpecs.getLoadableSurveySpecs().key);
+//            }else
+            if(surveyParameters != null&& shouldCallOnStopCallback){
                 Alium.stop(surveyParameters.screenName);
             }
             callback=null;

@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -47,8 +48,27 @@ public class MainActivity extends Activity {
         params.put("custEmail", "test@gmail.co");//branch id
         params.put("custMobile", "9090909090");//branch id
         params.put("custSystemId", "0jdu07");//systemId id
+        Alium.trigger(MainActivity.this, new SurveyParameters("screen4", params));
 
-         Alium.trigger(this, new SurveyParameters("screen4", params));
+//        new Handler().postDelayed(new Runnable() {
+//           @Override
+//           public void run() {
+//               Alium.trigger(MainActivity.this, new SurveyParameters("screen4", params));
+//           }
+//       }, 3000);
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Alium.trigger(MainActivity.this, new SurveyParameters("screen4", params));
+//            }
+//        }, 6000);
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Alium.stop("screen4");
+//            }
+//        }, 3500);
+
 //        Alium.stop("screen4");
 //        Alium.trigger(this, new SurveyParameters("screen4", params));
 //                  Alium.trigger(this, new SurveyParameters("screen3", params));
@@ -82,7 +102,7 @@ public class MainActivity extends Activity {
         Intent intent=new Intent(this, DashboardActivity.class);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view) {Alium.stop("screen4");
                 startActivity(intent);
             }
         });

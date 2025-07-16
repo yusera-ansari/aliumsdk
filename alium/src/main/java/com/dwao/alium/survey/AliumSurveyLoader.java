@@ -246,19 +246,16 @@ class AliumSurveyLoader implements Observer {
     private void findAndLoadSurveyForCurrentScr() {
           List<SurInfo> svs=Alium.surveyConfig.getSvs();
         for(int i=0; i<svs.size(); i++){
-            try {
+
                   String screenName =svs.get(i).getTps().getApp().getUm().getU();
                 if (surveyParameters.screenName.equals(screenName)){
-                    executingSurveys.add(svs.get(i).getId());
+
 
                     //survey is not already running...
                    loadSurveyIfShouldBeLoaded(svs.get(i));
-                       return; // limits survey to one on each screen
+                   return; // limits survey to one on each screen
                 }
-            } catch (Exception e) {
-                Logger.log(Logger.LogLevel.ERROR,"error", "inside catch block");
-                e.printStackTrace();
-            }
+
         }
     }
 
@@ -291,7 +288,8 @@ class AliumSurveyLoader implements Observer {
            if( FrequencyManagerFactory
                    .getFrequencyManager(aliumPreferences,currentSurveyJson.getId(), srvshowfrq,
                            customFreqSurveyData)
-                   .shouldSurveyLoad()){
+                   .shouldSurveyLoad())
+           {
                 Logger.log(Logger.LogLevel.DEBUG, "should-load", "survey frequency handled..survey should load");
 
                    loadSurvey( new LoadableSurveySpecs(
@@ -311,7 +309,6 @@ class AliumSurveyLoader implements Observer {
     private void loadSurvey(LoadableSurveySpecs loadableSurveySpecs) {
 
         if(threadShouldExecute) {
-
             CustomNetworkService.getNetworkData(  loadableSurveySpecs.uri ,
                     new LoadSurveyFromAPI(loadableSurveySpecs));
         }
@@ -324,6 +321,7 @@ class AliumSurveyLoader implements Observer {
         if(fm!=null ){
             if(executingSurveys.size()>0){
                 for(String key: executingSurveys){
+
                     android.app.Fragment fragment=  fm.findFragmentByTag(key+"-"+surveyParameters.screenName);
                     if(fragment!=null)  fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
                 }
@@ -364,7 +362,7 @@ class AliumSurveyLoader implements Observer {
         }
     }
     private synchronized void loadSurveyFromDialogFragment(JSONObject json, LoadableSurveySpecs loadableSurveySpecs){
-
+        executingSurveys.add(loadableSurveySpecs.key);
         ExecutableSurveySpecs executableSurveySpecs=new ExecutableSurveySpecs(
                 AliumJSONParser.getSurveyFromJson(json)
                 , loadableSurveySpecs);

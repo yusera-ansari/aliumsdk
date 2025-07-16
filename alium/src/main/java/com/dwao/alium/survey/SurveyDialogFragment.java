@@ -88,7 +88,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
 
             loaderId=savedInstanceState.getString("loaderId");
             if(loaderId!=null){
-                callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
+//                callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
             currentQuestionResponse = (QuestionResponse) savedInstanceState.getSerializable("currentQuestionResponse");
              Logger.log(Logger.LogLevel.INFO, "Dial-create", "Saved Instance State retrieved");
@@ -102,7 +102,7 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
               , (LoadableSurveySpecs)getArguments().getSerializable("loadableSurveySpecs"));
             loaderId=getArguments().getString("loaderId");
             if(loaderId!=null){
-                callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
+//                callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
             currentQuestionResponse = new QuestionResponse();
              Logger.log(Logger.LogLevel.INFO, "Dial-create", "retrieved arguments");
@@ -137,13 +137,13 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
                 dialog = new SurveyDialog(requireContext(), executableSurveySpecs, surveyParameters, savedInstanceState == null ? true : false);
                 dialog.currentQuestionResponse = currentQuestionResponse;
                 setCancelable(false);
-                if (savedInstanceState == null) {
-                    try {
-                        callback.onCreate(executableSurveySpecs.getLoadableSurveySpecs().key);
-                    } catch (Exception e) {
-                        Logger.log(Logger.LogLevel.ERROR, "Dial-call-back", e.toString());
-                    }
-                }
+//                if (savedInstanceState == null) {
+//                    try {
+//                        callback.onCreate(executableSurveySpecs.getLoadableSurveySpecs().key);
+//                    } catch (Exception e) {
+//                        Logger.log(Logger.LogLevel.ERROR, "Dial-call-back", e.toString());
+//                    }
+//                }
                 dialogInstance = dialog.getInstance();
             } else {
                 throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");
@@ -177,9 +177,10 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     public void onDestroy() {
         super.onDestroy();
         try {
-            if (callback != null && executableSurveySpecs != null && shouldCallOnStopCallback) {
-                callback.onStop(executableSurveySpecs.getLoadableSurveySpecs().key);
-            }else if(surveyParameters != null&& shouldCallOnStopCallback){
+//            if (callback != null && executableSurveySpecs != null && shouldCallOnStopCallback) {
+//                callback.onStop(executableSurveySpecs.getLoadableSurveySpecs().key);
+//            }else
+                if(surveyParameters != null&& shouldCallOnStopCallback){
                 Alium.stop(surveyParameters.screenName);
             }
             callback=null;
