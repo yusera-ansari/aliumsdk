@@ -1,57 +1,39 @@
 package com.dwao.alium.models;
 
+import java.util.ArrayList;
+import java.util.List;
 
-import java.io.Serializable;
+public class SurveyConfig {
+    public SurveyConfig(){};
 
-public class SurveyConfig implements Serializable {
-    SurveyConfig(){}
-    int active;
-
-    public int getActive() {
-        return active;
-    }
-
-    public void setActive(int active) {
-        this.active = active;
-    }
-
-    String orgId="";
-    String spath="";
+    String oid="";
 
     @Override
     public String toString() {
-        return "SurveyConfig{" +
-                "orgId='" + orgId + '\'' +
-                ", spath='" + spath + '\'' +
-                ", srv=" + srv +
+        return "SurConf{" +
+                "oid='" + oid + '\'' +
+                ", svs=" + svs +
                 '}';
     }
 
-    public String getOrgId() {
-        return orgId;
+    public List<SurInfo> getSvs() {
+        return svs;
     }
 
-    public void setOrgId(String orgId) {
-        this.orgId = orgId;
+    public void setSvs(List<SurInfo> svs) {
+        this.svs = svs;
     }
 
-    public String getSpath() {
-        return spath;
+    public String getOid() {
+        return oid;
     }
 
-    public void setSpath(String spath) {
-        this.spath = spath;
+    public void setOid(String oid) {
+        this.oid = oid;
     }
 
-    public Srv getSrv() {
-        return srv;
-    }
-
-    public void setSrv(Srv srv) {
-        this.srv = srv;
-    }
-
-
-    public  Srv srv=new Srv();
+    List<SurInfo> svs=new ArrayList<>();
 
 }
+
+

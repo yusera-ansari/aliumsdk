@@ -39,19 +39,16 @@ public class CustomNetworkService {
            @Override
            public void onSuccess(String response) {
               try{
-                  Log.d("response", "retrived json "+ Thread.currentThread().getName() + response);
                   responseListener.onResponseReceived(new JSONObject(response));
 
               }catch (JSONException e){
-                  Log.e("getNetworkData","couldn't parse json.."+e);
-                  responseListener.onRequestFailed();
+                  responseListener.onRequestFailed(e);
               }
            }
 
            @Override
            public void onError(Exception e) {
-            Log.e("Alium", "Netwrok request failed..."+ e.toString());
-            responseListener.onRequestFailed();
+            responseListener.onRequestFailed(e);
 
            }
        });

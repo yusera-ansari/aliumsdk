@@ -1,5 +1,6 @@
 package com.dwao.alium.models;
 
+//Survey info inside app config also called svs
 public class SurInfo{
     public  SurInfo(){}
     String id;

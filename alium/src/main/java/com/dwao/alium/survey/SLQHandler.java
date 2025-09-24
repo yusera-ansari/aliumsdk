@@ -2,7 +2,6 @@ package com.dwao.alium.survey;
 
 import android.util.Log;
 
-import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.models.TriggerRequest;
 
 import java.util.Iterator;
@@ -25,6 +24,7 @@ class SLQHandler {
         public SLQHandler(String screenName){
             this.screenName=screenName;
         }
+
 
 
     synchronized void  offer(TriggerRequest request){

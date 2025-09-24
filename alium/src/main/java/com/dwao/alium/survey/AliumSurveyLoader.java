@@ -362,7 +362,8 @@ class AliumSurveyLoader implements Observer {
         }
 
         @Override
-        public void onRequestFailed() {
+        public void onRequestFailed(Exception e) {
+            Logger.log(Logger.LogLevel.ERROR, "Survey-load", "survey load failed "+ e.toString());
             stop();
             callback.onQuitLoader(AliumSurveyLoader.this);
         }

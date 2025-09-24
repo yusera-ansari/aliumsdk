@@ -7,7 +7,8 @@ import android.os.Looper;
 
 import com.dwao.alium.listeners.ResponseListener;
 
-import com.dwao.alium.models.SurConf;
+import com.dwao.alium.models.AliumRequest;
+import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.models.SurveyParameters;
 import com.dwao.alium.models.TriggerRequest;
 import com.dwao.alium.network.CustomNetworkService;
@@ -28,12 +29,12 @@ import java.util.Queue;
 public class Alium {
 
 
-     static volatile SurConf surveyConfig =null;
+     static volatile SurveyConfig surveyConfig =null;
 
 
      private static volatile Alium instance;
 
-     private static String configURL;
+     private static volatile String configURL;
      private AliumRequestManager aliumRequestManager=new AliumRequestManager();
      private static AliumPreferences preferences;
 
@@ -54,7 +55,6 @@ public class Alium {
             }
         if( url.trim().isEmpty()){
             Logger.log(Logger.LogLevel.ERROR, "config","Configuration URL can't be empty. Please set a valid url: "+url );
-//            Log.e("Alium", "Configuration URL can't be empty. Please set a valid url: "+url );
             return;
         }
             if(configURL==null ){
@@ -71,7 +71,6 @@ public class Alium {
             else if(!configURL.equals(url)) {
               synchronized (Alium.class){
                   if(!configURL.equals(url)){
-                      Logger.log(Logger.LogLevel.DEBUG, "config", "Resetting url from "+configURL+" to "+url);
                       configURL = url;
                       Logger.log(Logger.LogLevel.INFO, "config", "url set to "+url);
                       instance.fetchConfigJson( );
@@ -84,20 +83,23 @@ public class Alium {
 
 
     public static void stop(String screenName){
-         Logger.log(Logger.LogLevel.DEBUG, "stop", "called on stop on "+screenName);
-        instance.aliumRequestQueue.offer(new AliumRequest(  screenName));
-        if(configURL==null||isConfigFetching ){return;}
-       instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
+         Logger.log(Logger.LogLevel.INFO, "stop", "called on stop on "+screenName);
+         instance.aliumRequestQueue.offer(new AliumRequest(  screenName));
+         if(configURL==null||isConfigFetching ){return;}
+         instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
     }
 
       void fetchConfigJson(){
           isConfigFetching=true;
-//          String config = preferences.getConfig();
           Logger.log(Logger.LogLevel.DEBUG, "fetch-config", "initiate config details fetching...");
-          String config = null;
+          CustomNetworkService.getNetworkData(  configURL,
+                  new Alium.ConfigURLResponseListener());
+//          disabled shared pref
+//          String config = preferences.getConfig();
+
+          /*  String config = null;
           try{
               if (config != null) {
-
                   surveyConfig = AliumJSONParser.getSurConfFromJSON(new JSONObject(config));
                   isConfigFetching=false;
               }else{
@@ -105,10 +107,10 @@ public class Alium {
               }
           }catch (Exception e){
               Logger.log(Logger.LogLevel.ERROR,"fetch-config", e.toString());
-              Logger.log(Logger.LogLevel.DEBUG, "fetch-config", "fetching config from config url: "+configURL);
+              Logger.log(Logger.LogLevel.INFO, "fetch-config", "Preferences is null so fetching config from config url: "+configURL);
               CustomNetworkService.getNetworkData(  configURL,
                       new Alium.ConfigURLResponseListener());
-          }
+          }*/
 
     }
 
@@ -168,8 +170,8 @@ public class Alium {
            }
 
         @Override
-        public void onRequestFailed() {
-
+        public void onRequestFailed(Exception e) {
+            Logger.log(Logger.LogLevel.ERROR, "Config-resp", e.toString());
         }
     }
 

@@ -2,6 +2,7 @@ package com.dwao.alium.models;
 
 import java.io.Serializable;
 
+//survey specific info within individual survey json file
 public class SurveyInfo implements Serializable {
     //          "orgId": "128",
 //                  "orgName": "ASDF",

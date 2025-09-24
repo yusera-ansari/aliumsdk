@@ -5,7 +5,7 @@ import android.util.Log;
 import com.dwao.alium.models.App;
 import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionSetting;
-import com.dwao.alium.models.SurConf;
+import com.dwao.alium.models.SurveyConfig;
 import com.dwao.alium.models.SurInfo;
 import com.dwao.alium.models.Survey;
 import com.dwao.alium.models.SurveyInfo;
@@ -21,9 +21,9 @@ import java.util.List;
 
 public class AliumJSONParser {
 
-    public static SurConf getSurConfFromJSON(JSONObject jsonObject){
+    public static SurveyConfig getSurConfFromJSON(JSONObject jsonObject){
         try{
-            SurConf surveyConfi=new SurConf();
+            SurveyConfig surveyConfi=new SurveyConfig();
 
             if(jsonObject.has("oid")){
                 surveyConfi.setOid(jsonObject.getString("oid"));
