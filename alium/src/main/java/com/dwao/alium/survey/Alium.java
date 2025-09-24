@@ -166,6 +166,11 @@ public class Alium {
         });
 
            }
-     }
+
+        @Override
+        public void onRequestFailed() {
+
+        }
+    }
 
 }

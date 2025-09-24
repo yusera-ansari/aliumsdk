@@ -4,4 +4,5 @@ import org.json.JSONObject;
 
 public interface ResponseListener {
     public void onResponseReceived(JSONObject jsonObject);
+    public void onRequestFailed();
 }
