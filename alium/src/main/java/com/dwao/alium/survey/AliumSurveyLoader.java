@@ -360,6 +360,12 @@ class AliumSurveyLoader implements Observer {
               }
 
         }
+
+        @Override
+        public void onRequestFailed() {
+            stop();
+            callback.onQuitLoader(AliumSurveyLoader.this);
+        }
     }
     private synchronized void loadSurveyFromDialogFragment(JSONObject json, LoadableSurveySpecs loadableSurveySpecs){
         executingSurveys.add(loadableSurveySpecs.key);

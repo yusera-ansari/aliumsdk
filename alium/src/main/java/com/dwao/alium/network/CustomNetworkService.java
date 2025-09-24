@@ -44,12 +44,14 @@ public class CustomNetworkService {
 
               }catch (JSONException e){
                   Log.e("getNetworkData","couldn't parse json.."+e);
+                  responseListener.onRequestFailed();
               }
            }
 
            @Override
            public void onError(Exception e) {
             Log.e("Alium", "Netwrok request failed..."+ e.toString());
+            responseListener.onRequestFailed();
 
            }
        });
