@@ -87,7 +87,7 @@ List<String> ratingOptions;
             }
         };
 
-        RatingType ratingType=RatingType.stars;
+        RatingType ratingType=RatingType.star;
         try{
             if(questionSetting!=null){
                 ratingType=RatingType.valueOf(questionSetting.getRatingType().toLowerCase());
