@@ -37,8 +37,8 @@ import java.io.Serializable;
 //		--color23 - #fff Toggle Icon Color
 
 public class ThemeColors implements Serializable {
-    public String color1, color2, color3, color4, color5, color6, color7, color8, color9, color10, color11, color12, color13, color14,
-            color15, color16, color17, color18, color19, color20, color21, color22, color23;
+    public String color1 = "#88000000", color2= "#88000000", color3= "#88000000", color4= "#88000000", color5= "#88000000", color6= "#88000000", color7= "#88000000", color8= "#88000000", color9= "#88000000", color10= "#88000000", color11= "#88000000", color12= "#88000000", color13= "#88000000", color14= "#88000000",
+            color15= "#88000000", color16= "#88000000", color17= "#88000000", color18= "#88000000", color19= "#88000000", color20= "#88000000", color21= "#88000000", color22= "#88000000", color23 = "#88000000";
 
     @Override
     public String toString() {

@@ -25,14 +25,18 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     private SurveyDialog dialog ;
     boolean shouldUpdatePreferences;
     SurveyParameters surveyParameters;
-    private AliumSurveyLoader.SurveyDialogCallback callback;
+//    private AliumSurveyLoader.SurveyDialogCallback callback;
     ExecutableSurveySpecs executableSurveySpecs;
     private String loaderId;
     private boolean shouldCallOnStopCallback=true;
     QuestionResponse currentQuestionResponse;
     public SurveyDialogFragment(){
     }
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        shouldCallOnStopCallback = true;
+    }
     @Override
     public void show(@NonNull FragmentManager manager, @Nullable String tag) {
         super.show(manager, tag);
@@ -91,7 +95,6 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
 //                callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
             currentQuestionResponse = (QuestionResponse) savedInstanceState.getSerializable("currentQuestionResponse");
-             Logger.log(Logger.LogLevel.INFO, "Dial-create", "Saved Instance State retrieved");
 
          }else if(getArguments()!=null){
        shouldUpdatePreferences=getArguments().getBoolean("shouldUpdatePreferences");
@@ -105,7 +108,6 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
 //                callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
             currentQuestionResponse = new QuestionResponse();
-             Logger.log(Logger.LogLevel.INFO, "Dial-create", "retrieved arguments");
 
          }
         shouldCallOnStopCallback=true;
@@ -181,9 +183,10 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
 //                callback.onStop(executableSurveySpecs.getLoadableSurveySpecs().key);
 //            }else
                 if(surveyParameters != null&& shouldCallOnStopCallback){
-                Alium.stop(surveyParameters.screenName);
+                    Alium.stop(surveyParameters.screenName);
+//                AliumRequestManager.getManager().stop(surveyParameters.screenName);
             }
-            callback=null;
+//            callback=null;
             dialog=null;
         }catch (Exception e){
             Logger.log(Logger.LogLevel.ERROR,"Dial-dest", e.toString());
