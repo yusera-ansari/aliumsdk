@@ -25,11 +25,17 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
     SurveyParameters surveyParameters;
     ExecutableSurveySpecs executableSurveySpecs;
     private boolean shouldCallOnStopCallback=true;
-    private AliumSurveyLoader.SurveyDialogCallback callback;
+//    private AliumSurveyLoader.SurveyDialogCallback callback;
     QuestionResponse currentQuestionResponse;
 
     public LegacySurveyDialogFragment(){
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        shouldCallOnStopCallback = true;
     }
 
     @Override
@@ -73,7 +79,7 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Logger.log(Logger.LogLevel.INFO, "L.Dial", "onCreate called");
 
         if(savedInstanceState!=null){
 
@@ -100,7 +106,6 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
 //                 callback= AliumRequestManager.reAttachCallback(loaderId, surveyParameters.screenName);
             }
             currentQuestionResponse = new QuestionResponse();
-            Logger.log(Logger.LogLevel.INFO, "LDial-create", "retrieved arguments");
         }
         shouldCallOnStopCallback=true;
     }
@@ -108,13 +113,12 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-
+        Logger.log(Logger.LogLevel.INFO, "LDial", "View state restored");
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-
         getDialog().setCancelable(true);
         getDialog().setCanceledOnTouchOutside(true);
         return super.onCreateView(inflater, container, savedInstanceState);
@@ -145,11 +149,12 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
                 throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");
             }
         }catch (Exception e){
-            Logger.log(Logger.LogLevel.ERROR, "LDial-on-create", e.toString());
+            Logger.log(Logger.LogLevel.ERROR, "L.Dial.onCreate", e.toString());
             dismissAllowingStateLoss();
             dialogInstance = new Dialog(getActivity()); // return an empty fallback dialog
             dialogInstance.setCancelable(true);
             dialogInstance.setOnShowListener(d -> dismissAllowingStateLoss());
+
         }
 
         setCancelable(true);
@@ -159,36 +164,36 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
-
+        Logger.log(Logger.LogLevel.INFO, "Dismiss", "dismiss the survey");
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Logger.log(Logger.LogLevel.DEBUG,"LDial", "onDestroyView called");
+//        Logger.log(Logger.LogLevel.DEBUG,"L.Dial.onViewDestroy", "onDestroyView called");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         try {
-
+            Logger.log(Logger.LogLevel.INFO, "Destroy", "destroy the survey..."+surveyParameters+" should call on stop: "+shouldCallOnStopCallback);
 //            if (callback != null && executableSurveySpecs != null && shouldCallOnStopCallback) {
 //                callback.onStop(executableSurveySpecs.getLoadableSurveySpecs().key);
 //            }else
             if(surveyParameters != null&& shouldCallOnStopCallback){
-                Alium.stop(surveyParameters.screenName);
+//                Alium.stop(surveyParameters.screenName);
+                AliumRequestManager.getManager().stop(surveyParameters.screenName);
             }
-            callback=null;
+//            callback=null;
             dialog=null;
         }catch (Exception e){
-            Logger.log(Logger.LogLevel.ERROR,"LDial-dest", e.toString());
+            Logger.log(Logger.LogLevel.ERROR,"L.Dial.onDest", e.toString());
         }
 
     }
     @Override
     public void onDetach() {
         super.onDetach();
-        Logger.log(Logger.LogLevel.DEBUG,"LDialog", "detached");
     }
 }

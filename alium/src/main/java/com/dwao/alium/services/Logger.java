@@ -16,7 +16,7 @@ public class Logger {
     public static void log(LogLevel level, String tag, String message) {
         if (!isLoggingEnabled || level.ordinal() < minLogLevel.ordinal()) return;
 
-        String safeTag = safeTag(LOG_PREFIX + "-" + tag);
+        String safeTag = safeTag(LOG_PREFIX + "." + tag);
 
         switch (level) {
             case DEBUG:

@@ -156,29 +156,112 @@ public class AliumJSONParser {
 
              JSONObject themeColorObj= surveyInfoObj.getJSONObject("thc");
             ThemeColors  themeColors=new ThemeColors();
-            themeColors.setColor1("#"+themeColorObj.getString("c1"));
-            themeColors.setColor2("#"+themeColorObj.getString("c2"));
-            themeColors.setColor3("#"+themeColorObj.getString("c3"));
-            themeColors.setColor4("#"+themeColorObj.getString("c4"));
-            themeColors.setColor5("#"+themeColorObj.getString("c5"));
-            themeColors.setColor6("#"+themeColorObj.getString("c6"));
-            themeColors.setColor7("#"+themeColorObj.getString("c7"));
-            themeColors.setColor8("#"+themeColorObj.getString("c8"));
-            themeColors.setColor9("#"+themeColorObj.getString("c9"));
-            themeColors.setColor10("#"+themeColorObj.getString("c10"));
-            themeColors.setColor11("#"+themeColorObj.getString("c11"));
-            themeColors.setColor12("#"+themeColorObj.getString("c12"));
-            themeColors.setColor13("#"+themeColorObj.getString("c13"));
-            themeColors.setColor14("#"+themeColorObj.getString("c14"));
-            themeColors.setColor15("#"+themeColorObj.getString("c15"));
-            themeColors.setColor16("#"+themeColorObj.getString("c16"));
-            themeColors.setColor17("#"+themeColorObj.getString("c17"));
-            themeColors.setColor18("#"+themeColorObj.getString("c18"));
-            themeColors.setColor19("#"+themeColorObj.getString("c19"));
-            themeColors.setColor20("#"+themeColorObj.getString("c20"));
-            themeColors.setColor21("#"+themeColorObj.getString("c21"));
-            themeColors.setColor22("#"+themeColorObj.getString("c22"));
-            themeColors.setColor23("#"+themeColorObj.getString("c23"));
+
+
+// loop over c1...c23
+            for (int i = 1; i <= 23; i++) {
+                String key = "c" + i;
+                String value = themeColorObj.optString(key, ""); // safe: returns "" if missing
+
+                if (value != null && !value.trim().isEmpty()) {
+                    String hexColor = "#" + value;
+                    switch (i) {
+                        case 1:
+                            themeColors.setColor1(hexColor);
+                            break;
+                        case 2:
+                            themeColors.setColor2(hexColor);
+                            break;
+                        case 3:
+                            themeColors.setColor3(hexColor);
+                            break;
+                        case 4:
+                            themeColors.setColor4(hexColor);
+                            break;
+                        case 5:
+                            themeColors.setColor5(hexColor);
+                            break;
+                        case 6:
+                            themeColors.setColor6(hexColor);
+                            break;
+                        case 7:
+                            themeColors.setColor7(hexColor);
+                            break;
+                        case 8:
+                            themeColors.setColor8(hexColor);
+                            break;
+                        case 9:
+                            themeColors.setColor9(hexColor);
+                            break;
+                        case 10:
+                            themeColors.setColor10(hexColor);
+                            break;
+                        case 11:
+                            themeColors.setColor11(hexColor);
+                            break;
+                        case 12:
+                            themeColors.setColor12(hexColor);
+                            break;
+                        case 13:
+                            themeColors.setColor13(hexColor);
+                            break;
+                        case 14:
+                            themeColors.setColor14(hexColor);
+                            break;
+                        case 15:
+                            themeColors.setColor15(hexColor);
+                            break;
+                        case 16:
+                            themeColors.setColor16(hexColor);
+                            break;
+                        case 17:
+                            themeColors.setColor17(hexColor);
+                            break;
+                        case 18:
+                            themeColors.setColor18(hexColor);
+                            break;
+                        case 19:
+                            themeColors.setColor19(hexColor);
+                            break;
+                        case 20:
+                            themeColors.setColor20(hexColor);
+                            break;
+                        case 21:
+                            themeColors.setColor21(hexColor);
+                            break;
+                        case 22:
+                            themeColors.setColor22(hexColor);
+                            break;
+                        case 23:
+                            themeColors.setColor23(hexColor);
+                            break;
+                    }
+                }
+            }
+//            themeColors.setColor1("#"+themeColorObj.getString("c1"));
+//            themeColors.setColor2("#"+themeColorObj.getString("c2"));
+//            themeColors.setColor3("#"+themeColorObj.getString("c3"));
+//            themeColors.setColor4("#"+themeColorObj.getString("c4"));
+//            themeColors.setColor5("#"+themeColorObj.getString("c5"));
+//            themeColors.setColor6("#"+themeColorObj.getString("c6"));
+//            themeColors.setColor7("#"+themeColorObj.getString("c7"));
+//            themeColors.setColor8("#"+themeColorObj.getString("c8"));
+//            themeColors.setColor9("#"+themeColorObj.getString("c9"));
+//            themeColors.setColor10("#"+themeColorObj.getString("c10"));
+//            themeColors.setColor11("#"+themeColorObj.getString("c11"));
+//            themeColors.setColor12("#"+themeColorObj.getString("c12"));
+//            themeColors.setColor13("#"+themeColorObj.getString("c13"));
+//            themeColors.setColor14("#"+themeColorObj.getString("c14"));
+//            themeColors.setColor15("#"+themeColorObj.getString("c15"));
+//            themeColors.setColor16("#"+themeColorObj.getString("c16"));
+//            themeColors.setColor17("#"+themeColorObj.getString("c17"));
+//            themeColors.setColor18("#"+themeColorObj.getString("c18"));
+//            themeColors.setColor19("#"+themeColorObj.getString("c19"));
+//            themeColors.setColor20("#"+themeColorObj.getString("c20"));
+//            themeColors.setColor21("#"+themeColorObj.getString("c21"));
+//            themeColors.setColor22("#"+themeColorObj.getString("c22"));
+//            themeColors.setColor23("#"+themeColorObj.getString("c23"));
+
             surveyInfo.setThemeColors(themeColors);
             survey.setSurveyInfo(surveyInfo);
 

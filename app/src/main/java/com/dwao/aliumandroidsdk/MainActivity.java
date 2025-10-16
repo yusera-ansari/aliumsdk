@@ -49,6 +49,7 @@ public class MainActivity extends Activity {
         params.put("custMobile", "9090909090");//branch id
         params.put("custSystemId", "0jdu07");//systemId id
         Alium.trigger(MainActivity.this, new SurveyParameters("home", params));
+//        Alium.trigger(MainActivity.this, new SurveyParameters("home", params));
 
 //        new Handler().postDelayed(new Runnable() {
 //           @Override
@@ -102,7 +103,8 @@ public class MainActivity extends Activity {
         Intent intent=new Intent(this, DashboardActivity.class);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {Alium.stop("screen4");
+            public void onClick(View view) {
+//                Alium.stop("screen4");
                 startActivity(intent);
             }
         });
