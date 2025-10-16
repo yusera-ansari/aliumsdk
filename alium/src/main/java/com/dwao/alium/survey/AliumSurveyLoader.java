@@ -40,56 +40,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-/**
- * AliumSurveyLoader is responsible for loading and displaying surveys within an Android application.
- * It observes changes and manages the lifecycle of survey dialogs.
- *
- * <p>Key functionalities include:
- * <ul>
- *   <li>Creating and managing instances of survey loaders for specific screens.</li>
- *   <li>Checking if a survey is already running to prevent duplicates.</li>
- *   <li>Fetching survey data from a network source.</li>
- *   <li>Determining if a survey should be loaded based on frequency settings.</li>
- *   <li>Displaying surveys using either {@link androidx.fragment.app.DialogFragment} (for {@link FragmentActivity})
- *       or {@link android.app.DialogFragment} (for older Activities).</li>
- *   <li>Handling the stopping and cleanup of survey loaders and their associated dialogs.</li>
- *   <li>Utilizing an {@link ExecutorService} for background operations like network requests.</li>
- *   <li>Communicating results and lifecycle events back to a {@link Callback}.</li>
- * </ul>
- *
- * <p><b>Usage Example:</b></p>
- * <pre>{@code
- * SurveyParameters params = new SurveyParameters("your_screen_name");
- * AliumSurveyLoader.Callback callback = new AliumSurveyLoader.Callback() {
- *     @Override
- *     public void onAliumLoaderExcecuted() {
- *         // Called when the loader has finished its execution (e.g., survey shown or decided not to show)
- *     }
- *
- *     @Override
- *     public void onQuitLoader(AliumSurveyLoader loader) {
- *         // Called when the loader is being stopped or cleaned up
- *     }
- * };
- *
- * // 'this' should be an Activity or FragmentActivity instance
- * AliumSurveyLoader loader = AliumSurveyLoader.createInstance(this, params, callback);
- * if (loader != null) {
- *     loader.showSurvey();
- * }
- * }</pre>
- *
- * <p>The loader ensures that only one survey is displayed per screen at a time. It uses
- * {@link AliumPreferences} to store and retrieve user-specific data like customer ID and
- * survey display frequencies.</p>
- *
- */
 class AliumSurveyLoader implements Observer {
 
     private AliumPreferences aliumPreferences;
-
-
-
     private volatile boolean threadShouldExecute=true;
     private WeakReference<Activity> activity;
 
@@ -101,7 +54,7 @@ class AliumSurveyLoader implements Observer {
     private final UUID ID=UUID.randomUUID();
     private ExecutorService executorService;
     private Handler mainHandler;
-    Callback callback;
+//    Callback callback;
     private Set<String> executingSurveys=new HashSet<>();
 
     private void cleanUp(){
@@ -111,32 +64,42 @@ class AliumSurveyLoader implements Observer {
 
     }
 
-    SurveyDialogCallback surveyDialogCallback
-            =new SurveyDialogCallback() {
-        @Override
-        public void onStop(String key) {
-            if(executingSurveys.contains(key)) {
+    void handleExecutingKeys(String key){
+                    if(executingSurveys.contains(key)) {
                 executingSurveys.remove(key);
                 if (executingSurveys.isEmpty()) {
-                    callback.onQuitLoader(AliumSurveyLoader.this
-                    );
-                    callback.onAliumLoaderExcecuted();
+                    Alium.stop(surveyParameters.screenName);
+//                     AliumRequestManager.getManager().stop(surveyParameters.screenName);
                 }
             }
-        }
-        @Override
-        public void onCreate(String key){
-        executingSurveys.add(key);
-        }
-    };
+    }
+
+//    SurveyDialogCallback surveyDialogCallback
+//            =new SurveyDialogCallback() {
+//        @Override
+//        public void onStop(String key) {
+//            if(executingSurveys.contains(key)) {
+//                executingSurveys.remove(key);
+//                if (executingSurveys.isEmpty()) {
+//                    callback.onQuitLoader(AliumSurveyLoader.this
+//                    );
+//                    callback.onAliumLoaderExcecuted();
+//                }
+//            }
+//        }
+//        @Override
+//        public void onCreate(String key){
+//        executingSurveys.add(key);
+//        }
+//    };
     public String getLoaderId(){
         return this.ID.toString();
     }
     private  AliumSurveyLoader(){}
-    interface  SurveyDialogCallback{
-        void onStop(String key);
-        void onCreate(String key);
-    }
+//    interface  SurveyDialogCallback{
+//        void onStop(String key);
+//        void onCreate(String key);
+//    }
 
     interface Callback{
         void  onAliumLoaderExcecuted();
@@ -149,7 +112,7 @@ class AliumSurveyLoader implements Observer {
 
         instance= new AliumSurveyLoader((Activity) obj, surveyParameters);
 
-        instance.callback=callback;
+//        instance.callback=callback;
 
         List<SurInfo> svs=Alium.surveyConfig.getSvs();
        for(int i=0; i<svs.size(); i++){
@@ -196,24 +159,26 @@ class AliumSurveyLoader implements Observer {
                 Fragment fragment = xfm.findFragmentByTag(key + "-" + surveyParameters.screenName);
                 if (fragment != null) {
 
-                    surveyDialogCallback.onStop(key);
-                    Logger.log(Logger.LogLevel.DEBUG, "already-running", "survey already running, cancelling the request");
+//                    surveyDialogCallback.onStop(key);
+                    handleExecutingKeys(key);
+                    Logger.log(Logger.LogLevel.DEBUG, "Loader.checkIfRunning", "survey already running, cancelling the request");
                     return true;
                 }
             } else {
                 fm = activity.get().getFragmentManager();
                 android.app.Fragment fragment = fm.findFragmentByTag(key + "-" + surveyParameters.screenName);
                 if (fragment != null) {
-                    Logger.log(Logger.LogLevel.DEBUG, "already-running", "survey already running, cancelling the request");
-                    surveyDialogCallback.onStop(key);
+                    Logger.log(Logger.LogLevel.DEBUG, "Loader.checkIfRunning", "survey already running, cancelling the request");
+//                    surveyDialogCallback.onStop(key);
+                    handleExecutingKeys(key);
                     return true;
                 }
             }
         }else{
-                Logger.log(Logger.LogLevel.ERROR, "already-running", "activity instance is null, returning...");
+                Logger.log(Logger.LogLevel.ERROR, "Loader.checkIfRunning", "activity instance is null, returning...");
                 return true;
             }
-        Logger.log(Logger.LogLevel.DEBUG, "already-running", "survey not running, proceeding the request");
+        Logger.log(Logger.LogLevel.DEBUG, "Loader.checkIfRunning", "survey not running, proceeding the request");
 
         return false;
     }
@@ -234,33 +199,28 @@ class AliumSurveyLoader implements Observer {
     }
 
     public synchronized void showSurvey(){
-        executorService.execute(()->{ //Runnable
-            Logger.log(Logger.LogLevel.DEBUG, "show-surv", "find and load survey");
-                    findAndLoadSurveyForCurrentScr();
-        });
-
-
+        //Runnable
+        executorService.execute(this::findAndLoadSurveyForCurrentScr);
         executorService.shutdown(); //very imp
     }
 
     private void findAndLoadSurveyForCurrentScr() {
           List<SurInfo> svs=Alium.surveyConfig.getSvs();
         for(int i=0; i<svs.size(); i++){
-
                   String screenName =svs.get(i).getTps().getApp().getUm().getU();
                 if (surveyParameters.screenName.equals(screenName)){
-
-
                     //survey is not already running...
                    loadSurveyIfShouldBeLoaded(svs.get(i));
                    return; // limits survey to one on each screen
                 }
 
         }
+//        remove the instance of the loader from manager
+        AliumRequestManager.getManager().stop(surveyParameters.screenName);
     }
 
 
-    //key is survey id
+
     private void loadSurveyIfShouldBeLoaded(SurInfo currentSurveyJson)  {
        try{
            App ppupsrvObject = currentSurveyJson.getTps().getApp();
@@ -290,7 +250,7 @@ class AliumSurveyLoader implements Observer {
                            customFreqSurveyData)
                    .shouldSurveyLoad())
            {
-                Logger.log(Logger.LogLevel.DEBUG, "should-load", "survey frequency handled..survey should load");
+                Logger.log(Logger.LogLevel.DEBUG, "shouldSurLoad", "survey frequency allows loading...");
 
                    loadSurvey( new LoadableSurveySpecs(
                            currentSurveyJson.getId(), srvshowfrq, spath.toString(),
@@ -298,16 +258,16 @@ class AliumSurveyLoader implements Observer {
                    ));
 
            }else{
-               Logger.log(Logger.LogLevel.DEBUG, "should-load", "survey frequency setting restricts loading...stopping....");
-               surveyDialogCallback.onStop(currentSurveyJson.getId());
+               Logger.log(Logger.LogLevel.DEBUG, "shouldSurLoad", "survey frequency setting restricts loading...stopping....");
+//               surveyDialogCallback.onStop(currentSurveyJson.getId());
+               handleExecutingKeys(currentSurveyJson.getId());
            }
        }catch (Exception e){
-           Logger.log(Logger.LogLevel.ERROR,"should-load", e.toString());
+           Logger.log(Logger.LogLevel.ERROR,"shouldSurLoad", e.toString());
        }
     }
 
     private void loadSurvey(LoadableSurveySpecs loadableSurveySpecs) {
-
         if(threadShouldExecute) {
             CustomNetworkService.getNetworkData(  loadableSurveySpecs.uri ,
                     new LoadSurveyFromAPI(loadableSurveySpecs));
@@ -363,19 +323,21 @@ class AliumSurveyLoader implements Observer {
 
         @Override
         public void onRequestFailed(Exception e) {
-            Logger.log(Logger.LogLevel.ERROR, "Survey-load", "survey load failed "+ e.toString());
+            Logger.log(Logger.LogLevel.ERROR, "LoaderNetReqFail", "Network request to survey load failed "+ e.toString());
             stop();
-            callback.onQuitLoader(AliumSurveyLoader.this);
+//            callback.onQuitLoader(AliumSurveyLoader.this);
+            AliumRequestManager.manager.stop(surveyParameters.screenName);
         }
     }
     private synchronized void loadSurveyFromDialogFragment(JSONObject json, LoadableSurveySpecs loadableSurveySpecs){
+        Logger.log(Logger.LogLevel.DEBUG, "Loader.Dial", "checking if a dialog exists...");
+
         executingSurveys.add(loadableSurveySpecs.key);
         ExecutableSurveySpecs executableSurveySpecs=new ExecutableSurveySpecs(
                 AliumJSONParser.getSurveyFromJson(json)
                 , loadableSurveySpecs);
-            Logger.log(Logger.LogLevel.DEBUG, "load-dial", "checking if a dialog exists...");
         if(!checkIfSurveyAlreadyRunning(loadableSurveySpecs.key)){
-            Logger.log(Logger.LogLevel.DEBUG, "load-dial", "creating a survey dialog...");
+            Logger.log(Logger.LogLevel.DEBUG, "Loader.Dial", "creating a survey dialog...");
 
             if (activity != null) {
                 if (activity.get() instanceof FragmentActivity) {

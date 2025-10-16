@@ -116,6 +116,8 @@ abstract class SurveyController {
                 }else {
                     currentIndx=nextQuestIndx;//set currentIndx as nextQuestIndx
                 }
+            }else{
+                currentIndx++;  //in some cases condition map might be empty, in that case next question
             }
         }catch (Exception e){
             Logger.log(Logger.LogLevel.ERROR,"Condition-Map", e.toString());
