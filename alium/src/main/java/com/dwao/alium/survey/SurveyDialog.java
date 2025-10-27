@@ -205,10 +205,12 @@ class SurveyDialog extends SurveyController {
          super.handleNextQuestion(); //updates index
          super.submitSurvey();
             //check if to show next question or else show thank-you layout
-            if( currentIndx< survey.getQuestions().size()){
+            if( currentIndx<survey.getQuestions().size()){
                 executableSurveySpecs.getLoadableSurveySpecs().setCurrentIndex(currentIndx);
                 showCurrentQuestion();
                 return;
+            }else{
+                submitSurvey();
             }
 
             //what else to do ?? if not show thankyou
@@ -263,6 +265,7 @@ class SurveyDialog extends SurveyController {
 
 
     private void resetElementsForNextQuestion(){
+Logger.log(Logger.LogLevel.DEBUG, "resetEle", "reset elements");
         this.layout.removeAllViews();
         if(survey.getQuestions().get(currentIndx).getResponseType().equals("-1")
                 ||survey.getQuestions().get(currentIndx).getResponseType().equals("0")) {
@@ -380,6 +383,7 @@ class SurveyDialog extends SurveyController {
                                    .renderQuestion(context, layout, currentQuestionResponse, nextQuestionBtn);
                     break;
             case "6": //opinion
+                Logger.log(Logger.LogLevel.DEBUG, "responseType", "opinion");
                 OpinionScaleQuesRenderer opinionScaleQuesRenderer=new OpinionScaleQuesRenderer();
                 opinionScaleQuesRenderer
                         .setTheme(survey.getSurveyInfo().getThemeColors())
