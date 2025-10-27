@@ -142,7 +142,9 @@ public class Alium {
 
        initiateTrigger(activity, parameters);
     }
-
+public static void cleanup(){
+      AliumRequestManager.getManager().cleanup();
+}
 
     private static class ConfigURLResponseListener implements ResponseListener{
         @Override
