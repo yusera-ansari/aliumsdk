@@ -8,8 +8,10 @@ import com.dwao.alium.services.Logger;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 final class AliumRequestManager {
     static AliumRequestManager manager = new AliumRequestManager();
@@ -146,6 +148,14 @@ final class AliumRequestManager {
 //        executeNextRequest(aliumRequestQueue);
 //    }
 
+void cleanup(){
+    Set<String> keys = surveyLoaderMap.keySet();
+    while(keys.iterator().hasNext()){
+        String key=keys.iterator().next();
+        stop(key);
+        keys.remove(key);
+    }
+}
      void stop(String screenName){
 //        SLQHandler slqHandler= surveyExecutingMap.get(screenName);
 //        if(slqHandler!=null ){
