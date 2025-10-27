@@ -313,7 +313,11 @@ class AliumSurveyLoader implements Observer {
              mainHandler.post(new Runnable() {
                  @Override
                  public void run() {
-                     loadSurveyFromDialogFragment(json, loadableSurveySpecs);
+
+                     ExecutableSurveySpecs executableSurveySpecs=new ExecutableSurveySpecs(
+                             AliumJSONParser.getSurveyFromJson(json)
+                             , loadableSurveySpecs);
+                     loadSurveyFromDialogFragment(executableSurveySpecs);
                  }
              });
 
@@ -329,13 +333,12 @@ class AliumSurveyLoader implements Observer {
             AliumRequestManager.manager.stop(surveyParameters.screenName);
         }
     }
-    private synchronized void loadSurveyFromDialogFragment(JSONObject json, LoadableSurveySpecs loadableSurveySpecs){
+    private synchronized void loadSurveyFromDialogFragment(ExecutableSurveySpecs executableSurveySpecs){
+        LoadableSurveySpecs loadableSurveySpecs = executableSurveySpecs.getLoadableSurveySpecs();
         Logger.log(Logger.LogLevel.DEBUG, "Loader.Dial", "checking if a dialog exists...");
 
         executingSurveys.add(loadableSurveySpecs.key);
-        ExecutableSurveySpecs executableSurveySpecs=new ExecutableSurveySpecs(
-                AliumJSONParser.getSurveyFromJson(json)
-                , loadableSurveySpecs);
+
         if(!checkIfSurveyAlreadyRunning(loadableSurveySpecs.key)){
             Logger.log(Logger.LogLevel.DEBUG, "Loader.Dial", "creating a survey dialog...");
 

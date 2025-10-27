@@ -149,9 +149,9 @@ public static void cleanup(){
     private static class ConfigURLResponseListener implements ResponseListener{
         @Override
         public void onResponseReceived(JSONObject jsonObject) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
+//        new Handler(Looper.getMainLooper()).post(new Runnable() {
+//            @Override
+//            public void run() {
 
                 try{
                     surveyConfig= AliumJSONParser.getSurConfFromJSON(jsonObject);
@@ -167,8 +167,8 @@ public static void cleanup(){
                     isConfigFetching = false;
                     surveyConfig = null;
                 }
-            }
-        });
+//            }
+//        });
 
            }
 
