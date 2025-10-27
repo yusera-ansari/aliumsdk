@@ -35,7 +35,7 @@ public class Alium {
      private static volatile Alium instance;
 
      private static volatile String configURL;
-     private AliumRequestManager aliumRequestManager=new AliumRequestManager();
+     private AliumRequestManager aliumRequestManager=  AliumRequestManager.getManager();
      private static AliumPreferences preferences;
 
      private volatile  Queue<AliumRequest> aliumRequestQueue = new LinkedList<>();
