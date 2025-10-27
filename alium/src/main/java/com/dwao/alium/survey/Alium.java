@@ -162,7 +162,8 @@ public class Alium {
 
                 }catch (Exception e){
                     Logger.log(Logger.LogLevel.ERROR, "config-resp", e.toString());
-
+                    isConfigFetching = false;
+                    surveyConfig = null;
                 }
             }
         });
@@ -172,6 +173,8 @@ public class Alium {
         @Override
         public void onRequestFailed(Exception e) {
             Logger.log(Logger.LogLevel.ERROR, "Config-resp", e.toString());
+            isConfigFetching = false;
+            surveyConfig = null;
         }
     }
 
