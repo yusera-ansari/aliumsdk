@@ -86,6 +86,14 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
             shouldUpdatePreferences=savedInstanceState.getBoolean("shouldUpdatePreferences");
             surveyParameters=(SurveyParameters)savedInstanceState.getSerializable("surveyParameters");
 
+//            on destroy activiyies by system
+            Logger.log(Logger.LogLevel.DEBUG,"isShouldResetOnBg", ""+Alium.isShouldResetOnBackground()+" present:"+AliumRequestManager.getManager().isSurveyPresentInLoader(surveyParameters.screenName));
+            if(Alium.isShouldResetOnBackground() &&
+                    !AliumRequestManager.getManager().isSurveyPresentInLoader(surveyParameters.screenName))
+            {
+                Logger.log(Logger.LogLevel.INFO,"Dialog","config url is null" );
+                dismissAllowingStateLoss();
+            }
             executableSurveySpecs=new ExecutableSurveySpecs( (Survey)savedInstanceState.getSerializable("surveyJson")
                     , (LoadableSurveySpecs)savedInstanceState.getSerializable("loadableSurveySpecs"));
 

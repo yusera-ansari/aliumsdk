@@ -27,7 +27,7 @@ final class AliumRequestManager {
 
 //    stores all the SLQHandlers for each screen
 //    private volatile static Map<String, SLQHandler> surveyExecutingMap=new HashMap<>();
-    private  volatile static Map<String, AliumSurveyLoader> surveyLoaderMap=new HashMap<>();
+      volatile static Map<String, AliumSurveyLoader> surveyLoaderMap=new HashMap<>();
 //    public static synchronized AliumSurveyLoader.SurveyDialogCallback reAttachCallback(String id, String screenName){
 //        SLQHandler execSurLoaderDM= surveyExecutingMap.get(screenName);
 //        if(execSurLoaderDM!=null){
@@ -148,6 +148,10 @@ final class AliumRequestManager {
 //        executeNextRequest(aliumRequestQueue);
 //    }
 
+boolean isSurveyPresentInLoader(String screenName){
+    if (surveyLoaderMap.get(screenName)!=null)return true;
+    return false;
+}
 void cleanup(){
     Set<String> keys = surveyLoaderMap.keySet();
     while(keys.iterator().hasNext()){

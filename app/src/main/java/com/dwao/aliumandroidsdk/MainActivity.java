@@ -26,6 +26,7 @@ public class MainActivity extends Activity {
     @Override
     protected  void onPause(){
         super.onPause();
+
 //        surveyLoader.stop();
 //        surveyLoader2.stop();
         Log.d("Pause", "MainActivity Paused");

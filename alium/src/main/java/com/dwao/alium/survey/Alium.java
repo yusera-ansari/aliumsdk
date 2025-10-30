@@ -37,6 +37,7 @@ public class Alium {
      private static volatile String configURL;
      private AliumRequestManager aliumRequestManager=  AliumRequestManager.getManager();
      private static AliumPreferences preferences;
+     private static boolean shouldResetOnBackground = false;
 
      private volatile  Queue<AliumRequest> aliumRequestQueue = new LinkedList<>();
      private static volatile boolean isConfigFetching=false;
@@ -44,7 +45,15 @@ public class Alium {
 
      }
 
-    public static void config(Application application,String url){
+     static boolean isShouldResetOnBackground() {
+        return shouldResetOnBackground;
+    }
+
+    public static void setShouldResetOnBackground(boolean shouldResetOnBackground) {
+        Alium.shouldResetOnBackground = shouldResetOnBackground;
+    }
+
+    public static void config(Application application, String url){
             if(instance==null){
                 synchronized (Alium.class){
                     if(instance==null){
