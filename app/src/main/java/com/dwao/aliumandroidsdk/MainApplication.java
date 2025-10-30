@@ -15,6 +15,7 @@ public class MainApplication extends Application {
     public void onCreate() {
 
         super.onCreate();
+        Alium.setShouldResetOnBackground(true);
         Alium.config(this,Config.BASE_URL);
         Log.d("Application", "initialized");
        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {

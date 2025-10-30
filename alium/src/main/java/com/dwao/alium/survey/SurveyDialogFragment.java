@@ -81,10 +81,15 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-         if(savedInstanceState!=null){
 
+         if(savedInstanceState!=null){
             shouldUpdatePreferences=savedInstanceState.getBoolean("shouldUpdatePreferences");
             surveyParameters=(SurveyParameters)savedInstanceState.getSerializable("surveyParameters");
+             if(Alium.isShouldResetOnBackground() &&!AliumRequestManager.getManager().isSurveyPresentInLoader(surveyParameters.screenName)){
+                 Logger.log(Logger.LogLevel.INFO,"Dialog","config url is null" );
+
+                 dismissAllowingStateLoss();
+             }
 
             executableSurveySpecs=new ExecutableSurveySpecs(
                     (Survey)savedInstanceState.getSerializable("surveyJson")
