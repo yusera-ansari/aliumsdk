@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -116,6 +117,9 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
             currentQuestionResponse = new QuestionResponse();
         }
         shouldCallOnStopCallback=true;
+//       if(getDialog()!=null && getDialog().getWindow()!=null){
+//           getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+//       }
     }
 
     @Override
