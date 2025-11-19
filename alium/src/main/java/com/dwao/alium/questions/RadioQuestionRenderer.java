@@ -20,6 +20,7 @@ import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionResponse;
 import com.dwao.alium.models.Survey;
 import com.dwao.alium.models.ThemeColors;
+import com.dwao.alium.services.Logger;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -83,7 +84,13 @@ public class RadioQuestionRenderer implements QuestionRenderer {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 adapter.updateResponse(currentquestion.getQuestionSetting().getOtherOption(),
                         textInputEditText.getText()!=null?textInputEditText.getText().toString():"");
-
+                if(currentquestion.getQuestionSetting().getOtherOption()) {
+                    setCtaEnabled(nextQuestionBtn,
+                            !textInputEditText.getText().toString().isEmpty());
+                }else{
+                    setCtaEnabled(nextQuestionBtn,
+                            !currentQuestionResponse.getQuestionResponse().isEmpty());
+                }
             }
 
             @Override
@@ -98,11 +105,14 @@ public class RadioQuestionRenderer implements QuestionRenderer {
             if ( currentQuestionResponse.getIndexOfSelectedAnswer() == responseOpt.size() - 1) {
                 textInputLayout.setVisibility(View.VISIBLE);
                 textInputEditText.requestFocus();
+                setCtaEnabled(nextQuestionBtn,
+                        !currentQuestionResponse.getQuestionResponse().isEmpty());
             } else  {
                 textInputLayout.setVisibility(View.GONE);
                 textInputEditText.clearFocus();
             }
         }
+
         RadioClickListener radioClickListener=new RadioClickListener() {
             @Override
             public void onClick(int position) {
@@ -111,13 +121,18 @@ public class RadioQuestionRenderer implements QuestionRenderer {
                     public void run() {
 
                         adapter.updateCheckedItem(position);
-                         if(isRequired){
-                            setCtaEnabled(nextQuestionBtn,
-                                    !currentQuestionResponse.getQuestionResponse().isEmpty());
-                        }
+
                         adapter.updateResponse(currentquestion.getQuestionSetting().getOtherOption(),
                                 (textInputEditText.getText()!=null)?textInputEditText.getText().toString():"");
-
+                        if(isRequired){
+                         if(currentquestion.getQuestionSetting().getOtherOption() && position == responseOpt.size() - 1) {
+                             setCtaEnabled(nextQuestionBtn,
+                                     !textInputEditText.getText().toString().isEmpty());
+                         }else{
+                             setCtaEnabled(nextQuestionBtn,
+                                     !currentQuestionResponse.getQuestionResponse().isEmpty());
+                         }
+                        }
                         if(currentquestion.getQuestionSetting().getOtherOption()){
                             if ( position == responseOpt.size() - 1) {
                                 textInputLayout.setVisibility(View.VISIBLE);
@@ -134,7 +149,6 @@ public class RadioQuestionRenderer implements QuestionRenderer {
         this.adapter=new RadioBtnAdapter(responseOpt,radioClickListener,
                 currentQuestionResponse, themeColors );
         radioBtnRecyView.setAdapter(adapter);
-
         layout.addView(radioQues);
     }
 }
