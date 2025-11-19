@@ -13,6 +13,9 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.transition.ChangeBounds;
+import android.transition.Fade;
+import android.transition.TransitionSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -28,6 +31,9 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+import androidx.transition.AutoTransition;
+import androidx.transition.TransitionManager;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.dwao.alium.R;
@@ -56,7 +62,7 @@ class SurveyDialog extends SurveyController {
     AppCompatTextView currentQuestion,improveExpTxt, poweredByText,poweredByValue;
 //    LinearProgressIndicator bottomProgressBar;
     RelativeLayout layout;
-
+    LinearLayout dialogLayout;
 
    void cleanUp(){
        this.executableSurveySpecs=null;
@@ -113,8 +119,9 @@ class SurveyDialog extends SurveyController {
     private void initializeDialogUiElements(){
         dialog=new Dialog(context, androidx.appcompat.R.style.Theme_AppCompat_Dialog);
         dialog.setContentView(R.layout.bottom_survey_layout);
-        layout= dialog.findViewById(R.id.dialog_layout_content);
 
+        layout= dialog.findViewById(R.id.dialog_layout_content);
+        dialogLayout=dialog.findViewById(R.id.dialog_layout);
         currentQuestion=dialog.findViewById(R.id.survey_question_text);
 
         nextQuestionBtn=dialog.findViewById(R.id.btn_next);
@@ -123,6 +130,7 @@ class SurveyDialog extends SurveyController {
 
         applySurveyUiColorScheme();
         addListenersToNextAndCloseBtn();
+
     }
     private void updateDialogUi(){
 
@@ -149,17 +157,20 @@ class SurveyDialog extends SurveyController {
                 400f,
                 context.getResources().getDisplayMetrics()
         );
-
-        dialog.getWindow().setLayout(Math.min(screenWidth, maxWidthInPx), ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(true);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        WindowManager.LayoutParams lp=dialog.getWindow().getAttributes();
-        lp.gravity= Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL;
-        lp.horizontalMargin=0f;
-        lp.verticalMargin=0.0f;
-        lp.dimAmount=0.1f;
-        dialog.getWindow().setAttributes(lp);
+
+        if(dialog.getWindow()!=null){
+            WindowManager.LayoutParams lp=dialog.getWindow().getAttributes();
+            lp.gravity= Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL;
+            lp.horizontalMargin=0f;
+            lp.verticalMargin=0.0f;
+            lp.dimAmount=0.1f;
+            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+            dialog.getWindow().setLayout(Math.min(screenWidth, maxWidthInPx), ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            dialog.getWindow().setAttributes(lp);
+        }
     }
     private void addListenersToNextAndCloseBtn(){
 
@@ -265,8 +276,9 @@ class SurveyDialog extends SurveyController {
 
 
     private void resetElementsForNextQuestion(){
-Logger.log(Logger.LogLevel.DEBUG, "resetEle", "reset elements");
+        Logger.log(Logger.LogLevel.DEBUG, "resetEle", "reset elements");
         this.layout.removeAllViews();
+        //in case of cover / thank-you page
         if(survey.getQuestions().get(currentIndx).getResponseType().equals("-1")
                 ||survey.getQuestions().get(currentIndx).getResponseType().equals("0")) {
                   setCtaEnabled(nextQuestionBtn, true);
@@ -274,7 +286,8 @@ Logger.log(Logger.LogLevel.DEBUG, "resetEle", "reset elements");
 
             lp.gravity = Gravity.CENTER_HORIZONTAL;
                 nextQuestionBtn.setLayoutParams(lp);
-              }else{
+        }
+        else{
 
             setCtaEnabled(nextQuestionBtn, !survey.getQuestions()
                           .get(currentIndx).getQuestionSetting().getRequired());
@@ -283,7 +296,7 @@ Logger.log(Logger.LogLevel.DEBUG, "resetEle", "reset elements");
 
             lp.gravity = Gravity.END;
             nextQuestionBtn.setLayoutParams(lp);
-              }
+        }
 
     }
     private void applySurveyUiColorScheme(){
@@ -321,13 +334,17 @@ Logger.log(Logger.LogLevel.DEBUG, "resetEle", "reset elements");
         }
 
         layout.setLayoutParams(lp);
+//        TransitionManager.beginDelayedTransition(dialogLayout,new AutoTransition()
+//                .setDuration(5520)
+//                .setInterpolator(new FastOutSlowInInterpolator())
+//                .addTarget(layout));
 
         resetElementsForNextQuestion();
-
-
         try {
+            String required = survey.getQuestions().get(currentIndx).getQuestionSetting().getRequired()?"*":"";
             currentQuestion.setText(survey.getQuestions().get(currentIndx)
-                    .getQuestion());
+                    .getQuestion() +
+                    required);
             String responseType = survey.getQuestions().get(currentIndx).getResponseType();
             generateQuestion(responseType); //matches response type and generates corresponding ques
 
