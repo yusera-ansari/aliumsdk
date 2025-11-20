@@ -34,20 +34,30 @@
 
         android:src="@drawable/ic_close"
         android:visibility="visible" />
-
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/ai_followup_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textAlignment="center"
+        android:textColor="#6c757d"
+        android:textSize="16sp"
+        android:layout_marginBottom="2dp"
+        android:gravity="center_horizontal"
+        android:text="💬 Follow-up question"
+ />
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/survey_question_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingRight="2dp"
+                android:ellipsize="none"
+                android:maxLines="10"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:layout_marginBottom="16dp"
-                android:gravity="center_horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:gravity="center_horizontal" />
 
         <RelativeLayout
             android:id="@+id/dialog_layout_content"

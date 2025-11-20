@@ -2,6 +2,8 @@ package com.dwao.alium.utils.jsonhandlers;
 
 import android.util.Log;
 
+import com.dwao.alium.models.AiFollowup;
+import com.dwao.alium.models.AiSettings;
 import com.dwao.alium.models.App;
 import com.dwao.alium.models.Question;
 import com.dwao.alium.models.QuestionSetting;
@@ -63,6 +65,18 @@ public class AliumJSONParser {
         }catch (Exception e){
             Log.e("SurveyConf", "Error parsing Survey Config"+e.toString());
             return null;
+        }
+    }
+
+    public static AiFollowup getAiFollowupFromJson(JSONObject jsonObject){
+        try{
+            AiFollowup aiFollowup=new AiFollowup();
+            aiFollowup.setShouldFollowup(jsonObject.optBoolean("should_followup",true));
+            aiFollowup.setFollowupQuestion(jsonObject.optString("followup_question",""));
+            aiFollowup.setRemainingFollowups(jsonObject.optInt("remaining_followups",0));
+        return aiFollowup;
+        }catch (Exception e){
+            return new AiFollowup();
         }
     }
 
@@ -140,7 +154,19 @@ public class AliumJSONParser {
                       }
                   }
                     question.setQuestionSetting(questionSetting);
+//                    Ai Settings
+                    AiSettings aiSettings=new AiSettings();
+                    if(currentQuest.has("ai")){
+                        JSONObject questionSettingObj= currentQuest.getJSONObject("ai");
+                        if(questionSettingObj.has("en")){
+                            aiSettings.setEnabled(questionSettingObj.getBoolean("en"));
+                        }
+                        if(questionSettingObj.has("mf")){
+                            aiSettings.setMaxFrequency(questionSettingObj.getInt("mf"));
+                        }
 
+                    }
+                    question.setAiSettings(aiSettings);
                     questions.add(question);
                 }
                 survey.setQuestions(questions);
