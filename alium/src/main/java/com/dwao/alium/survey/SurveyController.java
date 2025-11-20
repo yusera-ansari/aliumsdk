@@ -83,7 +83,7 @@ abstract class SurveyController {
 
             }
             Map<String, Object> params = generateTrackingParameters();
-
+            params.put("eventType","load");
             trackWithAlium(context, params);
         }
     shouldUpdatePreferences=true;
@@ -108,7 +108,9 @@ abstract class SurveyController {
                 List<Integer> conditionMappingArray=question.getConditionMapping();
 
                 int nextQuestIndx= conditionMappingArray.get(
-
+                        // this is -1 if no answer is selected
+                        // for radio and checkbox thus throws an error
+                        // and moves to next index
                         currentQuestionResponse.getIndexOfSelectedAnswer()
 
                 );
@@ -129,13 +131,20 @@ abstract class SurveyController {
         }
     }
     protected void submitResponse() {
-
+//        if thankyou or cover page or no response
+        if(survey.getQuestions().get(currentIndx).getResponseType().equals("-1")
+                ||survey.getQuestions().get(currentIndx).getResponseType().equals("0")||
+        currentQuestionResponse.getQuestionResponse().isEmpty()
+        ){
+            Logger.log(Logger.LogLevel.DEBUG, "submit", "no response");
+            return;
+        }
         Map<String, Object > responseMap=new HashMap<>(generateTrackingParameters());
         responseMap.put("questionId",(currentQuestionResponse.getQuestionId()));
 //        responseMap.put("response",currentQuestionResponse.getQuestionResponse());
 //        responseMap.put("respType",currentQuestionResponse.getResponseType());
         String resp = (String)responseMap.get("response");
-
+        if(resp==null|| resp.isEmpty())return;
         trackWithAlium(context,responseMap );
     }
 
