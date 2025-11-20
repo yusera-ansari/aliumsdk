@@ -1,6 +1,7 @@
 package com.dwao.alium.survey;
 
 import static com.dwao.alium.survey.SurveyTracker.trackWithAlium;
+import static com.dwao.alium.utils.DeviceInfo.getUserAgent;
 
 import android.content.Context;
 import android.util.Log;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 
 abstract class SurveyController {
+
     protected final String uuid;
     Survey survey;
     protected ExecutableSurveySpecs executableSurveySpecs;
@@ -42,6 +44,7 @@ abstract class SurveyController {
     protected final LoadableSurveySpecs loadableSurveySpecs;
     private SurveyFrequencyManager surveyFrequencyManager;
     protected AliumPreferences aliumPreferences ;
+    protected  FollowupManager manager ;
     protected SurveyController( Context context,LoadableSurveySpecs loadableSurveySpecs,
                                 boolean shouldUpdatePreferences){
         this.context=context;
@@ -53,10 +56,12 @@ abstract class SurveyController {
                 .getFrequencyManager(aliumPreferences, loadableSurveySpecs.key,
                 loadableSurveySpecs.surveyFreq,
                 loadableSurveySpecs.customSurveyData);
+
+
     }
 
     abstract protected void generateQuestion(String responseType) throws JSONException;
-    abstract protected Map<String, Object > generateTrackingParameters();
+//    abstract protected Map<String, Object > generateTrackingParameters();
     @CallSuper
     protected void  showCurrentQuestion( ) {
       if(shouldUpdatePreferences)  updateCurrentQuestionResponse();
@@ -74,7 +79,6 @@ abstract class SurveyController {
     @CallSuper
     protected void show(){
         if(shouldUpdatePreferences){
-
             if (!loadableSurveySpecs.surveyFreq.equals("os")) {//untilresponse
                 if(currentIndx>=responseSubmitIndex){
                     surveyFrequencyManager.recordSurveyTriggerOnPreferences(
@@ -89,9 +93,41 @@ abstract class SurveyController {
     shouldUpdatePreferences=true;
     }
 
+
+    private Map<String, Object>  generateTrackingParameters(){
+        Map<String,Object> params=new HashMap<>(surveyParameters.customerVariables);
+        params.put("questionId",(currentQuestionResponse.getQuestionId()));
+//        responseMap.put("response",currentQuestionResponse.getQuestionResponse());
+//        responseMap.put("respType",currentQuestionResponse.getResponseType());
+        params.put("surveyLoadId", uuid);
+        params.put("surveyPath", surveyParameters.screenName);
+        params.put("userId", "");
+        params.put("custId", aliumPreferences.getCustomerId());
+        params.put("userAgent", getUserAgent(context));
+        params.put("eventType", "resp");
+        params.put("language", "1");
+        params.put("surveyType", 7);
+        params.put("respType",currentQuestionResponse.getResponseType());
+        params.put("response",currentQuestionResponse.getQuestionResponse());
+        try{
+            params.put("surveyId", survey.getSurveyInfo().getSurveyId());
+            params.put("orgId",survey.getSurveyInfo().getOrgId());
+        }catch (Exception e){
+            Logger.log(Logger.LogLevel.ERROR,"track-params", "Couldn't get srvid/orgId");
+        }
+        if(survey.getQuestions().get(currentIndx).getAiSettings().isEnabled() && manager.followUpIndex>-1){
+            params.put("aiQuestionId", manager.followUpIndex+1);
+            params.put("aiQuestionText", manager.aiFollowup.getFollowupQuestion());
+            params.put("respType","15");
+            params.put("response",manager.aiFollowup.getResponse()); //needs to be done
+        }
+        String resp = (String) params.get("response");
+
+        return params;
+    }
     @CallSuper
     protected  void submitSurvey(){
-        if(loadableSurveySpecs.surveyFreq.equals("os")
+        if(loadableSurveySpecs.surveyFreq.equals("os") //untilresponse
         && !currentQuestionResponse.getResponseType().equals("0")
         ){
             if(currentIndx>=responseSubmitIndex){
@@ -134,18 +170,16 @@ abstract class SurveyController {
 //        if thankyou or cover page or no response
         if(survey.getQuestions().get(currentIndx).getResponseType().equals("-1")
                 ||survey.getQuestions().get(currentIndx).getResponseType().equals("0")||
-        currentQuestionResponse.getQuestionResponse().isEmpty()
+        (currentQuestionResponse.getQuestionResponse().isEmpty()&& manager.followUpIndex==-1)
         ){
             Logger.log(Logger.LogLevel.DEBUG, "submit", "no response");
             return;
         }
-        Map<String, Object > responseMap=new HashMap<>(generateTrackingParameters());
-        responseMap.put("questionId",(currentQuestionResponse.getQuestionId()));
-//        responseMap.put("response",currentQuestionResponse.getQuestionResponse());
-//        responseMap.put("respType",currentQuestionResponse.getResponseType());
-        String resp = (String)responseMap.get("response");
+
+        Map<String,Object> params=generateTrackingParameters();
+        String resp = (String)params.get("response");
         if(resp==null|| resp.isEmpty())return;
-        trackWithAlium(context,responseMap );
+        trackWithAlium(context,params );
     }
 
 

@@ -41,6 +41,8 @@ import androidx.transition.TransitionManager;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.dwao.alium.R;
+import com.dwao.alium.listeners.FollowUpCallback;
+import com.dwao.alium.listeners.FollowupHandlerCallback;
 import com.dwao.alium.listeners.ResponseListener;
 import com.dwao.alium.models.AiFollowup;
 import com.dwao.alium.models.ExecutableSurveySpecs;
@@ -111,7 +113,7 @@ class SurveyDialog extends SurveyController {
         survey=executableSurveySpecs.survey;
         this.surveyParameters=surveyParameters;
         currentIndx= executableSurveySpecs.getLoadableSurveySpecs().getCurrentIndex();
-
+        manager = new FollowupManager(survey);
 
     }
     @Override
@@ -195,12 +197,14 @@ class SurveyDialog extends SurveyController {
             @Override
             public void onClick(View view) {
                 submitResponse();
+
               if(survey.getQuestions()
                       .get(currentIndx).getAiSettings().isEnabled())
               {
+
                   Logger.log(Logger.LogLevel.DEBUG, "next", "handle next ai followup question");
                   handleAIFollowUp(survey.getQuestions()
-                            .get(currentIndx).getAiSettings().getMaxFrequency());
+                          .get(currentIndx).getAiSettings().getMaxFrequency());
               }
               else{
                   Logger.log(Logger.LogLevel.DEBUG, "next", "handle next question");
@@ -442,13 +446,7 @@ class SurveyDialog extends SurveyController {
                     }
                 });
                 break;
-//            case "15": //long question
-//
-//                FollowupTextQuestionRenderer followupTextQuestionRenderer = new FollowupTextQuestionRenderer();
-//                followupTextQuestionRenderer
-//                        .setCurrentquestion(survey.getQuestions().get(currentIndx))
-//                        .renderQuestion(context, layout, aiFollowup, nextQuestionBtn);
-//                break;
+
             default:
                 //in case no question type matches
                 handleNextQuestion();
@@ -456,36 +454,51 @@ class SurveyDialog extends SurveyController {
         }
     }
 
-    @Override
-    protected Map<String, Object>  generateTrackingParameters(){
-        Map  params=new HashMap<>(surveyParameters.customerVariables);
 
-        params.put("surveyLoadId", uuid);
-        params.put("surveyPath", surveyParameters.screenName);
-        params.put("userId", "");
-        params.put("custId", aliumPreferences.getCustomerId());
-        params.put("userAgent", getUserAgent(context));
-        params.put("eventType", "resp");
-        params.put("language", "1");
-        params.put("surveyType", 7);
-        params.put("respType",currentQuestionResponse.getResponseType());
-        params.put("response",currentQuestionResponse.getQuestionResponse());
-        try{
-            params.put("surveyId", survey.getSurveyInfo().getSurveyId());
-            params.put("orgId",survey.getSurveyInfo().getOrgId());
-        }catch (Exception e){
-            Logger.log(Logger.LogLevel.ERROR,"track-params", "Couldn't get srvid/orgId");
+    private void showAiFollowup(){
+        if(manager.aiFollowup!=null){
+
+            resetElementsForNextQuestion();
+            setCtaEnabled(nextQuestionBtn, true);
+            aiFollowupHeading.setVisibility(VISIBLE);
+            try {
+                currentQuestion.setText(manager.aiFollowup.getFollowupQuestion());
+                FollowupTextQuestionRenderer followupTextQuestionRenderer = new FollowupTextQuestionRenderer();
+                followupTextQuestionRenderer
+                        .renderQuestion(context, layout, manager.aiFollowup, nextQuestionBtn);
+
+            } catch (Exception e) {
+                aiFollowupHeading.setVisibility(GONE);
+                handleAIFollowUp(survey.getQuestions().get(currentIndx).getAiSettings().getMaxFrequency());
+                Logger.log(Logger.LogLevel.ERROR, "show-fol-up", e.toString());
+                e.printStackTrace();
+            }
         }
-        if(survey.getQuestions().get(currentIndx).getAiSettings().isEnabled() && followUpIndex>-1){
-            params.put("aiQuestionId", survey.getQuestions().get(currentIndx).getId());
-            params.put("aiQuestionText", aiFollowup.getFollowupQuestion());
-            params.put("respType","15");
-            params.put("response",aiFollowup.getResponse()); //needs to be done
+    }
+    protected  void handleAIFollowUp(int freq) {
+        setCtaEnabled(nextQuestionBtn, false);
+        super.submitSurvey();
 
-
-
+        manager.storePreviousFollowUp();
+        if(manager.shouldStop(freq)){
+            aiFollowupHeading.setVisibility(GONE);
+            handleNextQuestion();
+            return;
         }
-        return params;
+
+            manager.getFollowUpQuestion(freq,currentIndx,currentQuestionResponse.getQuestionResponse() ,new FollowUpCallback() {
+                @Override
+                public void onSuccess(AiFollowup response) {
+                    showAiFollowup();
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    aiFollowupHeading.setVisibility(GONE);
+                    setCtaEnabled(nextQuestionBtn, true);
+                }
+            });
+//        }
     }
     @Override
     protected void submitSurvey() {
@@ -493,91 +506,5 @@ class SurveyDialog extends SurveyController {
         dialog.dismiss();
         cleanUp();
     }
-    int followUpIndex=-1;
-   List<FollowupHistory> followupHistoryList=new ArrayList<>();
-    AiFollowup aiFollowup;
-    protected  void handleAIFollowUp(int freq) {
-//        submitResponse();
-        setCtaEnabled(nextQuestionBtn, false);
 
-        super.submitSurvey();
-        if(followUpIndex>-1 && aiFollowup!=null){
-            followupHistoryList.add(new FollowupHistory(aiFollowup.getFollowupQuestion(), currentQuestionResponse.getQuestionResponse()));
-        }
-       followUpIndex++;
-       if(followUpIndex>=freq){
-           Logger.log(Logger.LogLevel.DEBUG, "foll-up", "freq reached");
-           aiFollowup=null;
-           followUpIndex=-1;
-           followupHistoryList = new ArrayList<>();
-           aiFollowupHeading.setVisibility(GONE);
-           handleNextQuestion();
-       }
-       else{
-           getFollowUpQuestion(freq);
-       }
-    }
-private void showAiFollowup(){
-        if(aiFollowup!=null){
-
-            resetElementsForNextQuestion();
-            setCtaEnabled(nextQuestionBtn, true);
-            aiFollowupHeading.setVisibility(VISIBLE);
-            try {
-                currentQuestion.setText(aiFollowup.getFollowupQuestion());
-                FollowupTextQuestionRenderer followupTextQuestionRenderer = new FollowupTextQuestionRenderer();
-                followupTextQuestionRenderer
-                        .renderQuestion(context, layout, aiFollowup, nextQuestionBtn);
-//                generateQuestion("15"); //matches response type and generates corresponding ques
-
-            } catch (Exception e) {
-                aiFollowupHeading.setVisibility(GONE);
-                handleAIFollowUp(survey.getQuestions().get(currentIndx).getAiSettings().getMaxFrequency());
-//                throw new RuntimeException(e);
-            }
-        }
-}
-    private void getFollowUpQuestion(int maxFollowups) {
-        Map<String, Object> data = new HashMap<>();
-        Question curQues = survey.getQuestions().get(currentIndx);
-        data.put("survey_id", survey.getSurveyInfo().getSurveyId());
-        data.put("org_id", survey.getSurveyInfo().getOrgId());
-        data.put("question_id", curQues.getId());
-        data.put("question_text", curQues.getQuestion());
-        data.put("original_response", currentQuestionResponse.getQuestionResponse());
-
-        data.put("survey_context", new ArrayList<>());        // empty list
-        data.put("current_followup_count", followUpIndex);
-        data.put("max_followups", maxFollowups);
-
-        List<Map<String, Object>> historyMapList = new ArrayList<>();
-
-        for (FollowupHistory item : followupHistoryList) {
-            historyMapList.add(item.toMap());
-        }
-
-        data.put("conversation_history", historyMapList);  // empty list
-        Logger.log(Logger.LogLevel.DEBUG, "foll-up", "sending followup requesr");
-        CustomNetworkService.getFollowUpQuestion("https://api.aliumsurvey.com/api/v1/public/surveys/ai-followup", data, new ResponseListener() {
-            @Override
-            public void onResponseReceived(JSONObject jsonObject) {
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        aiFollowup = AliumJSONParser.getAiFollowupFromJson(jsonObject);
-                        Logger.log(Logger.LogLevel.DEBUG, "FollowUp", aiFollowup.toString());
-                        showAiFollowup();
-                    }
-                });
-
-            }
-
-            @Override
-            public void onRequestFailed(Exception e) {
-                aiFollowupHeading.setVisibility(GONE);
-                setCtaEnabled(nextQuestionBtn, true);
-            }
-        });
-    }
 }
