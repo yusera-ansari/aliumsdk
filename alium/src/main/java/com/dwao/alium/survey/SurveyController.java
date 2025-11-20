@@ -63,7 +63,7 @@ abstract class SurveyController {
     }
     @CallSuper
     protected void handleNextQuestion() throws JSONException {
-        submitResponse();
+//        submitResponse();
         //handle condition mapping, this updates the currentIndx
         handleConditionMapping(survey.getQuestions().get(currentIndx));
 
@@ -82,7 +82,9 @@ abstract class SurveyController {
                 }
 
             }
-            trackWithAlium(context, generateTrackingParameters());
+            Map<String, Object> params = generateTrackingParameters();
+
+            trackWithAlium(context, params);
         }
     shouldUpdatePreferences=true;
     }
@@ -106,7 +108,9 @@ abstract class SurveyController {
                 List<Integer> conditionMappingArray=question.getConditionMapping();
 
                 int nextQuestIndx= conditionMappingArray.get(
+
                         currentQuestionResponse.getIndexOfSelectedAnswer()
+
                 );
                 previousIndx=currentIndx;
                 if(nextQuestIndx==-2){
@@ -124,11 +128,14 @@ abstract class SurveyController {
             currentIndx++;
         }
     }
-    private void submitResponse() {
+    protected void submitResponse() {
+
         Map<String, Object > responseMap=new HashMap<>(generateTrackingParameters());
         responseMap.put("questionId",(currentQuestionResponse.getQuestionId()));
-        responseMap.put("response",currentQuestionResponse.getQuestionResponse());
-        responseMap.put("respType",currentQuestionResponse.getResponseType());
+//        responseMap.put("response",currentQuestionResponse.getQuestionResponse());
+//        responseMap.put("respType",currentQuestionResponse.getResponseType());
+        String resp = (String)responseMap.get("response");
+
         trackWithAlium(context,responseMap );
     }
 

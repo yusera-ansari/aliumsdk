@@ -12,6 +12,11 @@ public class Question implements Serializable {
     List<String> responseOptions= new ArrayList<>();
 
     QuestionSetting questionSetting;
+    AiSettings aiSettings;
+
+    public AiSettings getAiSettings() {
+        return aiSettings;
+    }
 
     @Override
     public String toString() {
@@ -21,8 +26,13 @@ public class Question implements Serializable {
                 ", responseType='" + responseType + '\'' +
                 ", responseOptions=" + responseOptions +
                 ", questionSetting=" + questionSetting +
+                ", aiSettings=" + aiSettings +
                 ", conditionMapping=" + conditionMapping +
                 '}';
+    }
+
+    public void setAiSettings(AiSettings aiSettings) {
+        this.aiSettings = aiSettings;
     }
 
     public QuestionSetting getQuestionSetting() {
