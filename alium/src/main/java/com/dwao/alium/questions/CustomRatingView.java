@@ -79,15 +79,13 @@ public class CustomRatingView extends LinearLayout {
                     int desiredSize = (int) (parentWidth * 0.56f / iconCount);  // use iconCount, not 5!
                     int size = Math.max(desiredSize, minimumSizePx);
 
-                    // POST to next frame — this is the ultimate fix
-                    post(() -> {
+
                         for (int i = 0; i < iconCount; i++) {
                             ImageView img = icon[i];
                             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
                             lp.setMargins(6, 8, 6, 8);
                             img.setLayoutParams(lp);
                         }
-                    });
                 }
             };
     public void render(){
@@ -130,40 +128,9 @@ public class CustomRatingView extends LinearLayout {
             icon[i] = img;
         }
         getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
-//        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//            @Override
-//            public void onGlobalLayout() {
-//                getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//                int parentwidth = getWidth();
-//
-//                int minimumSize =((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-//                        38,context.getResources().getDisplayMetrics() ));
-//                int size = (int)((parentwidth * 0.56 )/ 5 ) ;
-//
-//                if (size < minimumSize) {
-//                    size = minimumSize;
-//                }
-//
-//                int marginHorizontal = 6;
-//                int marginVertical = 8;
-//
-//// Apply correct size + margins to each icon individually
-//                for (int i = 0; i < iconCount; i++) {
-//                    ImageView img = icon[i];
-//                    Logger.log(Logger.LogLevel.ERROR, "size", "parent: "+parentwidth+" "+"size  "+size+img.getLayoutParams().width);
-//
-//                    // Create a BRAND NEW LayoutParams for each ImageView
-//                    LinearLayout.LayoutParams newParams = new LinearLayout.LayoutParams(size, size);
-//                    newParams.setMargins(marginHorizontal, marginVertical, marginHorizontal, marginVertical);
-//
-//                    img.setLayoutParams(newParams);  // Now it's safe and works 100%
-////                    img.requestLayout();
-//                    Logger.log(Logger.LogLevel.ERROR, "size-after", ""+size+"size: "+img.getLayoutParams().width+" min:"+minimumSize);
-////                    addView(img);
-//                }
-//
-//            }
-//        });
+
+
+
     }
 
     public CustomRatingView setRating(float rating) {
