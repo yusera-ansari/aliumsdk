@@ -3,11 +3,14 @@ package com.dwao.alium.questions;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -20,7 +23,7 @@ import com.dwao.alium.services.Logger;
 public class CustomRatingView extends LinearLayout {
     private int iconCount = 5;
     private float currentRating = 0f;
-    private ImageView[] icon;
+    private View[] icon;
     private Drawable fullIcon, emptyIcon;
     private Drawable[] filledIconList;
     Context context;
@@ -81,54 +84,88 @@ public class CustomRatingView extends LinearLayout {
 
 
                         for (int i = 0; i < iconCount; i++) {
-                            ImageView img = icon[i];
+
                             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
                             lp.setMargins(6, 8, 6, 8);
-                            img.setLayoutParams(lp);
+                            if(ratingType.equals(RatingType.buttons)){
+                                Button btn=(Button) icon[i];
+                                btn.setLayoutParams(lp);
+                            }else{
+                                ImageView img =(ImageView) icon[i];
+                                img.setLayoutParams(lp);
+                            }
                         }
                 }
             };
     public void render(){
         removeAllViews();
         setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-        RatingIconDrawable drawable=  RatingIconDrawableFactory.getDrawable(this.ratingType, context);
 
-        if(ratingType.equals(RatingType.emoji)){
-            filledIconList = drawable.getFilledIconList();
+        if(ratingType.equals(RatingType.buttons)){
+            icon = new Button[iconCount];
+            for (int i = 0; i < iconCount; i++) {
+                final int index = i;
+                Button btn = new Button(context);
+                btn.setText(String.valueOf(i + 1));
+                btn.setAllCaps(false);
+                btn.setOnClickListener(v -> setRating(index + 1));
+
+
+                if(themeColors!=null){
+                    btn.setBackgroundColor(Color.parseColor(themeColors.getColor19()));
+                    btn.setTextColor(Color.parseColor(themeColors.getColor20()));
+                }else{
+                    btn.setBackgroundColor(Color.WHITE);
+                    btn.setTextColor(Color.BLACK);
+                }
+
+                addView(btn);
+                icon[i]=btn;
+            }
+//            return;
         }
+        else{
+
+            RatingIconDrawable drawable = RatingIconDrawableFactory.getDrawable(this.ratingType, context);
+
+            if (ratingType.equals(RatingType.emoji)) {
+                filledIconList = drawable.getFilledIconList();
+            }
             fullIcon = drawable.getFilledIcon();
             emptyIcon = drawable.getEmptyIcon();
 
-        icon = new ImageView[iconCount];
+            icon = new ImageView[iconCount];
 
-        for (int i = 0; i < iconCount; i++) {
-            final int index = i;
+            for (int i = 0; i < iconCount; i++) {
+                final int index = i;
 
-            ImageView img = new ImageView(context);
-            img.setImageDrawable(emptyIcon);
-            img.setLayoutParams(new LinearLayout.LayoutParams(20,20));
-            img.setClickable(true);
-            LinearLayout.LayoutParams newParams = new LinearLayout.LayoutParams(200, 200);
+                ImageView img = new ImageView(context);
+                img.setImageDrawable(emptyIcon);
+                img.setLayoutParams(new LinearLayout.LayoutParams(20, 20));
+                img.setClickable(true);
+                LinearLayout.LayoutParams newParams = new LinearLayout.LayoutParams(200, 200);
 
 //            img.setLayoutParams(newParams);
-            img.setAdjustViewBounds(true);                    // ← THIS IS KEY
-            img.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                img.setAdjustViewBounds(true);                    // ← THIS IS KEY
+                img.setScaleType(ImageView.ScaleType.FIT_CENTER);
 //            img.requestLayout();
-            img.setOnClickListener(v -> setRating(index + 1));
-            img.setColorFilter(Color.WHITE);
-            if(themeColors!=null){
-                //		--color19 - #fff Rating Button Background Color
+                img.setOnClickListener(v -> setRating(index + 1));
+
+                if (themeColors != null) {
+                    //		--color19 - #fff Rating Button Background Color
 //		--color20 - #333 Rating Button Text Color
 //		--color21 - #ffc100 Rating Button selected bg
 //		--color22 - #333 Rating utton selected text color
-                img.setColorFilter(Color.parseColor(themeColors.getColor19()));
-            }
+                    img.setColorFilter(Color.parseColor(themeColors.getColor19()));
+                }else{
+                    img.setColorFilter(Color.WHITE);
+                }
 
-            addView(img);
-            icon[i] = img;
+                addView(img);
+                icon[i] = img;
+            }
         }
         getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
-
 
 
     }
@@ -138,18 +175,55 @@ public class CustomRatingView extends LinearLayout {
 
             currentRating = rating;
             for (int i = 0; i < iconCount; i++) {
+                if(ratingType.equals(RatingType.buttons)){
+                    Button btn = (Button) getChildAt(i);
 
-                if (i < rating) {
-                    icon[i].setImageDrawable(ratingType.equals(RatingType.emoji) ?
-                            filledIconList[i]
-                            : fullIcon);
-                    if (themeColors != null) {
-                        //		--color21 - #ffc100 Rating Button selected bg
-                        icon[i].setColorFilter(Color.parseColor(themeColors.getColor21()));
+                    if(themeColors!=null){
+                        if (i+1 == rating) {
+
+                            btn.setBackgroundColor(Color.parseColor(themeColors.getColor21()));
+                            btn.setTextColor(Color.parseColor(themeColors.getColor22()));
+                        }else{
+                            btn.setBackgroundColor(Color.parseColor(themeColors.getColor19()));
+                            btn.setTextColor(Color.parseColor(themeColors.getColor20()));
+                        }
+                    }else{
+                        if (i+1 == rating) {
+
+                            btn.setBackgroundColor(Color.DKGRAY);
+                            btn.setTextColor(Color.WHITE);
+                        }else{
+                            btn.setBackgroundColor(Color.WHITE);
+                            btn.setTextColor(Color.BLACK);
+                        }
                     }
-                } else {
-                    icon[i].setImageDrawable(emptyIcon);
-                    icon[i].setColorFilter(Color.parseColor(themeColors.getColor19()));
+                }
+                else{
+                    ImageView icon = (ImageView) getChildAt(i);
+                    if (i < rating) {
+
+                        icon.setImageDrawable(
+                                ratingType.equals(RatingType.emoji) ? filledIconList[i] : fullIcon
+                        );
+                        if (themeColors != null) {
+                            //		--color21 - #ffc100 Rating Button selected bg
+                            icon.setColorFilter(Color.parseColor(themeColors.getColor21()));
+                        }else{
+                            {
+                                //		--color21 - #ffc100 Rating Button selected bg
+                                icon.setColorFilter(Color.DKGRAY);
+                            }
+                        }
+                    } else {
+
+                        icon.setImageDrawable(emptyIcon);
+                      if(themeColors!=null)
+                      {
+                          icon.setColorFilter(Color.parseColor(themeColors.getColor19()));
+                      }else{
+                          icon.setColorFilter(Color.WHITE);
+                      }
+                    }
                 }
             }
             if (listener != null) {

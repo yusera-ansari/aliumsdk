@@ -1,5 +1,5 @@
 package com.dwao.alium.questions;
 
 public enum RatingType{
- star,hearts, emoji, ticks
+ star,hearts, emoji, ticks, buttons
 }

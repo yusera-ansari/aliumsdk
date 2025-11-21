@@ -49,7 +49,7 @@ public class MainActivity extends Activity {
         params.put("custEmail", "test@gmail.co");//branch id
         params.put("custMobile", "9090909090");//branch id
         params.put("custSystemId", "0jdu07");//systemId id
-        Alium.trigger(MainActivity.this, new SurveyParameters("AI", params));
+        Alium.trigger(MainActivity.this, new SurveyParameters("ratings", params));
 //        Alium.trigger(MainActivity.this, new SurveyParameters("home", params));
 runOnUiThread(new Runnable() {
     @Override
