@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.dwao.alium.R;
 import com.dwao.alium.listeners.RatingClickListener;
@@ -69,6 +70,9 @@ List<String> ratingOptions;
         if(currentQuestionResponse.getQuestionResponse().isEmpty() && currentQuestionResponse.getIndexOfSelectedAnswer()==0){
             currentQuestionResponse.setIndexOfSelectedAnswer(-1);
         }
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(   RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        view.setLayoutParams(params);
 
         RatingClickListener listener=new RatingClickListener() {
             @Override
