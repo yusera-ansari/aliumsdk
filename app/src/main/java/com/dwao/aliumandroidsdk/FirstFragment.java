@@ -77,5 +77,6 @@ public class FirstFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Log.e("view", "onView Created");
 
+
     }
 }
