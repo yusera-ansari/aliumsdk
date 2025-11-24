@@ -364,10 +364,6 @@ class SurveyDialog extends SurveyController {
         }
         Logger.log(Logger.LogLevel.DEBUG, "AI", survey.getQuestions().get(currentIndx).getAiSettings().toString());
         layout.setLayoutParams(lp);
-//        TransitionManager.beginDelayedTransition(dialogLayout,new AutoTransition()
-//                .setDuration(5520)
-//                .setInterpolator(new FastOutSlowInInterpolator())
-//                .addTarget(layout));
         Logger.log(Logger.LogLevel.ERROR, "currIndex", "index: " + currentIndx);
         if (
                 shouldAnimate()
@@ -385,6 +381,7 @@ class SurveyDialog extends SurveyController {
 
                     } catch (Exception e) {
                         e.printStackTrace();
+                        handleNextQuestion();
                     }
                 }
             });
@@ -398,8 +395,9 @@ class SurveyDialog extends SurveyController {
                 String responseType = survey.getQuestions().get(currentIndx).getResponseType();
                 generateQuestion(responseType); //matches response type and generates corresponding ques
 
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                e.printStackTrace();
+                handleNextQuestion();
             }
         }
 
@@ -528,36 +526,36 @@ class SurveyDialog extends SurveyController {
                         resetElementsForNextQuestion();
                         setCtaEnabled(nextQuestionBtn, true);
                         aiFollowupHeading.setVisibility(VISIBLE);
-                        try {
-                            currentQuestion.setText(manager.aiFollowup.getFollowupQuestion());
-                            FollowupTextQuestionRenderer followupTextQuestionRenderer = new FollowupTextQuestionRenderer();
-                            followupTextQuestionRenderer
-                                    .renderQuestion(context, layout, manager.aiFollowup, nextQuestionBtn);
+//                        try {
+                        currentQuestion.setText(manager.aiFollowup.getFollowupQuestion());
+                        FollowupTextQuestionRenderer followupTextQuestionRenderer = new FollowupTextQuestionRenderer();
+                        followupTextQuestionRenderer
+                                .renderQuestion(context, layout, manager.aiFollowup, nextQuestionBtn);
 
-                        } catch (Exception e) {
-                            aiFollowupHeading.setVisibility(GONE);
-                            handleAIFollowUp(survey.getQuestions().get(currentIndx).getAiSettings().getMaxFrequency());
-                            Logger.log(Logger.LogLevel.ERROR, "show-fol-up", e.toString());
-                            e.printStackTrace();
-                        }
+//                        } catch (Exception e) {
+//                            aiFollowupHeading.setVisibility(GONE);
+//                            handleAIFollowUp(survey.getQuestions().get(currentIndx).getAiSettings().getMaxFrequency());
+//                            Logger.log(Logger.LogLevel.ERROR, "show-fol-up", e.toString());
+//                            e.printStackTrace();
+//                        }
                     }
                 });
             } else {
                 resetElementsForNextQuestion();
                 setCtaEnabled(nextQuestionBtn, true);
                 aiFollowupHeading.setVisibility(VISIBLE);
-                try {
-                    currentQuestion.setText(manager.aiFollowup.getFollowupQuestion());
-                    FollowupTextQuestionRenderer followupTextQuestionRenderer = new FollowupTextQuestionRenderer();
-                    followupTextQuestionRenderer
-                            .renderQuestion(context, layout, manager.aiFollowup, nextQuestionBtn);
+//                try {
+                currentQuestion.setText(manager.aiFollowup.getFollowupQuestion());
+                FollowupTextQuestionRenderer followupTextQuestionRenderer = new FollowupTextQuestionRenderer();
+                followupTextQuestionRenderer
+                        .renderQuestion(context, layout, manager.aiFollowup, nextQuestionBtn);
 
-                } catch (Exception e) {
-                    aiFollowupHeading.setVisibility(GONE);
-                    handleAIFollowUp(survey.getQuestions().get(currentIndx).getAiSettings().getMaxFrequency());
-                    Logger.log(Logger.LogLevel.ERROR, "show-fol-up", e.toString());
-                    e.printStackTrace();
-                }
+//                } catch (Exception e) {
+//                    aiFollowupHeading.setVisibility(GONE);
+//                    handleAIFollowUp(survey.getQuestions().get(currentIndx).getAiSettings().getMaxFrequency());
+//                    Logger.log(Logger.LogLevel.ERROR, "show-fol-up", e.toString());
+//                    e.printStackTrace();
+//                }
             }
         }
     }
@@ -583,6 +581,7 @@ class SurveyDialog extends SurveyController {
             public void onError(Exception e) {
                 aiFollowupHeading.setVisibility(GONE);
                 setCtaEnabled(nextQuestionBtn, true);
+                handleNextQuestion();
             }
         });
 //        }

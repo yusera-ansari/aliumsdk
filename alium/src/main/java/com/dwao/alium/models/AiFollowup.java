@@ -1,7 +1,7 @@
 package com.dwao.alium.models;
 
 public class AiFollowup {
-    boolean shouldFollowup=true;
+    boolean shouldFollowup=false;
     String followupQuestion;
     int remainingFollowups=0;
     String response ="";

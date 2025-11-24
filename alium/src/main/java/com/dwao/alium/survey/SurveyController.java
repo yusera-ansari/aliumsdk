@@ -32,71 +32,77 @@ abstract class SurveyController {
     Survey survey;
     protected ExecutableSurveySpecs executableSurveySpecs;
 
-    int responseSubmitIndex=1;
+    int responseSubmitIndex = 1;
     protected SurveyParameters surveyParameters;
-    protected QuestionResponse currentQuestionResponse=new QuestionResponse();
+    protected QuestionResponse currentQuestionResponse = new QuestionResponse();
 
     protected Context context;
-    protected int currentIndx=0;
-    protected  int previousIndx=-1;
+    protected int currentIndx = 0;
+    protected int previousIndx = -1;
     private boolean shouldUpdatePreferences;
 
     protected final LoadableSurveySpecs loadableSurveySpecs;
     private SurveyFrequencyManager surveyFrequencyManager;
-    protected AliumPreferences aliumPreferences ;
-    protected  FollowupManager manager ;
-    protected SurveyController( Context context,LoadableSurveySpecs loadableSurveySpecs,
-                                boolean shouldUpdatePreferences){
-        this.context=context;
-        this.shouldUpdatePreferences=shouldUpdatePreferences;
-        this.uuid= UUID.randomUUID().toString();
-        this.loadableSurveySpecs=loadableSurveySpecs;
-        this.aliumPreferences= AliumPreferences.getInstance();
-        this.surveyFrequencyManager=  FrequencyManagerFactory
+    protected AliumPreferences aliumPreferences;
+    protected FollowupManager manager;
+
+    protected SurveyController(Context context, LoadableSurveySpecs loadableSurveySpecs,
+                               boolean shouldUpdatePreferences) {
+        this.context = context;
+        this.shouldUpdatePreferences = shouldUpdatePreferences;
+        this.uuid = UUID.randomUUID().toString();
+        this.loadableSurveySpecs = loadableSurveySpecs;
+        this.aliumPreferences = AliumPreferences.getInstance();
+        this.surveyFrequencyManager = FrequencyManagerFactory
                 .getFrequencyManager(aliumPreferences, loadableSurveySpecs.key,
-                loadableSurveySpecs.surveyFreq,
-                loadableSurveySpecs.customSurveyData);
+                        loadableSurveySpecs.surveyFreq,
+                        loadableSurveySpecs.customSurveyData);
 
 
     }
 
     abstract protected void generateQuestion(String responseType) throws JSONException;
-//    abstract protected Map<String, Object > generateTrackingParameters();
+
+    //    abstract protected Map<String, Object > generateTrackingParameters();
     @CallSuper
-    protected void  showCurrentQuestion( ) {
-      if(shouldUpdatePreferences)  updateCurrentQuestionResponse();
+    protected void showCurrentQuestion() {
+        if (shouldUpdatePreferences) updateCurrentQuestionResponse();
     }
+
     @CallSuper
     protected void handleNextQuestion() throws JSONException {
 //        submitResponse();
         //handle condition mapping, this updates the currentIndx
         handleConditionMapping(survey.getQuestions().get(currentIndx));
 
-    };
+    }
+
+    ;
+
     //os: Once per Submit -untilresponse
     //o: Once - onlyonce
     //rp: Repeatedly -overandover
     @CallSuper
-    protected void show(){
-        if(shouldUpdatePreferences){
+    protected void show() {
+        if (shouldUpdatePreferences) {
             if (!loadableSurveySpecs.surveyFreq.equals("os")) {//untilresponse
-                if(currentIndx>=responseSubmitIndex){
+                if (currentIndx >= responseSubmitIndex) {
                     surveyFrequencyManager.recordSurveyTriggerOnPreferences(
                     );
                 }
 
             }
             Map<String, Object> params = generateTrackingParameters();
-            params.put("eventType","load");
+            params.put("eventType", "load");
             trackWithAlium(context, params);
         }
-    shouldUpdatePreferences=true;
+        shouldUpdatePreferences = true;
     }
 
 
-    private Map<String, Object>  generateTrackingParameters(){
-        Map<String,Object> params=new HashMap<>(surveyParameters.customerVariables);
-        params.put("questionId",(currentQuestionResponse.getQuestionId()));
+    private Map<String, Object> generateTrackingParameters() {
+        Map<String, Object> params = new HashMap<>(surveyParameters.customerVariables);
+        params.put("questionId", (currentQuestionResponse.getQuestionId()));
 //        responseMap.put("response",currentQuestionResponse.getQuestionResponse());
 //        responseMap.put("respType",currentQuestionResponse.getResponseType());
         params.put("surveyLoadId", uuid);
@@ -107,84 +113,87 @@ abstract class SurveyController {
         params.put("eventType", "resp");
         params.put("language", "1");
         params.put("surveyType", 7);
-        params.put("respType",currentQuestionResponse.getResponseType());
-        params.put("response",currentQuestionResponse.getQuestionResponse());
-        try{
+        params.put("respType", currentQuestionResponse.getResponseType());
+        params.put("response", currentQuestionResponse.getQuestionResponse());
+        try {
             params.put("surveyId", survey.getSurveyInfo().getSurveyId());
-            params.put("orgId",survey.getSurveyInfo().getOrgId());
-        }catch (Exception e){
-            Logger.log(Logger.LogLevel.ERROR,"track-params", "Couldn't get srvid/orgId");
+            params.put("orgId", survey.getSurveyInfo().getOrgId());
+        } catch (Exception e) {
+            Logger.log(Logger.LogLevel.ERROR, "track-params", "Couldn't get srvid/orgId");
         }
-        if(survey.getQuestions().get(currentIndx).getAiSettings().isEnabled() && manager.followUpIndex>-1){
-            params.put("aiQuestionId", manager.followUpIndex+1);
+        if (survey.getQuestions().get(currentIndx).getAiSettings().isEnabled() && manager.followUpIndex > -1 && manager.aiFollowup != null) {
+            params.put("aiQuestionId", manager.followUpIndex + 1);
             params.put("aiQuestionText", manager.aiFollowup.getFollowupQuestion());
-            params.put("respType","15");
-            params.put("response",manager.aiFollowup.getResponse()); //needs to be done
+            params.put("respType", "15");
+            params.put("response", manager.aiFollowup.getResponse()); //needs to be done
         }
-        String resp = (String) params.get("response");
 
         return params;
     }
+
     @CallSuper
-    protected  void submitSurvey(){
-        if(loadableSurveySpecs.surveyFreq.equals("os") //untilresponse
-        && !currentQuestionResponse.getResponseType().equals("0")
-        ){
-            if(currentIndx>=responseSubmitIndex){
+    protected void submitSurvey() {
+        if (loadableSurveySpecs.surveyFreq.equals("os") //untilresponse
+                && !currentQuestionResponse.getResponseType().equals("0")
+        ) {
+            if (currentIndx >= responseSubmitIndex) {
                 surveyFrequencyManager.recordSurveyTriggerOnPreferences(
                 );
             }
         }
-    };
+    }
+
+    ;
 
 
-    private void handleConditionMapping(Question question){
-        try{
-            if(question!=null && !question.getConditionMapping().isEmpty()){
-                List<Integer> conditionMappingArray=question.getConditionMapping();
+    private void handleConditionMapping(Question question) {
+        try {
+            if (question != null && !question.getConditionMapping().isEmpty()) {
+                List<Integer> conditionMappingArray = question.getConditionMapping();
 
-                int nextQuestIndx= conditionMappingArray.get(
+                int nextQuestIndx = conditionMappingArray.get(
                         // this is -1 if no answer is selected
                         // for radio and checkbox thus throws an error
                         // and moves to next index
                         currentQuestionResponse.getIndexOfSelectedAnswer()
 
                 );
-                previousIndx=currentIndx;
-                if(nextQuestIndx==-2){
+                previousIndx = currentIndx;
+                if (nextQuestIndx == -2) {
                     currentIndx++;//next question
-                }else if(nextQuestIndx==-1){
-                    currentIndx=survey.getQuestions().size();//thankyou
-                }else {
-                    currentIndx=nextQuestIndx;//set currentIndx as nextQuestIndx
+                } else if (nextQuestIndx == -1) {
+                    currentIndx = survey.getQuestions().size();//thankyou
+                } else {
+                    currentIndx = nextQuestIndx;//set currentIndx as nextQuestIndx
                 }
-            }else{
+            } else {
                 currentIndx++;  //in some cases condition map might be empty, in that case next question
             }
-        }catch (Exception e){
-            Logger.log(Logger.LogLevel.ERROR,"Condition-Map", e.toString());
+        } catch (Exception e) {
+            Logger.log(Logger.LogLevel.ERROR, "Condition-Map", e.toString());
             currentIndx++;
         }
     }
+
     protected void submitResponse() {
 //        if thankyou or cover page or no response
-        if(survey.getQuestions().get(currentIndx).getResponseType().equals("-1")
-                ||survey.getQuestions().get(currentIndx).getResponseType().equals("0")||
-        (currentQuestionResponse.getQuestionResponse().isEmpty()&& manager.followUpIndex==-1)
-        ){
+        if (survey.getQuestions().get(currentIndx).getResponseType().equals("-1")
+                || survey.getQuestions().get(currentIndx).getResponseType().equals("0") ||
+                (currentQuestionResponse.getQuestionResponse().isEmpty() && manager.followUpIndex == -1)
+        ) {
             Logger.log(Logger.LogLevel.DEBUG, "submit", "no response");
             return;
         }
 
-        Map<String,Object> params=generateTrackingParameters();
-        String resp = (String)params.get("response");
-        if(resp==null|| resp.isEmpty())return;
-        trackWithAlium(context,params );
+        Map<String, Object> params = generateTrackingParameters();
+        String resp = (String) params.get("response");
+        if (resp == null || resp.isEmpty()) return;
+        trackWithAlium(context, params);
     }
 
 
-    private void updateCurrentQuestionResponse(){
-        try{
+    private void updateCurrentQuestionResponse() {
+        try {
             currentQuestionResponse.setQuestionId(survey.getQuestions().get(currentIndx)
                     .getId());
             currentQuestionResponse.setResponseType(survey.getQuestions().get(currentIndx)
@@ -192,8 +201,8 @@ abstract class SurveyController {
             currentQuestionResponse.setQuestionResponse("");
 
             currentQuestionResponse.setIndexOfSelectedAnswer(0);
-        }catch (Exception e){
-            Logger.log(Logger.LogLevel.ERROR,"updateQuestionResp", e.toString());
+        } catch (Exception e) {
+            Logger.log(Logger.LogLevel.ERROR, "updateQuestionResp", e.toString());
         }
     }
 

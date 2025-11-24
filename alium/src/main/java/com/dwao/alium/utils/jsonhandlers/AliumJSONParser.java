@@ -16,6 +16,7 @@ import com.dwao.alium.models.TypeOfSur;
 import com.dwao.alium.models.UrlMatch;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -68,16 +69,14 @@ public class AliumJSONParser {
         }
     }
 
-    public static AiFollowup getAiFollowupFromJson(JSONObject jsonObject){
-        try{
-            AiFollowup aiFollowup=new AiFollowup();
-            aiFollowup.setShouldFollowup(jsonObject.optBoolean("should_followup",true));
-            aiFollowup.setFollowupQuestion(jsonObject.optString("followup_question",""));
-            aiFollowup.setRemainingFollowups(jsonObject.optInt("remaining_followups",0));
+    public static AiFollowup getAiFollowupFromJson(JSONObject jsonObject) throws JSONException {
+
+        AiFollowup aiFollowup=new AiFollowup();
+            aiFollowup.setShouldFollowup(jsonObject.getBoolean("should_followup"));
+            aiFollowup.setFollowupQuestion(jsonObject.getString("followup_question"));
+            aiFollowup.setRemainingFollowups(jsonObject.getInt("remaining_followups"));
         return aiFollowup;
-        }catch (Exception e){
-            return new AiFollowup();
-        }
+
     }
 
     public static Survey getSurveyFromJson(JSONObject jsonObject){

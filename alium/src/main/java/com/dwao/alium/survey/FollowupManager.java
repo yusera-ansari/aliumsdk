@@ -26,47 +26,49 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public  class FollowupManager {
+public class FollowupManager {
 
-    int followUpIndex=-1;
-    private final String url= "https://api.aliumsurvey.com/api/v1/public/surveys/ai-followup";
-    List<FollowupHistory> followupHistoryList=new ArrayList<>();
+    int followUpIndex = -1;
+    private final String url = "https://api.aliumsurvey.com/api/v1/public/surveys/ai-followup";
+    List<FollowupHistory> followupHistoryList = new ArrayList<>();
     AiFollowup aiFollowup;
 
-    FollowupRepository repository= new FollowupRepository();
+    FollowupRepository repository = new FollowupRepository();
     Survey survey;
 
-   FollowupManager(
-           Survey survey
-   ){
-       this.survey=survey;
+    FollowupManager(
+            Survey survey
+    ) {
+        this.survey = survey;
 
 
-   }
+    }
 
-   protected  void storePreviousFollowUp(){
-      if(aiFollowup!=null){
-          if(followUpIndex>-1 && aiFollowup!=null){
-              followupHistoryList.add(new FollowupHistory(aiFollowup.getFollowupQuestion(), aiFollowup.getResponse()));
-          }
-      }
-   }
+    protected void storePreviousFollowUp() {
+        if (aiFollowup != null) {
+            if (followUpIndex > -1 && aiFollowup != null) {
+                followupHistoryList.add(new FollowupHistory(aiFollowup.getFollowupQuestion(), aiFollowup.getResponse()));
+            }
+        }
+    }
 
-   protected  void  incrementFollowupIndex(){
-       followUpIndex++;
-   }
-   protected boolean shouldStop(int freq){
-       incrementFollowupIndex();
-       if(followUpIndex>=freq){
-           Logger.log(Logger.LogLevel.DEBUG, "foll-up", "freq reached");
-           aiFollowup=null;
-          followUpIndex=-1;
-          followupHistoryList = new ArrayList<>();
-          return true;
-       }
-       return false;
-   }
-    protected void getFollowUpQuestion(int maxFollowups, int currentIndx,String originalResponse , FollowUpCallback callback) {
+    protected void incrementFollowupIndex() {
+        followUpIndex++;
+    }
+
+    protected boolean shouldStop(int freq) {
+        incrementFollowupIndex();
+        if (followUpIndex >= freq || (  aiFollowup!=null &&!aiFollowup.isShouldFollowup())) {
+            Logger.log(Logger.LogLevel.DEBUG, "foll-up", "freq reached");
+            aiFollowup = null;
+            followUpIndex = -1;
+            followupHistoryList = new ArrayList<>();
+            return true;
+        }
+        return false;
+    }
+
+    protected void getFollowUpQuestion(int maxFollowups, int currentIndx, String originalResponse, FollowUpCallback callback) {
         Map<String, Object> data = new HashMap<>();
         Question curQues = survey.getQuestions().get(currentIndx);
         data.put("survey_id", survey.getSurveyInfo().getSurveyId());
@@ -74,7 +76,7 @@ public  class FollowupManager {
         data.put("question_id", curQues.getId());
         data.put("question_text", curQues.getQuestion());
 //        data.put("original_response", currentQuestionResponse.getQuestionResponse());
-        data.put("original_response",originalResponse);
+        data.put("original_response", originalResponse);
         data.put("survey_context", new ArrayList<>());        // empty list
         data.put("current_followup_count", followUpIndex);
         data.put("max_followups", maxFollowups);
@@ -91,24 +93,29 @@ public  class FollowupManager {
                 url,
                 data,
                 new FollowUpCallback() {
-            @Override
-            public void onSuccess(AiFollowup response) {
-                                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
                     @Override
-                    public void run() {
-                        aiFollowup = response;
-                        Logger.log(Logger.LogLevel.DEBUG, "FollowUp", aiFollowup.toString());
-//                        showAiFollowup();
-                        callback.onSuccess(response);
+                    public void onSuccess(AiFollowup response) {
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                aiFollowup = response;
+                                Logger.log(Logger.LogLevel.DEBUG, "FollowUp", aiFollowup.toString());
+                                callback.onSuccess(response);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onError(e);
+                            }
+                        });
                     }
                 });
-            }
-
-            @Override
-            public void onError(Exception e) {
-               callback.onError(e);
-            }
-        });
     }
 }

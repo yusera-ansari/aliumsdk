@@ -13,6 +13,7 @@ import com.dwao.alium.network.CustomNetworkService;
 import com.dwao.alium.services.Logger;
 import com.dwao.alium.utils.jsonhandlers.AliumJSONParser;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -23,8 +24,18 @@ public class FollowupRepository {
         CustomNetworkService.getFollowUpQuestion(url, data, new ResponseListener() {
             @Override
             public void onResponseReceived(JSONObject jsonObject) {
-                callback.onSuccess(AliumJSONParser.getAiFollowupFromJson(jsonObject));
+               try
+               {
+                   AiFollowup aiFollowup = AliumJSONParser.getAiFollowupFromJson(jsonObject);
+                   if(aiFollowup.getFollowupQuestion().trim().isEmpty()) {
+                       callback.onError(new JSONException("No followup question"));
+                       return;
+                   }
+                   callback.onSuccess(aiFollowup);
 
+               }catch (Exception e){
+                   callback.onError(e);
+               }
 
             }
 
