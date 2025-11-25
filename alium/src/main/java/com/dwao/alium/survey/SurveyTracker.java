@@ -12,6 +12,7 @@ import com.dwao.alium.network.CustomNetworkService;
 import com.dwao.alium.services.Logger;
 
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -37,6 +38,20 @@ public class SurveyTracker {
     }
     public static void trackWithAlium(Context context,  Map<String, Object> parameters ) {
         try{
+            Iterator<Map.Entry<String, Object>> iterator = parameters.entrySet().iterator();
+
+            while (iterator.hasNext()) {
+                Map.Entry<String, Object> entry = iterator.next();
+                Object value = entry.getValue();
+
+                if (value == null ||
+                        (value instanceof String && ((String) value).trim().isEmpty()) ||
+                        (value instanceof Collection && ((Collection<?>) value).isEmpty()) ||
+                        (value instanceof Map && ((Map<?, ?>) value).isEmpty())) {
+
+                    iterator.remove(); // Safe removal for API 21
+                }
+            }
             CustomNetworkService.postTrackRequest("https://demo.dwao.in/tracker", parameters);
 //            volleyService.loadRequestWithVolley(  getUrl(context, parameters) );
 

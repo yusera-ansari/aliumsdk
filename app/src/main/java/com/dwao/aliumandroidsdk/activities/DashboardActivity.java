@@ -7,6 +7,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.dwao.alium.models.SurveyParameters;
+import com.dwao.alium.survey.Alium;
 import com.dwao.aliumandroidsdk.FirstFragment;
 import com.dwao.aliumandroidsdk.R;
 
@@ -26,7 +28,7 @@ public class DashboardActivity extends AppCompatActivity {
 //        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
 //        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
 //        Alium.trigger(this,  new SurveyParameters("secondscreen", params));
-//      Alium.trigger(this,  new SurveyParameters("secondscreen", params));
+      Alium.trigger(this,  new SurveyParameters("screen2", params));
 //       new Thread(new Runnable() {
 //            @Override
 //            public void run() {

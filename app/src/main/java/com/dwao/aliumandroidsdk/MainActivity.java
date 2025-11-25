@@ -21,23 +21,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends Activity {
-    JSONObject json=null;
+    JSONObject json = null;
     TextView next;
+
     @Override
-    protected  void onPause(){
+    protected void onPause() {
         super.onPause();
 
 //        surveyLoader.stop();
 //        surveyLoader2.stop();
         Log.d("Pause", "MainActivity Paused");
     }
+
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         Log.d("OnResume", "resumed main activity");
-            Map<String, String> params = new HashMap();
-            params.put("dim1", "mumbai");//city
-        params.put("dim2", "32");//age
+        Map<String, Object> params = new HashMap();
+
+        params.put("dim1", "mumbai");//city
+        params.put("dim2", "");//age
         params.put("dim3", "male");//gender
         params.put("dim4", "IN");//country
         params.put("dim5", "45678987654");//last login
@@ -48,15 +51,29 @@ public class MainActivity extends Activity {
         params.put("dim10", "BRCH0921MUM");//branch id
         params.put("custEmail", "test@gmail.co");//branch id
         params.put("custMobile", "9090909090");//branch id
-        params.put("custSystemId", "0jdu07");//systemId id
-        Alium.trigger(MainActivity.this, new SurveyParameters("AI", params));
-//        Alium.trigger(MainActivity.this, new SurveyParameters("home", params));
-runOnUiThread(new Runnable() {
-    @Override
-    public void run() {
+        params.put("custSystemId", new HashMap<Integer, Integer>());//systemId id
 
-    }
-});
+        SurveyParameters parameters = new SurveyParameters.Builder("AI")
+                .addDim(1, "mumbai")          // city
+                .addDim(2, "")                // age (empty → removed)
+                .addDim(3, "male")            // gender
+                .addDim(4, "")              // country
+                .addDim(5, "45678987654")     // last login
+                .addDim(6, "savings")         // account type
+                .addDim(7, "45678987")        // customer id
+                .addDim(8, " ")             // auth type
+                .addDim(9, "opted_in")        // consent
+                .addDim(10, "BRCH0921MUM")    // branch ID
+                .build();
+
+        Alium.trigger(MainActivity.this, parameters);
+//        Alium.trigger(MainActivity.this, new SurveyParameters("home", params));
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
 //        new Handler().postDelayed(new Runnable() {
 //           @Override
 //           public void run() {
@@ -91,7 +108,8 @@ runOnUiThread(new Runnable() {
 //
 //          }
 //      }, 5000);
-          }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); //disable night mode
@@ -104,9 +122,9 @@ runOnUiThread(new Runnable() {
         fragmentTransaction.add(R.id.fragment_container, fragment);
         fragmentTransaction.commit();
 
-        Log.d("Activity", ""+this.getClass().getSimpleName());
-        next=findViewById(R.id.main_next);
-        Intent intent=new Intent(this, DashboardActivity.class);
+        Log.d("Activity", "" + this.getClass().getSimpleName());
+        next = findViewById(R.id.main_next);
+        Intent intent = new Intent(this, DashboardActivity.class);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
