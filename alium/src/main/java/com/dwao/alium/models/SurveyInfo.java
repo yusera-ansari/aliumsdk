@@ -18,16 +18,22 @@ public class SurveyInfo implements Serializable {
 //                  "type": 1,
 //                  "thanksMessage": "",
 //                  "vf": "overandover"
-    String orgId, orgName, customerId, surveyId, language, position, background, uniqueidentifier, theme, branding,
+    String  orgName, customerId, surveyId, language, position, background, uniqueidentifier, theme, branding,
             type;
-//    viewFrequency;
-    public ThemeColors themeColors;
+    int orgId;
+
+    public void setOrgId(int orgId) {
+        this.orgId = orgId;
+    }
+
+    public int getOrgId() {
+        return orgId;
+    }
 
     @Override
     public String toString() {
         return "SurveyInfo{" +
-                "orgId='" + orgId + '\'' +
-                ", orgName='" + orgName + '\'' +
+                "orgName='" + orgName + '\'' +
                 ", customerId='" + customerId + '\'' +
                 ", surveyId='" + surveyId + '\'' +
                 ", language='" + language + '\'' +
@@ -37,13 +43,13 @@ public class SurveyInfo implements Serializable {
                 ", theme='" + theme + '\'' +
                 ", branding='" + branding + '\'' +
                 ", type='" + type + '\'' +
-                ", viewFrequency='"
-//                +
-//                viewFrequency
-                + '\'' +
+                ", orgId=" + orgId +
                 ", themeColors=" + themeColors +
                 '}';
     }
+
+    //    viewFrequency;
+    public ThemeColors themeColors;
 
     public ThemeColors getThemeColors() {
         return themeColors;
@@ -69,9 +75,6 @@ public class SurveyInfo implements Serializable {
         this.type = type;
     }
 
-    public String getOrgId() {
-        return orgId;
-    }
 
     public String getOrgName() {
         return orgName;
@@ -81,9 +84,7 @@ public class SurveyInfo implements Serializable {
         this.orgName = orgName;
     }
 
-    public void setOrgId(String orgId) {
-        this.orgId = orgId;
-    }
+
 
     public String getCustomerId() {
         return customerId;
