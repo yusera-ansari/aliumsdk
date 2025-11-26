@@ -29,7 +29,9 @@ import java.util.Map;
 public class FollowupManager {
 
     int followUpIndex = -1;
-    private final String url = "https://api.aliumsurvey.com/api/v1/public/surveys/ai-followup";
+    private final String url = "https://dev-api.alium.co.in/api/v1/public/surveys/ai-followup";
+
+//        private final String url = "https://api.aliumsurvey.com/api/v1/public/surveys/ai-followup";
     List<FollowupHistory> followupHistoryList = new ArrayList<>();
     AiFollowup aiFollowup;
 
