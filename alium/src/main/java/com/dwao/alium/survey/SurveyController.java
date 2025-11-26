@@ -21,6 +21,7 @@ import com.dwao.alium.utils.preferences.AliumPreferences;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -201,6 +202,7 @@ abstract class SurveyController {
             currentQuestionResponse.setQuestionResponse("");
 
             currentQuestionResponse.setIndexOfSelectedAnswer(0);
+            currentQuestionResponse.setIndexOfSelectedAnswers(new ArrayList<>());
         } catch (Exception e) {
             Logger.log(Logger.LogLevel.ERROR, "updateQuestionResp", e.toString());
         }

@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class QuestionResponse implements Serializable {
-    int questionId, indexOfSelectedAnswer=0;
+    int questionId, indexOfSelectedAnswer=-1;
     List<Integer> indexOfSelectedAnswers= new ArrayList<>( );
 
     public int getIndexOfSelectedAnswer() {
