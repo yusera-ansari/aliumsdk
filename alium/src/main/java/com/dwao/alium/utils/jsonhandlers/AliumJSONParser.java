@@ -174,7 +174,7 @@ public class AliumJSONParser {
         if(jsonObject.has("si")){
             JSONObject surveyInfoObj= jsonObject.getJSONObject("si");
             SurveyInfo surveyInfo = new SurveyInfo();
-            surveyInfo.setOrgId(surveyInfoObj.getString("oid"));
+            surveyInfo.setOrgId(surveyInfoObj.getInt("oid"));
             surveyInfo.setSurveyId(surveyInfoObj.getString("sid"));
              surveyInfo.setType(surveyInfoObj.getString("stp"));
 //             surveyInfo.setViewFrequency(surveyInfoObj.getString("vf"));
