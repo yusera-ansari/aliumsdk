@@ -404,6 +404,9 @@ class SurveyDialog extends SurveyController {
     }
 
     boolean shouldAnimate() {
+        if (currentQuestionResponse.getResponseType().equals("-1")) return false;
+        //animate  at index>1 if cover page was shown OR
+        //animate at index>0 if cover page was not shown
         return ((survey.getQuestions().get(0).getResponseType().equals("0") && currentIndx > 1)
                 ||
                 (!survey.getQuestions().get(0).getResponseType().equals("0") && currentIndx > 0)

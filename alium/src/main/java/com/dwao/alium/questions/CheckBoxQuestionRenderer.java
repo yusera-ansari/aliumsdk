@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -77,6 +79,24 @@ public class CheckBoxQuestionRenderer implements QuestionRenderer {
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         TextInputLayout textInputLayout = checkBoxQues.findViewById(R.id.checkbox_text_input_layout);
         TextInputEditText textInputEditText = checkBoxQues.findViewById(R.id.text_input_edit_text);
+
+        InputMethodManager imm = (InputMethodManager)
+                context.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+//        textInputEditText.setOnEditorActionListener((v, actionId, event) -> {
+//            if (actionId == android.view.KeyEvent.KEYCODE_ENTER &&
+//                    event.getAction() == android.view.KeyEvent.ACTION_UP) {
+//
+//                textInputEditText.clearFocus();
+//
+//                if (imm != null) {
+//                    imm.hideSoftInputFromWindow(textInputEditText.getWindowToken(), 0);
+//                }
+//
+//                return true; // prevent newline
+//            }
+//            return false;
+//        });
         textInputEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -92,7 +112,7 @@ public class CheckBoxQuestionRenderer implements QuestionRenderer {
                                     currentquestion.getQuestionSetting().getOtherOption() &&
                                     currentQuestionResponse.getIndexOfSelectedAnswers().contains(responseOpt.size() - 1)) {
                         setCtaEnabled(nextQuestionBtn,
-                                !textInputEditText.getText().toString().isEmpty());
+                                !textInputEditText.getText().toString().trim().isEmpty());
                     } else {
                         setCtaEnabled(nextQuestionBtn,
                                 !currentQuestionResponse.getQuestionResponse().isEmpty());
@@ -131,12 +151,29 @@ public class CheckBoxQuestionRenderer implements QuestionRenderer {
                             }
                         }
                         if (currentquestion.getQuestionSetting().getOtherOption()) {
+
                             if (selected && position == responseOpt.size() - 1) {
                                 textInputLayout.setVisibility(View.VISIBLE);
-                                textInputEditText.requestFocus();
+                                textInputLayout.post(()->{
+                                    textInputEditText.requestFocus();
+                                    if (imm != null) {
+                                        imm.showSoftInput(textInputEditText, InputMethodManager.SHOW_IMPLICIT);
+                                    }
+                                });
                             } else if (position == responseOpt.size() - 1) {
                                 textInputLayout.setVisibility(View.GONE);
+                                if (imm != null) {
+                                    imm.hideSoftInputFromWindow(textInputEditText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                                }
                                 textInputEditText.clearFocus();
+                                textInputEditText.setText(null);
+
+                            }else{
+                                if (imm != null) {
+                                    imm.hideSoftInputFromWindow(textInputEditText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                                }
+                                textInputEditText.clearFocus();
+
                             }
                         }
                     }
@@ -161,6 +198,5 @@ public class CheckBoxQuestionRenderer implements QuestionRenderer {
 
 
         layout.addView(checkBoxQues);
-
     }
 }

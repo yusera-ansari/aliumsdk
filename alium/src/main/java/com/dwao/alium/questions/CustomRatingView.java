@@ -141,7 +141,7 @@ public class CustomRatingView extends LinearLayout {
 
                 ImageView img = new ImageView(context);
                 img.setImageDrawable(emptyIcon);
-                img.setLayoutParams(new LinearLayout.LayoutParams(20, 20));
+                img.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
                 img.setClickable(true);
                 LinearLayout.LayoutParams newParams = new LinearLayout.LayoutParams(200, 200);
 

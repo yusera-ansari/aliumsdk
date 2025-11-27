@@ -46,17 +46,22 @@ public class CheckBoxRecyViewAdapter extends RecyclerView.Adapter<CheckBoxRecyVi
         String resp="";
         if(otherOptionEnabled){
             for(int i=0; i< selectedItems.size(); i++){
-                if(i==selectedItems.size()-1){
+                if(i==selectedItems.size()-1){ //if last item
+                    //(no need of "," in last item)
+                    //if last item(pos) is other option
                     if(selectedItems.get(i)== checkBoxList.size()-1){
+                        //response for other option
                         resp+= checkBoxList.get(selectedItems.get(i))+"|"+otherResponse;
                         break;
                     }
                     resp+= checkBoxList.get(selectedItems.get(i));
                     break;
                 }
+                //if current item is other option
                 if(selectedItems.get(i)== checkBoxList.size()-1){
                     resp+= checkBoxList.get(selectedItems.get(i))+"|"+otherResponse+",";
                 }
+                //normal response
                 else{
                     resp += checkBoxList.get(selectedItems.get(i)) + ",";
                 }

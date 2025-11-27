@@ -10,11 +10,14 @@
 
 
     <com.google.android.material.textfield.TextInputLayout
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        android:focusedByDefault="true"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/text_input_layout"
         app:placeholderText="Enter your response here"
-        app:placeholderTextColor="#373232"
+        app:placeholderTextColor="#2D2828"
         app:boxCornerRadiusBottomEnd="5dp"
         app:boxCornerRadiusBottomStart="5dp"
         app:boxCornerRadiusTopEnd="5dp"
@@ -24,10 +27,10 @@
         app:boxStrokeWidthFocused="0dp"
         app:counterMaxLength="280"
 
+
         app:counterOverflowTextAppearance="@color/black"
         android:padding="5dp"
         app:counterEnabled="false"
-       app:hintEnabled="false"
         app:boxStrokeColor="@color/white"
         android:background="@drawable/text_input_layout_bg"
       >
@@ -42,7 +45,7 @@
             android:inputType="textMultiLine"
             android:lines="5"
             android:textSize="16sp"
-
+            android:imeOptions="actionDone"
             android:background="@color/white"
 
 
