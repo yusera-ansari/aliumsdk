@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,6 +37,14 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
     public void onStart() {
         super.onStart();
         shouldCallOnStopCallback = true;
+        Dialog d = getDialog();
+        if (d != null && d.getWindow() != null) {
+            d.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+            d.getWindow().setSoftInputMode(
+                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
+                            WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
+            );
+        }
     }
     @Override
     public void show(@NonNull FragmentManager manager, @Nullable String tag) {
