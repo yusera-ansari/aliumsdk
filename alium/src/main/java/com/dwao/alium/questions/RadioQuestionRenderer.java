@@ -88,12 +88,15 @@ public class RadioQuestionRenderer implements QuestionRenderer {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 adapter.updateResponse(currentquestion.getQuestionSetting().getOtherOption(),
                         textInputEditText.getText()!=null?textInputEditText.getText().toString():"");
-                if(currentquestion.getQuestionSetting().getOtherOption()) {
-                    setCtaEnabled(nextQuestionBtn,
-                            !textInputEditText.getText().toString().isEmpty());
-                }else{
-                    setCtaEnabled(nextQuestionBtn,
-                            !currentQuestionResponse.getQuestionResponse().isEmpty());
+                if(isRequired){
+                    if (currentquestion.getQuestionSetting().getOtherOption() &&
+                    currentQuestionResponse.getIndexOfSelectedAnswers().contains(responseOpt.size() - 1)) {
+                        setCtaEnabled(nextQuestionBtn,
+                                !textInputEditText.getText().toString().isEmpty());
+                    } else {
+                        setCtaEnabled(nextQuestionBtn,
+                                !currentQuestionResponse.getQuestionResponse().isEmpty());
+                    }
                 }
             }
 
