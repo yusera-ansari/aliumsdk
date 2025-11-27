@@ -37,6 +37,14 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
     public void onStart() {
         super.onStart();
         shouldCallOnStopCallback = true;
+        Dialog d = getDialog();
+        if (d != null && d.getWindow() != null) {
+            d.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+            d.getWindow().setSoftInputMode(
+                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
+                            WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
+            );
+        }
     }
 
     @Override
