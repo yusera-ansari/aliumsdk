@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -74,6 +75,9 @@ public class RadioQuestionRenderer implements QuestionRenderer {
         radioBtnRecyView.setLayoutManager(new LinearLayoutManager(context));
         TextInputLayout textInputLayout = radioQues.findViewById(R.id.radio_text_input_layout);
         TextInputEditText textInputEditText = radioQues.findViewById(R.id.text_input_edit_text);
+        InputMethodManager imm = (InputMethodManager)
+                context.getSystemService(Context.INPUT_METHOD_SERVICE);
+
         textInputEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -136,10 +140,20 @@ public class RadioQuestionRenderer implements QuestionRenderer {
                         if(currentquestion.getQuestionSetting().getOtherOption()){
                             if ( position == responseOpt.size() - 1) {
                                 textInputLayout.setVisibility(View.VISIBLE);
-                                textInputEditText.requestFocus();
+                                textInputLayout.post(()->{
+                                    textInputEditText.requestFocus();
+                                    if (imm != null) {
+                                        imm.showSoftInput(textInputEditText, InputMethodManager.SHOW_IMPLICIT);
+                                    }
+                                });
                             } else  {
+                                if (imm != null) {
+                                    imm.hideSoftInputFromWindow(textInputEditText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                                }
                                 textInputLayout.setVisibility(View.GONE);
+                                textInputEditText.setText(null);
                                 textInputEditText.clearFocus();
+
                             }
                         }
                     }

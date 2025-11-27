@@ -12,6 +12,7 @@
         />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:id="@+id/radio_text_input_layout"
         android:visibility="gone"
         app:boxBackgroundMode="none"

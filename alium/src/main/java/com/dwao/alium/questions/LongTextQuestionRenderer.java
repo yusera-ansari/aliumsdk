@@ -1,5 +1,7 @@
 package com.dwao.alium.questions;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
+import static androidx.core.content.ContextCompat.getSystemService;
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
 import android.content.Context;
@@ -11,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethod;
+import android.view.inputmethod.InputMethodManager;
 
 import com.dwao.alium.R;
 import com.dwao.alium.models.Question;
@@ -92,7 +96,17 @@ public class LongTextQuestionRenderer implements QuestionRenderer {
             }
         });
 
-        input.requestFocus();
         layout.addView(longtextQues);
+
+        input.post(() -> {
+            input.requestFocus();
+
+            InputMethodManager imm = (InputMethodManager)
+                    context.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            if (imm != null) {
+                imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
+            }
+        });
     }
 }
