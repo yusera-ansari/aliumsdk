@@ -21,13 +21,13 @@
         android:layout_below="@+id/checkbox_recy_view"
         android:background="@drawable/text_input_layout_bg"
         android:gravity="center_horizontal"
-        android:paddingHorizontal="5dp"
-        android:paddingTop="2dp"
+        android:paddingTop="0dp"
+        android:paddingHorizontal="10dp"
         android:layout_marginVertical="2dp"
         app:placeholderText="Enter your response here"
         app:placeholderTextColor="#373232"
         app:placeholderTextAppearance="@drawable/ph_heart"
-        app:hintEnabled="false">
+        app:hintEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/text_input_edit_text"
