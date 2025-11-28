@@ -28,7 +28,7 @@
         app:counterMaxLength="280"
         app:counterOverflowTextAppearance="@color/black"
         android:paddingHorizontal="5dp"
-        android:paddingTop="0dp"
+        android:paddingTop="2dp"
         app:counterEnabled="false"
         app:boxStrokeColor="@color/white"
         android:background="@drawable/text_input_layout_bg"
