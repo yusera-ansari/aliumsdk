@@ -2,15 +2,20 @@ plugins {
     id 'com.android.library'
     id 'maven-publish'
 }
-
+def apiUrlDebug = project.hasProperty("API_FOLLOWUP_DEBUG") ? API_URL_DEBUG : ""
+def apiUrlRelease = project.hasProperty("API_FOLLOWUP_RELEASE") ? API_URL_RELEASE : ""
+android.buildFeatures.buildConfig true
 android {
     namespace 'com.dwao.alium'
-    compileSdk 34
+    compileSdk 35
     publishing {
         singleVariant('release') {
             withSourcesJar()
         }
     }
+//    buildFeatures{
+//        buildConfig true
+//    }
     defaultConfig {
         minSdk 21
         targetSdk 33
@@ -21,12 +26,14 @@ android {
     }
 
     buildTypes {
-//        debug{
-//            minifyEnabled true
-//            shrinkResources true
-//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-//        }
+        debug{
+            buildConfigField("String", "FOLLOWUP_URL", '\"${apiUrlDebug}\"')
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
         release {
+            buildConfigField('String', 'FOLLOWUP_URL', '\"${apiUrlRelease}\"')
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

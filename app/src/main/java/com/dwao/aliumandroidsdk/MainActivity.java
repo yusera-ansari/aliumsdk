@@ -1,5 +1,4 @@
 package com.dwao.aliumandroidsdk;
-
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -38,7 +37,6 @@ public class MainActivity extends Activity {
         super.onResume();
         Log.d("OnResume", "resumed main activity");
         Map<String, Object> params = new HashMap();
-
         params.put("dim1", "mumbai");//city
         params.put("dim2", "");//age
         params.put("dim3", "male");//gender
