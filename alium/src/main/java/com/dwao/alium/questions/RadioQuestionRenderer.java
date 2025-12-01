@@ -151,7 +151,7 @@ public class RadioQuestionRenderer implements QuestionRenderer {
                                 });
                             } else  {
                                 if (imm != null) {
-                                    imm.hideSoftInputFromWindow(textInputEditText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                                    imm.hideSoftInputFromWindow(textInputEditText.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
                                 }
                                 textInputLayout.setVisibility(View.GONE);
                                 textInputEditText.setText(null);

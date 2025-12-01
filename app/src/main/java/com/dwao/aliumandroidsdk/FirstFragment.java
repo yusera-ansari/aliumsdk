@@ -1,5 +1,6 @@
 package com.dwao.aliumandroidsdk;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,7 +22,6 @@ import com.dwao.alium.models.SurveyParameters;
  *
  */
 public class FirstFragment extends Fragment {
-
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";

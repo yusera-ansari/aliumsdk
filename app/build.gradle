@@ -1,11 +1,14 @@
 plugins {
     id 'com.android.application'
 }
-
+android.buildFeatures.buildConfig true
 android {
     namespace 'com.dwao.aliumandroidsdk'
     compileSdk 34
 
+//    buildFeatures{
+//        buildConfig true
+//    }
     defaultConfig {
         applicationId "com.dwao.aliumandroidsdk"
         minSdk 21

@@ -154,7 +154,7 @@ public class CheckBoxQuestionRenderer implements QuestionRenderer {
 
                             if (selected && position == responseOpt.size() - 1) {
                                 textInputLayout.setVisibility(View.VISIBLE);
-                                textInputLayout.post(()->{
+                                textInputLayout.post(() -> {
                                     textInputEditText.requestFocus();
                                     if (imm != null) {
                                         imm.showSoftInput(textInputEditText, InputMethodManager.SHOW_IMPLICIT);
@@ -163,14 +163,14 @@ public class CheckBoxQuestionRenderer implements QuestionRenderer {
                             } else if (position == responseOpt.size() - 1) {
                                 textInputLayout.setVisibility(View.GONE);
                                 if (imm != null) {
-                                    imm.hideSoftInputFromWindow(textInputEditText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                                    imm.hideSoftInputFromWindow(textInputEditText.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
                                 }
                                 textInputEditText.clearFocus();
                                 textInputEditText.setText(null);
 
-                            }else{
+                            } else {
                                 if (imm != null) {
-                                    imm.hideSoftInputFromWindow(textInputEditText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                                    imm.hideSoftInputFromWindow(textInputEditText.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
                                 }
                                 textInputEditText.clearFocus();
 

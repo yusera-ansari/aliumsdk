@@ -5,6 +5,7 @@ import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.dwao.alium.BuildConfig;
 import com.dwao.alium.listeners.ResponseListener;
 
 import com.dwao.alium.models.AliumRequest;
@@ -54,6 +55,7 @@ public class Alium {
     }
 
     public static void config(Application application, String url){
+         Logger.log(Logger.LogLevel.ERROR, "URL", BuildConfig.FOLLOWUP_URL );
             if(instance==null){
                 synchronized (Alium.class){
                     if(instance==null){
