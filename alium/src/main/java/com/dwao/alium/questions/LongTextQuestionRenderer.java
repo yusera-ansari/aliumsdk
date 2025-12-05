@@ -83,8 +83,8 @@ public class LongTextQuestionRenderer implements QuestionRenderer {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                currentQuestionResponse.setQuestionResponse(input.getText().toString().trim()
-                        .replace(" ", "%20"));
+                currentQuestionResponse.setQuestionResponse(input.getText().toString().trim());
+//                        .replace(" ", "%20"));
                 if(isRequired){
                     setCtaEnabled(nextQuestionBtn, !currentQuestionResponse.getQuestionResponse().isEmpty());
                 }
