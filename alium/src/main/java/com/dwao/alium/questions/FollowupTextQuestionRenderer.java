@@ -65,8 +65,8 @@ public class FollowupTextQuestionRenderer {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                aiFollowup.setResponse(input.getText().toString().trim()
-                        .replace(" ", "%20"));
+                aiFollowup.setResponse(input.getText().toString().trim());
+//                        .replace(" ", "%20"));
 
             }
 
