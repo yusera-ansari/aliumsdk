@@ -119,17 +119,22 @@ class AliumSurveyLoader implements Observer {
             try {
                 String screenName = svs.get(i).getTps().getApp().getUm().getU();
                 if (surveyParameters.screenName.equals(screenName)){
-                    //check if its already running
-
-                    if (instance != null && instance.activity != null) {
-                        if (instance.activity.get() instanceof FragmentActivity) {
-                            instance.xfm = ((FragmentActivity) instance.activity.get()).getSupportFragmentManager();
+                    //check if its already running, set instance to null if already present
+                    if (instance != null ) {
+                        Activity act = instance.activity != null ? instance.activity.get() : null;
+                        if(act==null) {
+                            instance=null;
+                            Logger.log(Logger.LogLevel.INFO, "create-instance", "activity reference is null, returning...");
+                            break;
+                        };
+                        if (act instanceof FragmentActivity) {
+                            instance.xfm = ((FragmentActivity) act).getSupportFragmentManager();
                             Fragment fragment = instance.xfm.findFragmentByTag(svs.get(i).getId() + "-" + surveyParameters.screenName);
                             if (fragment != null) {
                                 instance = null;
                             }
                         } else {
-                            instance.fm = instance.activity.get().getFragmentManager();
+                            instance.fm = act.getFragmentManager();
                             android.app.Fragment fragment = instance.fm.findFragmentByTag(svs.get(i).getId() + "-" + surveyParameters.screenName);
                             if (fragment != null) {
                                 instance = null;
@@ -152,10 +157,10 @@ class AliumSurveyLoader implements Observer {
 
     private boolean checkIfSurveyAlreadyRunning(String key){
 
-            if(activity !=null){
-
-            if (activity.get() instanceof FragmentActivity) {
-                xfm = ((FragmentActivity) activity.get()).getSupportFragmentManager();
+        Activity act = activity != null ? activity.get() : null;
+            if(act !=null){
+            if (act instanceof FragmentActivity) {
+                xfm = ((FragmentActivity) act).getSupportFragmentManager();
                 Fragment fragment = xfm.findFragmentByTag(key + "-" + surveyParameters.screenName);
                 if (fragment != null) {
 
@@ -165,7 +170,7 @@ class AliumSurveyLoader implements Observer {
                     return true;
                 }
             } else {
-                fm = activity.get().getFragmentManager();
+                fm = act.getFragmentManager();
                 android.app.Fragment fragment = fm.findFragmentByTag(key + "-" + surveyParameters.screenName);
                 if (fragment != null) {
                     Logger.log(Logger.LogLevel.DEBUG, "Loader.checkIfRunning", "survey already running, cancelling the request");
@@ -341,10 +346,10 @@ class AliumSurveyLoader implements Observer {
 
         if(!checkIfSurveyAlreadyRunning(loadableSurveySpecs.key)){
             Logger.log(Logger.LogLevel.DEBUG, "Loader.Dial", "creating a survey dialog...");
-
-            if (activity != null) {
-                if (activity.get() instanceof FragmentActivity) {
-                    xfm = ((FragmentActivity) activity.get()).getSupportFragmentManager();
+            Activity act = activity != null ? activity.get() : null;
+            if (act != null) {
+                if (act instanceof FragmentActivity) {
+                    xfm = ((FragmentActivity) act).getSupportFragmentManager();
                     if (!xfm.isStateSaved()) {
                         xfm.beginTransaction()
                                 .add(SurveyDialogFragment.newInstance(executableSurveySpecs,
@@ -354,7 +359,7 @@ class AliumSurveyLoader implements Observer {
                     }
 
                 } else {
-                    fm = activity.get().getFragmentManager();
+                    fm = act.getFragmentManager();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
                         if (!fm.isStateSaved()) {

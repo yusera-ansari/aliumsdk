@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 //main class
 //entry point for the SDK
@@ -39,8 +40,9 @@ public class Alium {
      private static AliumPreferences preferences;
      private static boolean shouldResetOnBackground = false;
 
-     private volatile  Queue<AliumRequest> aliumRequestQueue = new LinkedList<>();
+     private final Queue<AliumRequest> aliumRequestQueue = new ConcurrentLinkedQueue<>();
      private static volatile boolean isConfigFetching=false;
+    private static final Object configLock = new Object();
      private  Alium(){
 
      }
@@ -52,55 +54,89 @@ public class Alium {
     public static void setShouldResetOnBackground(boolean shouldResetOnBackground) {
         Alium.shouldResetOnBackground = shouldResetOnBackground;
     }
-
+private static void fetchConfigSafely(){
+    synchronized (configLock){
+        if(isConfigFetching)return;
+        isConfigFetching=true;
+    }
+    instance.fetchConfigJson();
+}
     public static void config(Application application, String url){
-            if(instance==null){
+            if(instance==null||preferences==null){
                 synchronized (Alium.class){
                     if(instance==null){
+                        Logger.log(Logger.LogLevel.INFO, "config","Initialized Alium()...");
                         instance=new Alium();
+                    }
+                    if(preferences==null){
+                        Logger.log(Logger.LogLevel.INFO, "config","Initialized preferences...");
                         preferences= AliumPreferences.setInstance(application);
                     }
                 }
             }
+
         if( url.trim().isEmpty()){
             Logger.log(Logger.LogLevel.ERROR, "config","Configuration URL can't be empty. Please set a valid url: "+url );
             return;
         }
-            if(configURL==null ){
-               synchronized (Alium.class){
-                   if(configURL==null){
-//                       android.util.Log.d("CONFIG", "url is null! setting....");
-                       Logger.log(Logger.LogLevel.DEBUG, "config","url is null! setting value to: "+url);
-                       configURL=url;
-                       Logger.log(Logger.LogLevel.INFO, "config", "url set to "+url);
-                       instance.fetchConfigJson( );
-                   }
-               }
+        synchronized (configLock) {
+            if (configURL == null) {
+                configURL = url;
+                Logger.log(Logger.LogLevel.INFO, "config",
+                        "Config URL set to " + url);
+                fetchConfigSafely();
+            } else {
+                Logger.log(Logger.LogLevel.INFO, "config",
+                        "Config already set. Using " + configURL);
             }
-            else if(!configURL.equals(url)) {
-              synchronized (Alium.class){
-                  if(!configURL.equals(url)){
-                      configURL = url;
-                      Logger.log(Logger.LogLevel.INFO, "config", "url set to "+url);
-                      instance.fetchConfigJson( );
-                  }
-              }
-            }
+        }
+//            if(configURL==null ){
+//               synchronized (Alium.class){
+//                   if(configURL==null ){
+//                       configURL=url;
+//                       Logger.log(Logger.LogLevel.INFO, "config", "url set to "+url);
+////                       instance.fetchConfigJson( );
+//                       fetchConfigSafely();
+//                   }else{
+//                       Logger.log(Logger.LogLevel.INFO, "config", "url already set to and fetching for: "+configURL);
+//                   }
+//               }
+//            }else{
+//                Logger.log(Logger.LogLevel.INFO, "config", "url already set to and fetching for: "+configURL);
+//            }
+//            else if(!configURL.equals(url)) {
+//              synchronized (Alium.class){
+//                  if(!configURL.equals(url)){
+//                      configURL = url;
+//                      Logger.log(Logger.LogLevel.INFO, "config", "url set to "+url);
+////                      instance.fetchConfigJson( );
+//                      fetchConfigSafely();
+//                  }
+//              }
+//            }
      }
 
 
 
 
     public static void stop(String screenName){
+         if(instance==null) {
+             Logger.log(Logger.LogLevel.INFO, "stop", "Alium instance is null, please ensure that you have called configure() first.");
+             return;
+         }
          Logger.log(Logger.LogLevel.INFO, "stop", "called on stop on "+screenName);
          instance.aliumRequestQueue.offer(new AliumRequest(  screenName));
-         if(configURL==null||isConfigFetching ){return;}
+            synchronized (configLock){
+            if (configURL == null || isConfigFetching) {
+                return;
+            }
+            }
          instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
     }
 
       void fetchConfigJson(){
-          isConfigFetching=true;
-          Logger.log(Logger.LogLevel.DEBUG, "fetch-config", "initiate config details fetching...");
+
+          Logger.log(Logger.LogLevel.DEBUG, "fConfig", "config details fetching...");
           CustomNetworkService.getNetworkData(  configURL,
                   new Alium.ConfigURLResponseListener());
 //          disabled shared pref
@@ -124,31 +160,48 @@ public class Alium {
     }
 
     private static void initiateTrigger(Object object, SurveyParameters parameters ){
+        if (instance == null || configURL == null) {
+            Logger.log(Logger.LogLevel.ERROR, "iTrigger", "Alium not configured. Call config() before trigger().");
+            return;
+        }
         try{
-            Logger.log(Logger.LogLevel.INFO, "init-trigger", "trigger called on"+parameters.screenName);
-            if (configURL == null) {
-                Logger.log(Logger.LogLevel.ERROR,"init-trigger", "Configuration URL not set. Call configure() method first.");
-                return;
-            }
+//            Logger.log(Logger.LogLevel.INFO, "init-trigger", "trigger called on"+parameters.screenName);
+//            if (configURL == null) {
+//                Logger.log(Logger.LogLevel.ERROR,"init-trigger", "Configuration URL not set. Call configure() method first.");
+//                return;
+//            }
 
-            Logger.log(Logger.LogLevel.DEBUG, "init-trigger", "adding to request queue...");
+            Logger.log(Logger.LogLevel.DEBUG, "iTrigger", "adding to request queue...");
             instance.aliumRequestQueue.offer(new AliumRequest(  new TriggerRequest(object, parameters)));
-
-
-            if(surveyConfig==null && !isConfigFetching) {
-                instance.fetchConfigJson();
-            }else{
-                if(configURL==null||isConfigFetching ){return;}
-                instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
-
+            synchronized (configLock){
+                if(surveyConfig==null && !isConfigFetching){
+                    fetchConfigSafely();
+                    return;
+                }
+                if(isConfigFetching){
+                    return;
+                }
             }
+            instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
+
+//            if(surveyConfig==null && !isConfigFetching) {
+////                instance.fetchConfigJson();
+//                fetchConfigSafely();
+//            }else{
+//                if(configURL==null||isConfigFetching ){return;}
+//                instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
+//
+//            }
         }catch (Exception e){
             Logger.log(Logger.LogLevel.ERROR, "init-trigger", e.toString());
 
         }
     }
     public static synchronized void trigger( Activity activity, SurveyParameters parameters){
-
+        if (instance == null) {
+            Logger.log(Logger.LogLevel.ERROR, "trigger", "Alium not configured. Call config() before trigger().");
+            return;
+        }
        initiateTrigger(activity, parameters);
     }
 public static void cleanup(){
@@ -157,24 +210,31 @@ public static void cleanup(){
 
     private static class ConfigURLResponseListener implements ResponseListener{
         @Override
-        public void onResponseReceived(JSONObject jsonObject) {
+        public void onResponseReceived(JSONObject json) {
 //        new Handler(Looper.getMainLooper()).post(new Runnable() {
 //            @Override
 //            public void run() {
 
                 try{
-                    surveyConfig= AliumJSONParser.getSurConfFromJSON(jsonObject);
+                    SurveyConfig parsed = AliumJSONParser.getSurConfFromJSON(json);
                     Logger.log(Logger.LogLevel.INFO, "config-resp",
-                            "received response for config "+surveyConfig.toString());
-                    preferences.storeConfig(jsonObject.toString());
-                    isConfigFetching=false;
-                    if(configURL==null||isConfigFetching ){return;}
+                            "received response for config "+parsed);
+                    preferences.storeConfig(json.toString());
+                    synchronized (configLock){
+                        isConfigFetching = false;
+                        surveyConfig= parsed;
+
+                    }
+
                     instance.aliumRequestManager.executeNextRequest(instance.aliumRequestQueue);
 
                 }catch (Exception e){
                     Logger.log(Logger.LogLevel.ERROR, "config-resp", e.toString());
-                    isConfigFetching = false;
-                    surveyConfig = null;
+                    synchronized (configLock){
+                        isConfigFetching = false;
+                        surveyConfig = null;
+                    }
+
                 }
 //            }
 //        });
@@ -184,8 +244,10 @@ public static void cleanup(){
         @Override
         public void onRequestFailed(Exception e) {
             Logger.log(Logger.LogLevel.ERROR, "Config-resp", e.toString());
-            isConfigFetching = false;
-            surveyConfig = null;
+            synchronized (configLock){
+                isConfigFetching = false;
+                surveyConfig = null;
+            }
         }
     }
 
