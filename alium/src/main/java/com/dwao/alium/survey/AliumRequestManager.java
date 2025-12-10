@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 final class AliumRequestManager {
     static AliumRequestManager manager = new AliumRequestManager();
@@ -27,7 +28,7 @@ final class AliumRequestManager {
 
 //    stores all the SLQHandlers for each screen
 //    private volatile static Map<String, SLQHandler> surveyExecutingMap=new HashMap<>();
-      volatile static Map<String, AliumSurveyLoader> surveyLoaderMap=new HashMap<>();
+      final static Map<String, AliumSurveyLoader> surveyLoaderMap=new ConcurrentHashMap<>();
 //    public static synchronized AliumSurveyLoader.SurveyDialogCallback reAttachCallback(String id, String screenName){
 //        SLQHandler execSurLoaderDM= surveyExecutingMap.get(screenName);
 //        if(execSurLoaderDM!=null){
@@ -154,10 +155,11 @@ boolean isSurveyPresentInLoader(String screenName){
 }
 void cleanup(){
     Set<String> keys = surveyLoaderMap.keySet();
-    while(keys.iterator().hasNext()){
-        String key=keys.iterator().next();
+    Iterator<String> iterator = keys.iterator();
+    while(iterator.hasNext()){
+        String key=iterator.next();
         stop(key);
-        keys.remove(key);
+        iterator.remove();
     }
 }
      void stop(String screenName){
