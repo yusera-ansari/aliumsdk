@@ -54,14 +54,19 @@ public class Alium {
     }
 
     public static void config(Application application, String url){
-            if(instance==null){
+            if(instance==null||preferences==null){
                 synchronized (Alium.class){
                     if(instance==null){
+                        Logger.log(Logger.LogLevel.INFO, "config","Initialized Alium()...");
                         instance=new Alium();
+                    }
+                    if(preferences==null){
+                        Logger.log(Logger.LogLevel.INFO, "config","Initialized preferences...");
                         preferences= AliumPreferences.setInstance(application);
                     }
                 }
             }
+
         if( url.trim().isEmpty()){
             Logger.log(Logger.LogLevel.ERROR, "config","Configuration URL can't be empty. Please set a valid url: "+url );
             return;
