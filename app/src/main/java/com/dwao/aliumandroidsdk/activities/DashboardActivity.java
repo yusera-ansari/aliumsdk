@@ -2,6 +2,7 @@ package com.dwao.aliumandroidsdk.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.TextView;
 
@@ -28,7 +29,14 @@ public class DashboardActivity extends AppCompatActivity {
 //        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
 //        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
 //        Alium.trigger(this,  new SurveyParameters("secondscreen", params));
-      Alium.trigger(this,  new SurveyParameters("home", params));
+//      Alium.trigger(this,  new SurveyParameters("home", params));
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+//                DashboardActivity.this.finish();
+//                Alium.trigger(DashboardActivity.this,  new SurveyParameters("home", params));
+            }
+        },5000);
 //       new Thread(new Runnable() {
 //            @Override
 //            public void run() {

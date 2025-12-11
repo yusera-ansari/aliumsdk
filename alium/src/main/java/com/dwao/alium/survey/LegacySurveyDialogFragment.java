@@ -153,6 +153,8 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
             if (executableSurveySpecs != null && surveyParameters != null) {
                 dialog = new SurveyDialog(getActivity(), executableSurveySpecs,
                         surveyParameters, savedInstanceState == null);
+
+
                 dialog.currentQuestionResponse = currentQuestionResponse;
                 setCancelable(false);
 //                if(savedInstanceState==null){
@@ -164,6 +166,11 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
 //                    }
 //                }
                 dialogInstance=dialog.getInstance();
+                if(dialogInstance==null){
+                    throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");
+
+                }
+
             }
             else {
                 throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");

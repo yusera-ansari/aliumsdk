@@ -64,7 +64,7 @@ public class MainActivity extends Activity {
                 .addDim(10, "BRCH0921MUM")    // branch ID
                 .build();
 
-        Alium.trigger(MainActivity.this, parameters);
+//        Alium.trigger(MainActivity.this, parameters);
 //        Alium.trigger(MainActivity.this, new SurveyParameters("home", params));
         runOnUiThread(new Runnable() {
             @Override
@@ -72,14 +72,15 @@ public class MainActivity extends Activity {
 
             }
         });
+        new Handler().postDelayed(new Runnable() {
+           @Override
+           public void run() {
+               Alium.trigger(MainActivity.this, parameters);
+               finish();
+           }
+       }, 3000);
 //        new Handler().postDelayed(new Runnable() {
-//           @Override
-//           public void run() {
-//               Alium.trigger(MainActivity.this, new SurveyParameters("screen4", params));
-//           }
-//       }, 3000);
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
+//            @Override       Alium.trigger(MainActivity.this, new SurveyParameters("screen4", p
 //            public void run() {
 //                Alium.trigger(MainActivity.this, new SurveyParameters("screen4", params));
 //            }

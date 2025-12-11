@@ -167,7 +167,7 @@ void cleanup(){
 //            slqHandler.stop();
 //        }
         AliumSurveyLoader loader = surveyLoaderMap.get(screenName);
-        Logger.log(Logger.LogLevel.INFO, "STOP", "manager called stop: "+loader);
+        Logger.log(Logger.LogLevel.INFO, "STOP", "manager called stop: "+loader.getSurveyParameters().screenName);
         if(loader!=null){
 
             loader.stop();

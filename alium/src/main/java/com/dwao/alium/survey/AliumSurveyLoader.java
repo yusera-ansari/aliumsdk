@@ -224,7 +224,8 @@ class AliumSurveyLoader implements Observer {
 
         }
 //        remove the instance of the loader from manager
-        AliumRequestManager.getManager().stop(surveyParameters.screenName);
+        Logger.log(Logger.LogLevel.INFO,"INFO", "survey not found in config...stopping...");
+    AliumRequestManager.getManager().stop(surveyParameters.screenName);
     }
 
 

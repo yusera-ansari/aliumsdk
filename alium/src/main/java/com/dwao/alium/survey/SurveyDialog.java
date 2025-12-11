@@ -6,6 +6,7 @@ import static android.view.View.VISIBLE;
 import static com.dwao.alium.utils.DeviceInfo.getUserAgent;
 import static com.dwao.alium.utils.Util.setCtaEnabled;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -90,11 +91,35 @@ class SurveyDialog extends SurveyController {
         currentIndx = -1;
         dialog = null;
         context = null;
-        if(layout!=null)layout.removeAllViews();
+        if(layout!=null) {
+            layout.removeAllViews();
+            layout.clearAnimation();
+            layout=null;
+        }
         currentQuestionResponse = null;
+        manager = null;
+        if (nextQuestionBtn != null) {
+            nextQuestionBtn.setOnClickListener(null);
+        }
+        if (closeDialogBtn != null) {
+            closeDialogBtn.setOnClickListener(null);
+        }
+        currentQuestion = null;
+        aiFollowupHeading = null;
+
+
+
     }
 
     public Dialog getInstance() {
+        if (context instanceof Activity) {
+            Activity activity = (Activity) context;
+            if (activity.isFinishing() || activity.isDestroyed()) {
+                Logger.log(Logger.LogLevel.WARN, "SurveyDialog",
+                        "Activity finishing, cannot show dialog ....");
+                return null;
+            }
+        }
         initializeDialogUiElements(); //initializes elements and updates UI
         configureDialogWindow();
         if (!survey.getQuestions().isEmpty() && currentIndx >= 0) {
@@ -103,6 +128,7 @@ class SurveyDialog extends SurveyController {
             submitSurvey();
             return null;
         }
+
         super.show();
         return dialog;
     }
@@ -122,6 +148,14 @@ class SurveyDialog extends SurveyController {
 
     @Override
     public void show() {
+        if (context instanceof Activity) {
+            Activity activity = (Activity) context;
+            if (activity.isFinishing() || activity.isDestroyed()) {
+                Logger.log(Logger.LogLevel.WARN, "SurveyDialog",
+                        "Activity finishing, cannot show dialog");
+                return;
+            }
+        }
         initializeDialogUiElements(); //initializes elements and updates UI
         configureDialogWindow();
         if (survey.getQuestions().size() > 0 && currentIndx >= 0) {
@@ -130,6 +164,7 @@ class SurveyDialog extends SurveyController {
             submitSurvey();
             return;
         }
+
         dialog.show();
         super.show();
     }
@@ -595,7 +630,10 @@ class SurveyDialog extends SurveyController {
     @Override
     protected void submitSurvey() {
         super.submitSurvey();
-        dialog.dismiss();
+        if(dialog!=null){
+            dialog.dismiss();
+        }
+
         cleanUp();
     }
 

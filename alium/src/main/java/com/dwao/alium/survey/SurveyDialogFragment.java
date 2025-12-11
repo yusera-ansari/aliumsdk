@@ -161,6 +161,10 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
 //                    }
 //                }
                 dialogInstance = dialog.getInstance();
+                if(dialogInstance==null){
+                    throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");
+
+                }
             } else {
                 throw new IllegalStateException("SurveyDialog cannot be initialized: missing data.");
             }
