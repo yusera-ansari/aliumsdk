@@ -197,8 +197,8 @@ public class SurveyDialogFragment extends DialogFragment implements LifecycleObs
 //                callback.onStop(executableSurveySpecs.getLoadableSurveySpecs().key);
 //            }else
                 if(surveyParameters != null&& shouldCallOnStopCallback){
-                    Alium.stop(surveyParameters.screenName);
-//                AliumRequestManager.getManager().stop(surveyParameters.screenName);
+//                    Alium.stop(surveyParameters.screenName);
+                AliumRequestManager.getManager().stop(surveyParameters.screenName);
             }
 //            callback=null;
             dialog=null;

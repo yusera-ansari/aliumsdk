@@ -207,6 +207,9 @@ public class LegacySurveyDialogFragment extends android.app.DialogFragment {
             }
 //            callback=null;
             dialog=null;
+            executableSurveySpecs = null;
+            surveyParameters = null;
+            currentQuestionResponse = null;
         }catch (Exception e){
             Logger.log(Logger.LogLevel.ERROR,"L.Dial.onDest", e.toString());
         }

@@ -61,6 +61,9 @@ class AliumSurveyLoader implements Observer {
          activity=null;
          xfm=null;
           fm=null;
+        executingSurveys.clear();
+        executorService.shutdownNow();
+        mainHandler.removeCallbacksAndMessages(null);
 
     }
 
@@ -283,6 +286,7 @@ class AliumSurveyLoader implements Observer {
     public synchronized void stop() { //stop means remove every fragment and destroy loader object too
         threadShouldExecute=false;
         executorService.shutdownNow();
+
         if(fm!=null ){
             if(executingSurveys.size()>0){
                 for(String key: executingSurveys){

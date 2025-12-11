@@ -51,7 +51,7 @@ public class MainActivity extends Activity {
         params.put("custMobile", "9090909090");//branch id
         params.put("custSystemId", new HashMap<Integer, Integer>());//systemId id
 
-        SurveyParameters parameters = new SurveyParameters.Builder("home")
+        SurveyParameters parameters = new SurveyParameters.Builder("AI")
                 .addDim(1, "mumbai")          // city
                 .addDim(2, "")                // age (empty → removed)
                 .addDim(3, "male")            // gender

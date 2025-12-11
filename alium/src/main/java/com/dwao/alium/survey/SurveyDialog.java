@@ -90,6 +90,8 @@ class SurveyDialog extends SurveyController {
         currentIndx = -1;
         dialog = null;
         context = null;
+        if(layout!=null)layout.removeAllViews();
+        currentQuestionResponse = null;
     }
 
     public Dialog getInstance() {
