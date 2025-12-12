@@ -29,7 +29,7 @@ public class DashboardActivity extends AppCompatActivity {
 //        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
 //        Alium.trigger(this,  new SurveyParameters("thirdscreen"));
 //        Alium.trigger(this,  new SurveyParameters("secondscreen", params));
-//      Alium.trigger(this,  new SurveyParameters("home", params));
+      Alium.trigger(this,  new SurveyParameters("home", params));
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
